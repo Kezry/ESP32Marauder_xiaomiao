@@ -152,9 +152,9 @@ jobs:
         id: rename
         continue-on-error: true
         run: |
-          VERSION=$(grep '#define MARAUDER_VERSION' ./esp32_marauder/configs.h | sed -E 's/.*"v([^"]+)"/v\1/' | tr '.' '_')
+          # Fixed release filename as requested: esp32_marauder_v0_0_1_<date>_xiaomiao.bin
           DATE=$(date -u +%Y%m%d)
-          OUTPUT_BIN=esp32_marauder_${VERSION}_${DATE}_xiaomiao.bin
+          OUTPUT_BIN=esp32_marauder_v0_0_1_${DATE}_xiaomiao.bin
           echo "=== searching for built bin ==="
           find . -name "*.ino.bin" -type f 2>/dev/null
           INPUT_BIN=$(find . -name "esp32_marauder.ino.bin" -type f | head -1)
@@ -174,21 +174,26 @@ jobs:
           path: ${{ env.artifact_name }}
           retention-days: 14
 
-      # Push the built .bin back to the branch's Release Bins/ dir so it can be
-      # fetched with plain git (no gh auth needed for artifact download).
-      - name: Commit firmware bin to Release Bins
+      # Publish the firmware as GitHub Release v0.0.1 using the built-in GITHUB_TOKEN
+      # (no user gh auth needed). softprops/action-gh-release is what upstream CI uses.
+      - name: Create Release v0.0.1 with firmware
         if: steps.rename.outputs.rename_ok == 'true'
-        run: |
-          set -x
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # checkout leaves us in detached HEAD; switch to the branch so push has an upstream
-          git checkout -B feat/xiaomiao
-          mkdir -p "Release Bins"
-          cp -v "${{ env.artifact_name }}" "Release Bins/"
-          git add -f "Release Bins/${{ env.artifact_name }}"
-          git commit -m "Add XiaoMiao firmware ${{ env.artifact_name }} (CI run ${{ github.run_id }})"
-          git push origin feat/xiaomiao
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v0.0.1
+          name: XiaoMiao v0.0.1
+          body: |
+            ESP32 Marauder firmware for the 学而思小喵掌机 (XiaoMiao).
+
+            - Target: ESP32-D0WD, 4MB flash, ST7735 128x160 (landscape)
+            - Source: feat/xiaomiao branch (CI build ${{ github.run_id }})
+            - Flash with esptool: `0x10000` = this .bin (plus bootloader/partitions/boot_app0)
+
+            Full backup of factory firmware is in the repo at `doc/esp32_xiaomiao_factory_backup.bin`.
+          files: ${{ env.artifact_name }}
+          fail_on_unmatched_files: true
+          draft: false
+          prerelease: false
 
       # Always commit the compile output + rename diagnostics back to the branch so
       # failures are readable via plain git (no gh auth needed).
@@ -199,7 +204,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           mkdir -p doc
           cp /tmp/compile_output.log doc/last_compile_error.log
-          # append rename step's find output too
           {
             echo ""
             echo "=== artifact search (rename step) ==="
