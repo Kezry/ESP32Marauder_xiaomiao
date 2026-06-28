@@ -75,6 +75,13 @@ jobs:
       - name: Install Adafruit_TCA8418 (repo-bundled)
         run: cp -r libraries/Adafruit_TCA8418 CustomAdafruit_TCA8418
 
+      # NimBLE-Arduino: upstream relies on the sketch-bundled copy, but arduino-cli's
+      # sketch-local lib discovery is unreliable across versions, so install it
+      # explicitly at the CI-pinned version to be safe.
+      - name: Install NimBLE-Arduino
+        uses: actions/checkout@v3
+        with: { repository: h2zero/NimBLE-Arduino, ref: 2.3.8, path: CustomNimBLE-Arduino }
+
       - name: Show libraries
         run: find "$HOME" -maxdepth 4 -name "Custom*" -type d 2>/dev/null | head -20
 
