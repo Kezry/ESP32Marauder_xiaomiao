@@ -1,9 +1,8 @@
 name: Build XiaoMiao
 
 # Single-board build for XiaoMiao (学而思小喵掌机).
-# Replicates build_parallel.yml's per-board job EXACTLY (same lib versions, same
-# checkout-then-place strategy), but builds ONLY XiaoMiao. Bundled libraries under
-# esp32_marauder/libraries/ are the source of truth for TFT_eSPI/NimBLE/lv_arduino/etc.
+# Uses ArminJo/arduino-test-compile EXACTLY like upstream build_parallel.yml so the
+# sketch-bundled libraries (esp32_marauder/libraries/) are auto-discovered.
 on:
   workflow_dispatch:
   push:
@@ -23,6 +22,12 @@ jobs:
           curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
 
+      - name: Verify Installed Cores
+        run: arduino-cli core list || true
+
+      # Install ESP32 core at the pinned version via the same action upstream uses.
+      # arduino-test-compile installs the platform itself, but we also need it for the
+      # platform.txt patch step below, so install explicitly first.
       - name: Install ESP32 core v3.3.4
         run: |
           arduino-cli config init
@@ -30,7 +35,7 @@ jobs:
           arduino-cli core update-index
           arduino-cli core install esp32:esp32@3.3.4
 
-      # ---- All deps via git checkout at CI-pinned versions (mirrors build_parallel.yml) ----
+      # ---- All dependencies via git checkout at CI-pinned versions (mirrors build_parallel.yml) ----
       - name: Install ESP32Ping
         uses: actions/checkout@v3
         with: { repository: marian-craciunescu/ESP32Ping, ref: 1.6, path: CustomESP32Ping }
@@ -67,18 +72,13 @@ jobs:
       - name: Install Adafruit_MAX1704X
         uses: actions/checkout@v3
         with: { repository: adafruit/Adafruit_MAX1704X, ref: 1.0.2, path: CustomAdafruit_MAX1704X }
-
       - name: Install Adafruit_TCA8418 (repo-bundled)
         run: cp -r libraries/Adafruit_TCA8418 CustomAdafruit_TCA8418
 
-      - name: Place all custom libs into Arduino library dir
-        run: |
-          arduino-cli config set directories.user "$HOME/Arduino"
-          mkdir -p "$HOME/Arduino/libraries"
-          for d in Custom*/; do cp -r "$d" "$HOME/Arduino/libraries/"; done
+      - name: Show libraries
+        run: find "$HOME" -maxdepth 4 -name "Custom*" -type d 2>/dev/null | head -20
 
-      # TFT_eSPI bundled in esp32_marauder/libraries/TFT_eSPI is the active one
-      # (upstream CI uses the sketch-bundled TFT_eSPI for every screen board).
+      # Configure the sketch-bundled TFT_eSPI (the one used in compilation) for XiaoMiao.
       - name: Configure bundled TFT_eSPI for XiaoMiao
         run: |
           TFT="esp32_marauder/libraries/TFT_eSPI"
@@ -93,20 +93,24 @@ jobs:
             sed -i 's|compiler.c.elf.extra_flags=|compiler.c.elf.extra_flags=-Wl,-zmuldefs |' "$i"
           done
 
-      - name: Compile XiaoMiao
-        run: |
-          arduino-cli compile \
-            --fqbn "esp32:esp32:d32:PartitionScheme=min_spiffs" \
-            --build-property "compiler.cpp.extra_flags=-DMARAUDER_XIAOMIAO" \
-            --warnings none \
-            esp32_marauder/esp32_marauder.ino
+      # Use the SAME compile action as upstream build_parallel.yml so sketch-bundled
+      # libraries under esp32_marauder/libraries/ are auto-discovered.
+      - name: Build XiaoMiao
+        uses: ArminJo/arduino-test-compile@v3.3.0
+        with:
+          sketch-names: esp32_marauder.ino
+          arduino-board-fqbn: esp32:esp32:d32:PartitionScheme=min_spiffs
+          extra-arduino-cli-args: "--warnings none --build-property compiler.cpp.extra_flags=-DMARAUDER_XIAOMIAO"
+          arduino-platform: esp32:esp32@3.3.4
+          platform-url: https://github.com/espressif/arduino-esp32/releases/download/3.3.4/package_esp32_dev_index.json
 
       - name: Rename artifact
         run: |
           VERSION=$(grep '#define MARAUDER_VERSION' ./esp32_marauder/configs.h | sed -E 's/.*"v([^"]+)"/v\1/' | tr '.' '_')
           DATE=$(date -u +%Y%m%d)
           BUILD_DIR=./esp32_marauder/build/esp32.esp32.d32
-          ls -la "$BUILD_DIR"/esp32_marauder.ino.bin
+          echo "--- build dir contents ---"
+          ls -la "$BUILD_DIR"/ 2>/dev/null | head
           OUTPUT_BIN=esp32_marauder_${VERSION}_${DATE}_xiaomiao.bin
           cp "$BUILD_DIR/esp32_marauder.ino.bin" "$OUTPUT_BIN"
           ls -la "$OUTPUT_BIN"
