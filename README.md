@@ -35,17 +35,17 @@ You can buy the ESP32 Marauder using [this link](https://www.justcallmekokollc.c
 - **设备**：ESP32-D0WD，4MB Flash，ST7735 128×160（横屏 160×128）
 - **按键**：上/下/左/右 + **A=确认/进入** + **B=返回上一级**
 - **屏幕**：横屏，`SCREEN_ORIENTATION=3`（logo 头朝上）
-- **固件 Release**：[v0.0.1](https://github.com/Kezry/ESP32Marauder_xiaomiao/releases/tag/v0.0.1)
+- **固件 Release**：[v0.0.2](https://github.com/Kezry/ESP32Marauder_xiaomiao/releases/tag/v0.0.2)
 
 ## 1. 下载固件
 
-从 [Releases · v0.0.1](https://github.com/Kezry/ESP32Marauder_xiaomiao/releases/tag/v0.0.1) 下载这 3 个文件（同一编译产物，必须配套）：
+从 [Releases · v0.0.2](https://github.com/Kezry/ESP32Marauder_xiaomiao/releases/tag/v0.0.2) 下载这 3 个文件（同一编译产物，必须配套）：
 
 | 文件 | 烧录地址 | 说明 |
 |------|---------|------|
 | `bootloader_xiaomiao.bin` | `0x1000` | 引导加载器（与 app 配套，不能混用原厂/bootloader） |
 | `partitions_xiaomiao.bin` | `0x8000` | min_spiffs 分区表 |
-| `esp32_marauder_v0_0_1_20260628_xiaomiao.bin` | `0x10000` | 应用固件本体 |
+| `esp32_marauder_v0_0_2_20260628_xiaomiao.bin` | `0x10000` | 应用固件本体 |
 
 > 还需要 `boot_app0.bin`（OTA 数据初始镜像），可从 [arduino-esp32 核心](https://github.com/espressif/arduino-esp32/blob/3.3.4/tools/partitions/boot_app0.bin) 下载，烧到 `0xe000`。
 
@@ -83,7 +83,7 @@ FlashFiles\esptool.exe --chip esp32 --port COM5 --baud 921600 ^
   0x1000  bootloader_xiaomiao.bin ^
   0x8000  partitions_xiaomiao.bin ^
   0xe000  boot_app0.bin ^
-  0x10000 esp32_marauder_v0_0_1_20260628_xiaomiao.bin
+  0x10000 esp32_marauder_v0_0_2_20260628_xiaomiao.bin
 
 # Linux / macOS
 esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600 \
@@ -91,7 +91,7 @@ esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600 \
   0x1000  bootloader_xiaomiao.bin \
   0x8000  partitions_xiaomiao.bin \
   0xe000  boot_app0.bin \
-  0x10000 esp32_marauder_v0_0_1_20260628_xiaomiao.bin
+  0x10000 esp32_marauder_v0_0_2_20260628_xiaomiao.bin
 ```
 
 看到 `Hash of data verified.` + `Hard resetting via RTS pin...` 即烧录成功。设备会自动重启，屏幕显示 Marauder 骷髅 logo 和主菜单。
