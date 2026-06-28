@@ -124,52 +124,41 @@ jobs:
 
       - name: Build XiaoMiao
         run: |
-          set +e
+          set -x
           BUILD_OUT="$GITHUB_WORKSPACE/build_out"
+          mkdir -p "$BUILD_OUT"
           arduino-cli compile \
             --fqbn "esp32:esp32:d32:PartitionScheme=min_spiffs" \
             --build-path "$BUILD_OUT" \
             --build-property "compiler.cpp.extra_flags=-DMARAUDER_XIAOMIAO" \
             --warnings none \
             esp32_marauder/esp32_marauder.ino 2>&1 | tee /tmp/compile_output.log
-          echo "${PIPESTATUS[0]}" > /tmp/compile_exit.txt
-
-      - name: Surface compile errors to step summary
-        if: always()
-        run: |
-          EXIT=$(cat /tmp/compile_exit.txt 2>/dev/null || echo "1")
-          {
-            echo "## Compile result: exit $EXIT"
-            echo '```'
-            grep -iE "error:|fatal error|No such file|overflow|not enough|Sketch uses|region " /tmp/compile_output.log | tail -40
-            echo '--- last 30 lines ---'
-            tail -30 /tmp/compile_output.log
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-          if [ "$EXIT" != "0" ]; then exit 1; fi
+          # verify the bin exists immediately after compile
+          echo "=== POST-COMPILE: build_out .bin files ==="
+          ls -la "$BUILD_OUT"/*.bin 2>&1 | tee -a /tmp/compile_output.log
 
       - name: Rename artifact
         run: |
-          # Fixed release filename as requested: esp32_marauder_v0_0_1_<date>_xiaomiao.bin
+          set -x
+          exec 2>&1  # send stderr (set -x) to the log via tee below
+          {
           DATE=$(date -u +%Y%m%d)
           OUTPUT_BIN=esp32_marauder_v0_0_1_${DATE}_xiaomiao.bin
           BUILD_OUT="$GITHUB_WORKSPACE/build_out"
-          echo "=== build_out contents ==="
-          ls -la "$BUILD_OUT"/*.bin 2>/dev/null || echo "no .bin directly in build_out"
+          echo "=== build_out *.bin ==="
+          ls -la "$BUILD_OUT"/*.bin 2>&1
           INPUT_BIN="$BUILD_OUT/esp32_marauder.ino.bin"
-          echo "Expected bin: $INPUT_BIN"
           if [ ! -f "$INPUT_BIN" ]; then
-            echo "expected bin missing, searching..."
+            echo "expected bin missing, searching build_out..."
             INPUT_BIN=$(find "$BUILD_OUT" -name "*.ino.bin" -type f | head -1)
-            echo "fallback found: $INPUT_BIN"
           fi
           if [ -z "$INPUT_BIN" ] || [ ! -f "$INPUT_BIN" ]; then
-            echo "NO BIN FOUND"; { echo "## NO BIN FOUND in $BUILD_OUT"; ls -laR "$BUILD_OUT" | head -50; } >> "$GITHUB_STEP_SUMMARY"; exit 1
+            echo "NO BIN FOUND"; ls -laR "$BUILD_OUT" | head -50; exit 1
           fi
-          ls -la "$INPUT_BIN"
           cp "$INPUT_BIN" "$OUTPUT_BIN"
           ls -la "$OUTPUT_BIN"
           echo "artifact_name=$OUTPUT_BIN" >> $GITHUB_ENV
+          } 2>&1 | tee -a /tmp/compile_output.log
 
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
