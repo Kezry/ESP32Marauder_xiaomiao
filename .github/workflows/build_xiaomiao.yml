@@ -82,13 +82,34 @@ jobs:
         uses: actions/checkout@v3
         with: { repository: h2zero/NimBLE-Arduino, ref: 2.3.8, path: CustomNimBLE-Arduino }
 
-      - name: Show libraries
-        run: find "$HOME" -maxdepth 4 -name "Custom*" -type d 2>/dev/null | head -20
-
-      # Configure the sketch-bundled TFT_eSPI (the one used in compilation) for XiaoMiao.
-      - name: Configure bundled TFT_eSPI for XiaoMiao
+      - name: Place all custom libs into Arduino library dir
         run: |
-          TFT="esp32_marauder/libraries/TFT_eSPI"
+          arduino-cli config set directories.user "$HOME/Arduino"
+          mkdir -p "$HOME/Arduino/libraries"
+          for d in Custom*/; do cp -r "$d" "$HOME/Arduino/libraries/"; done
+
+      # sketch-bundled libs (esp32_marauder/libraries/) are NOT reliably auto-discovered
+      # by arduino-cli/arduino-test-compile on forks. Copy them into the user library dir
+      # too, so all libs resolve from one place. Repo versions win for bundled ones.
+      - name: Copy sketch-bundled libs into user library dir
+        run: |
+          for d in esp32_marauder/libraries/*/; do
+            name=$(basename "$d")
+            rm -rf "$HOME/Arduino/libraries/$name"
+            cp -r "$d" "$HOME/Arduino/libraries/$name"
+            echo "bundled -> user lib: $name"
+          done
+          # Remove the sketch-local libraries dir so the compiler resolves every lib
+          # from the single user library dir (avoids duplicate-resolution / .pde scan noise).
+          rm -rf esp32_marauder/libraries
+
+      - name: Show libraries
+        run: ls "$HOME/Arduino/libraries/"
+
+      # Configure the TFT_eSPI now living in the user library dir for XiaoMiao.
+      - name: Configure TFT_eSPI for XiaoMiao
+        run: |
+          TFT="$HOME/Arduino/libraries/TFT_eSPI"
           cp User_*.h "$TFT/"
           sed -i 's|^//#include <User_Setup_xiaomiao.h>|#include <User_Setup_xiaomiao.h>|' "$TFT/User_Setup_Select.h"
           echo "--- active TFT_eSPI setup: ---"
