@@ -522,7 +522,10 @@ void Display::processAndPrintString(TFT_eSPI& tft, const String& originalString)
     }
   }
 
-  int count = TFT_WIDTH / CHAR_WIDTH;
+  // Characters that fit across the visible (post-rotation) width. On landscape
+  // boards like XiaoMiao, SCREEN_WIDTH (160) != portrait TFT_WIDTH (128); using
+  // TFT_WIDTH here left the right portion of each line uncleared/overflowing.
+  int count = SCREEN_WIDTH / CHAR_WIDTH;
 
   char buf[count + 1];
   memset(buf, ' ', count);
@@ -574,9 +577,9 @@ void Display::displayBuffer(bool do_clear)
 
         for (int i = 0; i < this->screen_buffer->size(); i++) {
           #ifdef HAS_TOUCH
-            tft.setCursor(xPos, (i * 12) + ((TFT_HEIGHT / 6) * 1.3));
+            tft.setCursor(xPos, (i * 12) + ((SCREEN_HEIGHT / 6) * 1.3));
           #else
-            tft.setCursor(xPos, (i * 12) + (TFT_HEIGHT / 6));
+            tft.setCursor(xPos, (i * 12) + (SCREEN_HEIGHT / 6));
           #endif
 
           this->processAndPrintString(tft, this->screen_buffer->get(i));
