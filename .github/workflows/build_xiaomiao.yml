@@ -165,10 +165,12 @@ jobs:
         run: |
           VERSION=$(grep '#define MARAUDER_VERSION' ./esp32_marauder/configs.h | sed -E 's/.*"v([^"]+)"/v\1/' | tr '.' '_')
           DATE=$(date -u +%Y%m%d)
-          BUILD_DIR=./esp32_marauder/build/esp32.esp32.d32
-          ls -la "$BUILD_DIR"/esp32_marauder.ino.bin
           OUTPUT_BIN=esp32_marauder_${VERSION}_${DATE}_xiaomiao.bin
-          cp "$BUILD_DIR/esp32_marauder.ino.bin" "$OUTPUT_BIN"
+          # Locate the built bin (path varies by arduino-cli version)
+          INPUT_BIN=$(find . -name "esp32_marauder.ino.bin" -type f | head -1)
+          echo "Found bin: $INPUT_BIN"
+          ls -la "$INPUT_BIN"
+          cp "$INPUT_BIN" "$OUTPUT_BIN"
           ls -la "$OUTPUT_BIN"
           echo "artifact_name=$OUTPUT_BIN" >> $GITHUB_ENV
 
