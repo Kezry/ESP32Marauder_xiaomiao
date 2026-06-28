@@ -25,7 +25,20 @@ void MenuFunctions::drawMiniMenuButton(int b, int x, bool selected) {
   display_obj.tft.fillRect(button_x, button_y - 4, KEY_W, KEY_H, background);
   display_obj.tft.setTextColor(text_color, background);
   display_obj.tft.setCursor(button_x + BUTTON_PADDING, button_y + (KEY_H / 2) - 8);
-  display_obj.tft.print(current_menu->list->get(x).name);
+
+  // Truncate the label so it never overflows the button's right edge on narrow
+  // landscape screens (e.g. XiaoMiao 160px wide). Available text width is the
+  // button width minus padding on both sides.
+  String label = current_menu->list->get(x).name;
+  int16_t max_w = KEY_W - (BUTTON_PADDING * 2);
+  if (max_w > 4 && display_obj.tft.textWidth(label) > max_w) {
+    // Trim character-by-character until it fits (leave room for "..").
+    while (label.length() > 1 && display_obj.tft.textWidth(label + "..") > max_w) {
+      label.remove(label.length() - 1, 1);
+    }
+    label += "..";
+  }
+  display_obj.tft.print(label);
 }
 #endif
 
