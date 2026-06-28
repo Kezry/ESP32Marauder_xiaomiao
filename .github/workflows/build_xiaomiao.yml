@@ -179,13 +179,16 @@ jobs:
       - name: Commit firmware bin to Release Bins
         if: steps.rename.outputs.rename_ok == 'true'
         run: |
+          set -x
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # checkout leaves us in detached HEAD; switch to the branch so push has an upstream
+          git checkout -B feat/xiaomiao
           mkdir -p "Release Bins"
-          cp "${{ env.artifact_name }}" "Release Bins/"
-          git add "Release Bins/${{ env.artifact_name }}"
-          git commit -m "Add XiaoMiao firmware build ${{ env.artifact_name }} (CI run ${{ github.run_id }})" || echo "nothing to commit"
-          git push || echo "push skipped"
+          cp -v "${{ env.artifact_name }}" "Release Bins/"
+          git add -f "Release Bins/${{ env.artifact_name }}"
+          git commit -m "Add XiaoMiao firmware ${{ env.artifact_name }} (CI run ${{ github.run_id }})"
+          git push origin feat/xiaomiao
 
       # Always commit the compile output + rename diagnostics back to the branch so
       # failures are readable via plain git (no gh auth needed).
