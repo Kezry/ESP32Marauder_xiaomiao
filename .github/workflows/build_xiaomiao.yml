@@ -121,16 +121,17 @@ jobs:
             sed -i 's|compiler.c.elf.extra_flags=|compiler.c.elf.extra_flags=-Wl,-zmuldefs |' "$i"
           done
 
-      # Use the SAME compile action as upstream build_parallel.yml so sketch-bundled
-      # libraries under esp32_marauder/libraries/ are auto-discovered.
+      # Use bare arduino-cli (NOT arduino-test-compile, which re-inits config and
+      # ignores our directories.user / placed libs). All libs now live in the single
+      # user library dir, so resolution is straightforward.
       - name: Build XiaoMiao
-        uses: ArminJo/arduino-test-compile@v3.3.0
-        with:
-          sketch-names: esp32_marauder.ino
-          arduino-board-fqbn: esp32:esp32:d32:PartitionScheme=min_spiffs
-          extra-arduino-cli-args: "--warnings none --build-property compiler.cpp.extra_flags=-DMARAUDER_XIAOMIAO"
-          arduino-platform: esp32:esp32@3.3.4
-          platform-url: https://github.com/espressif/arduino-esp32/releases/download/3.3.4/package_esp32_dev_index.json
+        run: |
+          arduino-cli config set directories.user "$HOME/Arduino"
+          arduino-cli compile \
+            --fqbn "esp32:esp32:d32:PartitionScheme=min_spiffs" \
+            --build-property "compiler.cpp.extra_flags=-DMARAUDER_XIAOMIAO" \
+            --warnings none \
+            esp32_marauder/esp32_marauder.ino
 
       - name: Rename artifact
         run: |
