@@ -1,19 +1,14 @@
 name: Build XiaoMiao
 
-# Single-board build for the XiaoMiao (学而思小喵掌机) target.
-# Mirrors build_parallel.yml but builds ONLY XiaoMiao (cheap, fast).
-# Sketch-bundled libraries under esp32_marauder/libraries/ are the source of truth
-# for TFT_eSPI / NimBLE / lv_arduino / etc. — exactly how upstream builds screen boards.
+# Single-board build for XiaoMiao (学而思小喵掌机).
+# Replicates build_parallel.yml's per-board job EXACTLY (same lib versions, same
+# checkout-then-place strategy), but builds ONLY XiaoMiao. Bundled libraries under
+# esp32_marauder/libraries/ are the source of truth for TFT_eSPI/NimBLE/lv_arduino/etc.
 on:
   workflow_dispatch:
   push:
     branches:
       - feat/xiaomiao
-    paths:
-      - 'esp32_marauder/**'
-      - 'User_Setup_xiaomiao.h'
-      - 'User_Setup_Select.h'
-      - '.github/workflows/build_xiaomiao.yml'
 
 jobs:
   build:
@@ -35,45 +30,61 @@ jobs:
           arduino-cli core update-index
           arduino-cli core install esp32:esp32@3.3.4
 
-      # Libraries NOT bundled in esp32_marauder/libraries/ — install from Library Manager
-      - name: Install non-bundled dependencies
-        run: |
-          arduino-cli lib install "ESP32Ping"@1.6
-          arduino-cli lib install "Adafruit NeoPixel"@1.12.0
-          arduino-cli lib install "Adafruit BusIO"@1.15.0
-          arduino-cli lib install "Adafruit MAX1704X"@1.0.2
-          arduino-cli lib install "ArduinoJson"@6.18.2
-          arduino-cli lib install "XPT2046 Touchscreen"@1.4.0
-          arduino-cli lib install "MicroNMEA"@2.0.6
-          arduino-cli lib install "Adafruit GFX Library"@1.11.9
-
-      # Pinned-version deps that need a specific fork/commit (matched to upstream CI)
-      - name: Checkout AsyncTCP
+      # ---- All deps via git checkout at CI-pinned versions (mirrors build_parallel.yml) ----
+      - name: Install ESP32Ping
+        uses: actions/checkout@v3
+        with: { repository: marian-craciunescu/ESP32Ping, ref: 1.6, path: CustomESP32Ping }
+      - name: Install AsyncTCP
         uses: actions/checkout@v3
         with: { repository: ESP32Async/AsyncTCP, ref: v3.4.8, path: CustomAsyncTCP }
-      - name: Checkout ESPAsyncWebServer (fork)
+      - name: Install MicroNMEA
+        uses: actions/checkout@v3
+        with: { repository: stevemarple/MicroNMEA, ref: v2.0.6, path: CustomMicroNMEA }
+      - name: Install ESPAsyncWebServer (fork)
         uses: actions/checkout@v3
         with: { repository: bigbrodude6119/ESPAsyncWebServer, ref: master, path: CustomESPAsyncWebServer }
-      - name: Checkout EspSoftwareSerial
+      - name: Install XPT2046_Touchscreen
+        uses: actions/checkout@v3
+        with: { repository: PaulStoffregen/XPT2046_Touchscreen, ref: v1.4, path: CustomXPT2046_Touchscreen }
+      - name: Install JPEGDecoder
+        uses: actions/checkout@v3
+        with: { repository: Bodmer/JPEGDecoder, ref: 1.8.0, path: CustomJPEGDecoder }
+      - name: Install Adafruit_NeoPixel
+        uses: actions/checkout@v3
+        with: { repository: adafruit/Adafruit_NeoPixel, ref: 1.12.0, path: CustomAdafruit_NeoPixel }
+      - name: Install ArduinoJson
+        uses: actions/checkout@v3
+        with: { repository: bblanchon/ArduinoJson, ref: v6.18.2, path: CustomArduinoJson }
+      - name: Install LinkedList
+        uses: actions/checkout@v3
+        with: { repository: ivanseidel/LinkedList, ref: v1.3.3, path: CustomLinkedList }
+      - name: Install EspSoftwareSerial
         uses: actions/checkout@v3
         with: { repository: plerup/espsoftwareserial, ref: 8.1.0, path: CustomEspSoftwareSerial }
+      - name: Install Adafruit_BusIO
+        uses: actions/checkout@v3
+        with: { repository: adafruit/Adafruit_BusIO, ref: 1.15.0, path: CustomAdafruit_BusIO }
+      - name: Install Adafruit_MAX1704X
+        uses: actions/checkout@v3
+        with: { repository: adafruit/Adafruit_MAX1704X, ref: 1.0.2, path: CustomAdafruit_MAX1704X }
 
-      - name: Place custom libs into Arduino library dir
+      - name: Install Adafruit_TCA8418 (repo-bundled)
+        run: cp -r libraries/Adafruit_TCA8418 CustomAdafruit_TCA8418
+
+      - name: Place all custom libs into Arduino library dir
         run: |
           arduino-cli config set directories.user "$HOME/Arduino"
           mkdir -p "$HOME/Arduino/libraries"
           for d in Custom*/; do cp -r "$d" "$HOME/Arduino/libraries/"; done
-          # repo-bundled TCA8418 (used by some board configs)
-          cp -r libraries/Adafruit_TCA8418 "$HOME/Arduino/libraries/" || true
 
-      # TFT_eSPI is the one bundled in esp32_marauder/libraries/TFT_eSPI — configure THAT one
-      # (this is how upstream CI handles every screen board: mini, m5stickc, cyd, etc.)
+      # TFT_eSPI bundled in esp32_marauder/libraries/TFT_eSPI is the active one
+      # (upstream CI uses the sketch-bundled TFT_eSPI for every screen board).
       - name: Configure bundled TFT_eSPI for XiaoMiao
         run: |
           TFT="esp32_marauder/libraries/TFT_eSPI"
           cp User_*.h "$TFT/"
           sed -i 's|^//#include <User_Setup_xiaomiao.h>|#include <User_Setup_xiaomiao.h>|' "$TFT/User_Setup_Select.h"
-          echo "--- active setup line: ---"
+          echo "--- active TFT_eSPI setup: ---"
           grep -nE "^#include <User_Setup" "$TFT/User_Setup_Select.h"
 
       - name: Patch platform.txt (idf 3.x -Wl,-zmuldefs)
@@ -90,14 +101,14 @@ jobs:
             --warnings none \
             esp32_marauder/esp32_marauder.ino
 
-      - name: Rename and locate artifact
+      - name: Rename artifact
         run: |
           VERSION=$(grep '#define MARAUDER_VERSION' ./esp32_marauder/configs.h | sed -E 's/.*"v([^"]+)"/v\1/' | tr '.' '_')
           DATE=$(date -u +%Y%m%d)
           BUILD_DIR=./esp32_marauder/build/esp32.esp32.d32
-          INPUT_BIN=$BUILD_DIR/esp32_marauder.ino.bin
+          ls -la "$BUILD_DIR"/esp32_marauder.ino.bin
           OUTPUT_BIN=esp32_marauder_${VERSION}_${DATE}_xiaomiao.bin
-          cp "$INPUT_BIN" "$OUTPUT_BIN"
+          cp "$BUILD_DIR/esp32_marauder.ino.bin" "$OUTPUT_BIN"
           ls -la "$OUTPUT_BIN"
           echo "artifact_name=$OUTPUT_BIN" >> $GITHUB_ENV
 
