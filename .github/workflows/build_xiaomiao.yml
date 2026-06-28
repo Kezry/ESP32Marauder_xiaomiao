@@ -82,11 +82,16 @@ jobs:
       - name: Adafruit_GFX
         uses: actions/checkout@v3
         with: { repository: adafruit/Adafruit-GFX-Library, ref: 1.11.9, path: libs/Adafruit_GFX }
-      # SwitchLib is a justcallmekoko lib bundled in the repo (not on its own repo).
-      - name: SwitchLib (repo-bundled)
-        run: cp -r libraries/SwitchLib libs/SwitchLib
+      # SwitchLib is a justcallmekoko submodule (esp32_marauder/libraries/SwitchLib) —
+      # not strictly compiled against, but install it for completeness from its repo.
+      - name: SwitchLib
+        uses: actions/checkout@v3
+        with: { repository: justcallmekoko/SwitchLib, ref: master, path: libs/SwitchLib }
+      # Adafruit_TCA8418 is a real (non-submodule) dir at the repo top level.
       - name: Adafruit_TCA8418 (repo-bundled)
-        run: cp -r libraries/Adafruit_TCA8418 libs/Adafruit_TCA8418
+        run: |
+          mkdir -p libs
+          cp -r libraries/Adafruit_TCA8418 libs/Adafruit_TCA8418
 
       - name: Install libs into Arduino user library dir
         run: |
