@@ -123,12 +123,12 @@ jobs:
           done
 
       - name: Build XiaoMiao
-        id: compile
-        continue-on-error: true
         run: |
           set +e
+          BUILD_OUT="$GITHUB_WORKSPACE/build_out"
           arduino-cli compile \
             --fqbn "esp32:esp32:d32:PartitionScheme=min_spiffs" \
+            --build-path "$BUILD_OUT" \
             --build-property "compiler.cpp.extra_flags=-DMARAUDER_XIAOMIAO" \
             --warnings none \
             esp32_marauder/esp32_marauder.ino 2>&1 | tee /tmp/compile_output.log
@@ -153,11 +153,19 @@ jobs:
           # Fixed release filename as requested: esp32_marauder_v0_0_1_<date>_xiaomiao.bin
           DATE=$(date -u +%Y%m%d)
           OUTPUT_BIN=esp32_marauder_v0_0_1_${DATE}_xiaomiao.bin
-          echo "=== searching for built bin ==="
-          find . -name "*.ino.bin" -type f 2>/dev/null
-          INPUT_BIN=$(find . -name "esp32_marauder.ino.bin" -type f | head -1)
-          echo "Found bin: $INPUT_BIN"
-          if [ -z "$INPUT_BIN" ]; then echo "NO BIN FOUND"; exit 1; fi
+          BUILD_OUT="$GITHUB_WORKSPACE/build_out"
+          echo "=== build_out contents ==="
+          ls -la "$BUILD_OUT"/*.bin 2>/dev/null || echo "no .bin directly in build_out"
+          INPUT_BIN="$BUILD_OUT/esp32_marauder.ino.bin"
+          echo "Expected bin: $INPUT_BIN"
+          if [ ! -f "$INPUT_BIN" ]; then
+            echo "expected bin missing, searching..."
+            INPUT_BIN=$(find "$BUILD_OUT" -name "*.ino.bin" -type f | head -1)
+            echo "fallback found: $INPUT_BIN"
+          fi
+          if [ -z "$INPUT_BIN" ] || [ ! -f "$INPUT_BIN" ]; then
+            echo "NO BIN FOUND"; { echo "## NO BIN FOUND in $BUILD_OUT"; ls -laR "$BUILD_OUT" | head -50; } >> "$GITHUB_STEP_SUMMARY"; exit 1
+          fi
           ls -la "$INPUT_BIN"
           cp "$INPUT_BIN" "$OUTPUT_BIN"
           ls -la "$OUTPUT_BIN"
