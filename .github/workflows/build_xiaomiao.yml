@@ -15,9 +15,13 @@ jobs:
   build:
     name: Build XiaoMiao firmware
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # allow pushing the compile-error log back to the branch
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
         # Do NOT init submodules: bundled esp32_marauder/libraries/* are stale and
         # we override every one with pinned Custom* checkouts below.
 
@@ -134,14 +138,25 @@ jobs:
           {
             echo "## Compile result: exit $EXIT"
             echo '```'
-            # Show errors + the size summary line if present
             grep -iE "error:|fatal error|No such file|overflow|not enough|Sketch uses|region " /tmp/compile_output.log | tail -40
             echo '--- last 30 lines ---'
             tail -30 /tmp/compile_output.log
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          # Fail the job if compile failed
           if [ "$EXIT" != "0" ]; then exit 1; fi
+
+      # Persist compile errors back to the branch (via built-in GITHUB_TOKEN) so they
+      # can be read with plain git fetch (no gh auth needed for log download).
+      - name: Commit compile log on failure
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p doc
+          cp /tmp/compile_output.log doc/last_compile_error.log
+          git add doc/last_compile_error.log || true
+          git commit -m "Update compile error log (CI run ${{ github.run_id }})" || true
+          git push || true
 
       - name: Rename artifact
         run: |
