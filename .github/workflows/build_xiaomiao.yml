@@ -158,6 +158,11 @@ jobs:
           cp "$INPUT_BIN" "$OUTPUT_BIN"
           ls -la "$OUTPUT_BIN"
           echo "artifact_name=$OUTPUT_BIN" >> $GITHUB_ENV
+          # Also stage the matching bootloader + partitions (needed to flash; must
+          # match the IDF version the app was built with).
+          cp "$BUILD_OUT/esp32_marauder.ino.bootloader.bin" "bootloader_xiaomiao.bin" 2>/dev/null || echo "no bootloader in build_out"
+          cp "$BUILD_OUT/esp32_marauder.ino.partitions.bin" "partitions_xiaomiao.bin" 2>/dev/null || echo "no partitions in build_out"
+          ls -la bootloader_xiaomiao.bin partitions_xiaomiao.bin 2>/dev/null
           } 2>&1 | tee -a /tmp/compile_output.log
 
       - name: Upload firmware artifact
@@ -182,7 +187,10 @@ jobs:
             - Flash with esptool: `0x10000` = this .bin (plus bootloader/partitions/boot_app0)
 
             Full backup of factory firmware is in the repo at `doc/esp32_xiaomiao_factory_backup.bin`.
-          files: ${{ env.artifact_name }}
+          files: |
+            ${{ env.artifact_name }}
+            bootloader_xiaomiao.bin
+            partitions_xiaomiao.bin
           fail_on_unmatched_files: true
           draft: false
           prerelease: false
