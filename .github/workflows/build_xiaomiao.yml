@@ -16,6 +16,11 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+        with:
+          # esp32_marauder/libraries/* are git submodules (TFT_eSPI, NimBLE, lv_arduino...)
+          # and upstream CI relies on explicit Custom* checkouts instead, but init them
+          # anyway so any code that references them has content.
+          submodules: true
 
       - name: Install Arduino CLI
         run: |
