@@ -82,11 +82,7 @@ jobs:
       - name: Adafruit_GFX
         uses: actions/checkout@v3
         with: { repository: adafruit/Adafruit-GFX-Library, ref: 1.11.9, path: libs/Adafruit_GFX }
-      # SwitchLib is a justcallmekoko submodule (esp32_marauder/libraries/SwitchLib) —
-      # not strictly compiled against, but install it for completeness from its repo.
-      - name: SwitchLib
-        uses: actions/checkout@v3
-        with: { repository: justcallmekoko/SwitchLib, ref: master, path: libs/SwitchLib }
+      # SwitchLib submodule is NOT included by Marauder code (uses local Switches.h), skip it.
       # Adafruit_TCA8418 is a real (non-submodule) dir at the repo top level.
       - name: Adafruit_TCA8418 (repo-bundled)
         run: |
