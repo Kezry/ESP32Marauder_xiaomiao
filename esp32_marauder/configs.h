@@ -36,6 +36,7 @@
   //#define MARAUDER_MINI_V3
   //#define MARAUDER_M5_NANO_C6
   //#define DUAL_MINI_C5
+  //#define MARAUDER_XIAOMIAO // 学而思小喵掌机 ESP32-D0WD ST7735 128x160
   //// END BOARD TARGETS
 
   #define JSON_SETTING_SIZE 2048
@@ -109,6 +110,8 @@
     #define HARDWARE_NAME "Dual Mini C5"
   #elif defined(MARAUDER_M5_NANO_C6)
     #define HARDWARE_NAME "M5 Nano C6"
+  #elif defined(MARAUDER_XIAOMIAO)
+    #define HARDWARE_NAME "XiaoMiao"
   #else
     #define HARDWARE_NAME "ESP32"
   #endif
@@ -557,6 +560,26 @@
     #define HAS_NIMBLE_2
     #define HAS_IDF_3
   #endif
+
+  #ifdef MARAUDER_XIAOMIAO
+    // 学而思小喵掌机: ESP32-D0WD, 4MB flash, ST7735 128x160 (landscape),
+    // 6 buttons (U/D/L/R + A=select, B unused), shared-SPI SD, no GPS/battery/backlight.
+    //#define FLIPPER_ZERO_HAT
+    //#define HAS_BATTERY
+    #define HAS_BT
+    #define HAS_BUTTONS
+    //#define HAS_NEOPIXEL_LED
+    //#define HAS_PWR_MGMT
+    #define HAS_MINI_KB
+    #define HAS_SCREEN
+    #define HAS_MINI_SCREEN
+    //#define HAS_GPS
+    #define HAS_SD
+    #define USE_SD
+    #define HAS_TEMP_SENSOR
+    #define HAS_NIMBLE_2
+    #define HAS_IDF_3
+  #endif
   //// END BOARD FEATURES
 
   //// POWER MANAGEMENT
@@ -847,6 +870,29 @@
       #define U_PULL true
       #define R_PULL true
       #define D_PULL true
+    #endif
+
+    #ifdef MARAUDER_XIAOMIAO
+      // Buttons per doc/ESP32_Info.md section 七:
+      //   上=GPIO2  下=GPIO13  左=GPIO27  右=GPIO35  A=GPIO34(确认C)  B=GPIO12(闲置, boot敏感)
+      // GPIO34/35 are input-only (no internal pullup) but hardware has external pullup.
+      #define U_BTN 2
+      #define C_BTN 34   // A key acts as select/confirm
+      #define D_BTN 13
+      #define L_BTN 27
+      #define R_BTN 35
+
+      #define HAS_U
+      #define HAS_D
+      #define HAS_L
+      #define HAS_R
+      #define HAS_C
+
+      #define U_PULL true
+      #define C_PULL true
+      #define D_PULL true
+      #define L_PULL true
+      #define R_PULL true
     #endif
 
   #endif
@@ -2015,7 +2061,78 @@
       #define GREENBUTTON_Y FRAME_Y
       #define GREENBUTTON_W (FRAME_W/2)
       #define GREENBUTTON_H FRAME_H
-    
+
+      #define STATUSBAR_COLOR 0x4A49
+    #endif
+
+    #ifdef MARAUDER_XIAOMIAO
+      // ST7735 128x160 panel, used in LANDSCAPE -> 160x128.
+      // TFT_eSPI geometry is portrait (TFT_WIDTH=128, TFT_HEIGHT=160); rotation 1 flips to landscape.
+      #define CHAN_PER_PAGE 7
+
+      #define SCREEN_CHAR_WIDTH 40
+      #define TFT_MISO 19
+      #define TFT_MOSI 23
+      #define TFT_SCLK 18
+      #define TFT_CS   5
+      #define TFT_DC   4
+      #define TFT_RST  19
+      #define TFT_BL   -1   // no backlight control pin on this board
+      #define TOUCH_CS -1
+      #define SD_CS    22
+
+      #define SCREEN_BUFFER
+
+      #define MAX_SCREEN_BUFFER 9
+
+      #define BANNER_TEXT_SIZE 1
+
+      #ifndef TFT_WIDTH
+        #define TFT_WIDTH  128   // physical portrait width
+      #endif
+
+      #ifndef TFT_HEIGHT
+        #define TFT_HEIGHT 160   // physical portrait height
+      #endif
+
+      #define GRAPH_VERT_LIM TFT_HEIGHT/2 - 1
+
+      #define EXT_BUTTON_WIDTH 0
+
+      #define SCREEN_ORIENTATION 1   // 90 deg -> landscape 160x128
+
+      #define CHAR_WIDTH 6
+      #define SCREEN_WIDTH  TFT_HEIGHT  // 160 in landscape
+      #define SCREEN_HEIGHT TFT_WIDTH   // 128 in landscape
+      #define HEIGHT_1 TFT_WIDTH
+      #define WIDTH_1  TFT_WIDTH
+      #define STANDARD_FONT_CHAR_LIMIT (TFT_WIDTH/6)
+      #define TEXT_HEIGHT (TFT_HEIGHT/10)
+      #define BOT_FIXED_AREA 0
+      #define TOP_FIXED_AREA 48
+      #define YMAX TFT_HEIGHT
+      #define minimum(a,b)     (((a) < (b)) ? (a) : (b))
+      #define MENU_FONT &FreeMono9pt7b
+      #define BUTTON_SCREEN_LIMIT 9
+      #define BUTTON_ARRAY_LEN BUTTON_SCREEN_LIMIT
+      #define STATUS_BAR_WIDTH (TFT_HEIGHT/16)
+      #define LVGL_TICK_PERIOD 6
+
+      #define FRAME_X 100
+      #define FRAME_Y 64
+      #define FRAME_W 120
+      #define FRAME_H 50
+
+      #define REDBUTTON_X FRAME_X
+      #define REDBUTTON_Y FRAME_Y
+      #define REDBUTTON_W (FRAME_W/2)
+      #define REDBUTTON_H FRAME_H
+
+      #define GREENBUTTON_X (REDBUTTON_X + REDBUTTON_W)
+      #define GREENBUTTON_Y FRAME_Y
+      #define GREENBUTTON_W (FRAME_W/2)
+      #define GREENBUTTON_H FRAME_H
+
       #define STATUSBAR_COLOR 0x4A49
     #endif
 
@@ -2302,6 +2419,25 @@
     #define ICON_H 22
     #define BUTTON_PADDING 10
   #endif
+
+  #ifdef MARAUDER_XIAOMIAO
+    // Landscape menu layout (uses portrait TFT_WIDTH/HEIGHT macros like Mini,
+    // since the menu engine draws in the rotated framebuffer coordinate space).
+    #define BANNER_TIME 50
+
+    #define COMMAND_PREFIX "!"
+
+    #define KEY_X (TFT_WIDTH/2)
+    #define KEY_Y (TFT_HEIGHT/4.5)
+    #define KEY_W TFT_WIDTH
+    #define KEY_H (TFT_HEIGHT/12.8)
+    #define KEY_SPACING_X 0
+    #define KEY_SPACING_Y 1
+    #define KEY_TEXTSIZE 1
+    #define ICON_W 22
+    #define ICON_H 22
+    #define BUTTON_PADDING 10
+  #endif
   //// END MENU DEFINITIONS
 
   //// SD DEFINITIONS
@@ -2397,6 +2533,10 @@
 
     #ifdef MARAUDER_MINI_V3
       #define SD_CS 10
+    #endif
+
+    #ifdef MARAUDER_XIAOMIAO
+      #define SD_CS 22
     #endif
 
   #endif
@@ -2501,6 +2641,8 @@
   #elif defined(MARAUDER_V8)
     #define MEM_LOWER_LIM 10000
   #elif defined(MARAUDER_MINI_V3)
+    #define MEM_LOWER_LIM 10000
+  #elif defined(MARAUDER_XIAOMIAO)
     #define MEM_LOWER_LIM 10000
   #else
     #define MEM_LOWER_LIM 10000
@@ -2763,6 +2905,8 @@
   #elif defined(MARAUDER_V8)
     #define MARAUDER_TITLE_BYTES 13578
   #elif defined(MARAUDER_MINI_V3)
+    #define MARAUDER_TITLE_BYTES 13578
+  #elif defined(MARAUDER_XIAOMIAO)
     #define MARAUDER_TITLE_BYTES 13578
   #else
     #define MARAUDER_TITLE_BYTES 13578
