@@ -894,6 +894,17 @@ void MenuFunctions::main(uint32_t currentTime)
       }
       #endif
 
+      // B button (XiaoMiao): acts as "back" — return to parent menu.
+      #if (B_BTN >= 0)
+      if (b_btn.justPressed()) {
+        if (wifi_scan_obj.currentScanMode == WIFI_SCAN_OFF) {
+          if (current_menu->parentMenu != NULL) {
+            this->changeMenu(current_menu->parentMenu, true);
+          }
+        }
+      }
+      #endif
+
       if(c_btn_press){
         current_menu->list->get(current_menu->selected).callable();
       }

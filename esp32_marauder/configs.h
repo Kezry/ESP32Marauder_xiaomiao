@@ -874,25 +874,31 @@
 
     #ifdef MARAUDER_XIAOMIAO
       // Buttons per doc/ESP32_Info.md section 七:
-      //   上=GPIO2  下=GPIO13  左=GPIO27  右=GPIO35  A=GPIO34(确认C)  B=GPIO12(闲置, boot敏感)
+      //   上=GPIO2  下=GPIO13  左=GPIO27  右=GPIO35  A=GPIO34(确认C)  B=GPIO12(返回)
       // GPIO34/35 are input-only (no internal pullup) but hardware has external pullup.
+      // GPIO12 is boot-strapping (must be LOW at power-on for 3.3V flash); B key is
+      // normally-open so it reads HIGH at boot — safe as long as user doesn't hold B
+      // while powering on. Maps to "back / return to parent menu".
       #define U_BTN 2
       #define C_BTN 34   // A key acts as select/confirm
       #define D_BTN 13
       #define L_BTN 27
       #define R_BTN 35
+      #define B_BTN 12   // B key acts as back/return
 
       #define HAS_U
       #define HAS_D
       #define HAS_L
       #define HAS_R
       #define HAS_C
+      #define HAS_B
 
       #define U_PULL true
       #define C_PULL true
       #define D_PULL true
       #define L_PULL true
       #define R_PULL true
+      #define B_PULL true
     #endif
 
   #endif
@@ -2067,7 +2073,8 @@
 
     #ifdef MARAUDER_XIAOMIAO
       // ST7735 128x160 panel, used in LANDSCAPE -> 160x128.
-      // TFT_eSPI geometry is portrait (TFT_WIDTH=128, TFT_HEIGHT=160); rotation 1 flips to landscape.
+      // TFT_eSPI geometry is portrait (TFT_WIDTH=128, TFT_HEIGHT=160); rotation 3 flips
+      // to landscape the other way vs rotation 1, correcting an upside-down display.
       #define CHAN_PER_PAGE 7
 
       #define SCREEN_CHAR_WIDTH 40
@@ -2099,7 +2106,7 @@
 
       #define EXT_BUTTON_WIDTH 0
 
-      #define SCREEN_ORIENTATION 1   // 90 deg -> landscape 160x128
+      #define SCREEN_ORIENTATION 3   // 270 deg -> landscape 160x128 (corrects upside-down)
 
       #define CHAR_WIDTH 6
       #define SCREEN_WIDTH  TFT_HEIGHT  // 160 in landscape

@@ -39,6 +39,9 @@
   #if (C_BTN >= 0)
     extern Switches c_btn;
   #endif
+  #if (B_BTN >= 0)
+    extern Switches b_btn;
+  #endif
 #endif
 
 extern WiFiScan wifi_scan_obj;

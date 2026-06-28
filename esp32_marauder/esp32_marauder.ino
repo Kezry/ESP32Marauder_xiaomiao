@@ -66,6 +66,9 @@ https://www.online-utility.org/image/convert/to/XBM
   #if (C_BTN >= 0)
     Switches c_btn = Switches(C_BTN, 1000, C_PULL);
   #endif
+  #if (B_BTN >= 0)
+    Switches b_btn = Switches(B_BTN, 1000, B_PULL);
+  #endif
 
 #endif
 
