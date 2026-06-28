@@ -47,9 +47,12 @@ jobs:
       - name: MicroNMEA
         uses: actions/checkout@v3
         with: { repository: stevemarple/MicroNMEA, ref: v2.0.6, path: libs/MicroNMEA }
-      - name: ESPAsyncWebServer (fork)
-        uses: actions/checkout@v3
-        with: { repository: bigbrodude6119/ESPAsyncWebServer, ref: master, path: libs/ESPAsyncWebServer }
+      - name: ESPAsyncWebServer (repo-bundled, 2.10.4 — compatible with idf 3.3.4 mbedtls)
+        # NOTE: bigbrodude6119@master (v1.2.3) uses mbedtls_md5_*_ret which is gone in
+        # arduino-esp32 3.3.4's mbedtls. The repo-bundled 2.10.4 has version guards.
+        run: |
+          mkdir -p libs
+          cp -r libraries/ESPAsyncWebServer libs/ESPAsyncWebServer
       - name: TFT_eSPI (V2.5.34 — has 3-arg setTextColor)
         uses: actions/checkout@v3
         with: { repository: Bodmer/TFT_eSPI, ref: V2.5.34, path: libs/TFT_eSPI }
