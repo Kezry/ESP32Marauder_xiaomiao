@@ -149,8 +149,6 @@ jobs:
           if [ "$EXIT" != "0" ]; then exit 1; fi
 
       - name: Rename artifact
-        id: rename
-        continue-on-error: true
         run: |
           # Fixed release filename as requested: esp32_marauder_v0_0_1_<date>_xiaomiao.bin
           DATE=$(date -u +%Y%m%d)
@@ -164,10 +162,8 @@ jobs:
           cp "$INPUT_BIN" "$OUTPUT_BIN"
           ls -la "$OUTPUT_BIN"
           echo "artifact_name=$OUTPUT_BIN" >> $GITHUB_ENV
-          echo "rename_ok=true" >> $GITHUB_OUTPUT
 
       - name: Upload firmware artifact
-        if: steps.rename.outputs.rename_ok == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: xiaomiao_firmware
@@ -177,7 +173,6 @@ jobs:
       # Publish the firmware as GitHub Release v0.0.1 using the built-in GITHUB_TOKEN
       # (no user gh auth needed). softprops/action-gh-release is what upstream CI uses.
       - name: Create Release v0.0.1 with firmware
-        if: steps.rename.outputs.rename_ok == 'true'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v0.0.1
