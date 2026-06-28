@@ -116,12 +116,32 @@ jobs:
           done
 
       - name: Build XiaoMiao
+        id: compile
+        continue-on-error: true
         run: |
+          set +e
           arduino-cli compile \
             --fqbn "esp32:esp32:d32:PartitionScheme=min_spiffs" \
             --build-property "compiler.cpp.extra_flags=-DMARAUDER_XIAOMIAO" \
             --warnings none \
-            esp32_marauder/esp32_marauder.ino
+            esp32_marauder/esp32_marauder.ino 2>&1 | tee /tmp/compile_output.log
+          echo "${PIPESTATUS[0]}" > /tmp/compile_exit.txt
+
+      - name: Surface compile errors to step summary
+        if: always()
+        run: |
+          EXIT=$(cat /tmp/compile_exit.txt 2>/dev/null || echo "1")
+          {
+            echo "## Compile result: exit $EXIT"
+            echo '```'
+            # Show errors + the size summary line if present
+            grep -iE "error:|fatal error|No such file|overflow|not enough|Sketch uses|region " /tmp/compile_output.log | tail -40
+            echo '--- last 30 lines ---'
+            tail -30 /tmp/compile_output.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          # Fail the job if compile failed
+          if [ "$EXIT" != "0" ]; then exit 1; fi
 
       - name: Rename artifact
         run: |
