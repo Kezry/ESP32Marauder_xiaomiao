@@ -2428,16 +2428,21 @@
   #endif
 
   #ifdef MARAUDER_XIAOMIAO
-    // Landscape menu layout (uses portrait TFT_WIDTH/HEIGHT macros like Mini,
-    // since the menu engine draws in the rotated framebuffer coordinate space).
+    // Landscape menu layout (160 wide x 128 tall visible after 270deg rotation).
+    // IMPORTANT: KEY_Y/KEY_W/KEY_X use the LANDSCAPE visible size (SCREEN_WIDTH=160,
+    // SCREEN_HEIGHT=128), NOT the portrait TFT_HEIGHT(160). The Mini layout this was
+    // copied from uses TFT_HEIGHT because Mini is 128x128 square; on this 128x160 panel
+    // TFT_HEIGHT(160) != visible vertical(128), which pushed the last menu row off-screen.
+    // With KEY_Y=23, KEY_H=12, spacing=1: row centers run 17,30,...,121 — all 9 rows fit
+    // inside the 10..128 usable band (128 minus the 10px status bar).
     #define BANNER_TIME 50
 
     #define COMMAND_PREFIX "!"
 
-    #define KEY_X (TFT_WIDTH/2)
-    #define KEY_Y (TFT_HEIGHT/4.5)
-    #define KEY_W TFT_WIDTH
-    #define KEY_H (TFT_HEIGHT/12.8)
+    #define KEY_X (SCREEN_WIDTH/2)
+    #define KEY_Y 23
+    #define KEY_W SCREEN_WIDTH
+    #define KEY_H 12
     #define KEY_SPACING_X 0
     #define KEY_SPACING_Y 1
     #define KEY_TEXTSIZE 1

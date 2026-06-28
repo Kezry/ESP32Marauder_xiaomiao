@@ -68,10 +68,29 @@
 | 颜色反转 | 默认关闭 (invert=False) |
 | 接口 | SPI2 |
 | SPI 速率 | 20MHz (MicroPython) / 40MHz (ESPHome/LVGL) |
-| 旋转 | 90 度（横向显示 160 x 128） |
+| 旋转 | MicroPython: 90 度（横向显示 160 x 128） |
 | 背光 | 无背光控制引脚（bl=None） |
 | Framebuffer | `bytearray(width * height * 2)` = 40,960 bytes |
 | LVGL 双缓冲 | 30,720 bytes x 2 (DMA) |
+
+### Marauder 适配的屏幕方向（重要）
+
+Marauder 固件在 TFT_eSPI 里把面板定义成 **portrait（竖屏）128×160**（`TFT_WIDTH=128 / TFT_HEIGHT=160`），再通过 `setRotation(SCREEN_ORIENTATION)` 旋转到横屏使用。Marauder 的菜单/绘制逻辑以**旋转后的可视区**为准：`SCREEN_WIDTH = 160`、`SCREEN_HEIGHT = 128`。
+
+> 物理面板是 128(短)×160(长)。Marauder 用横屏 160×128，可视纵向只有 128 像素。
+
+| 配置项 | 值 | 说明 |
+|--------|-----|------|
+| `SCREEN_ORIENTATION` | **3** | TFT_eSPI 旋转值 = 270°。**这是 Marauder 正确的朝向**（logo/文字头朝上）|
+| 旋转值 0 | portrait 128×160 | 不用 |
+| 旋转值 1 | landscape 160×128 | ❌ 实测**上下颠倒**（屏被翻转 180°）|
+| 旋转值 2 | portrait 128×160 (倒) | 不用 |
+| 旋转值 3 | landscape 160×128 | ✅ **正确朝向**，菜单布局据此适配 |
+
+**排错指南**（若屏幕朝向不对，改 `User_Setup_xiaomiao.h` 无效，要改 `esp32_marauder/configs.h` 里 `MARAUDER_XIAOMIAO` 块的 `SCREEN_ORIENTATION`）：
+- 上下颠倒 → 把 `SCREEN_ORIENTATION` 在 `1` 和 `3` 之间切换（两者都是横屏，互为 180° 翻转）
+- 旋转 90°（变成竖屏长条）→ 值应为 `1` 或 `3`（横屏），不是 `0`/`2`
+- 左右镜像或颜色反 → 改 `User_Setup_xiaomiao.h` 的 `TFT_RGB_ORDER`（RGB↔BGR）或 `ST7735_BLACKTAB`→`ST7735_REDTAB`
 
 ### 显示屏引脚
 
