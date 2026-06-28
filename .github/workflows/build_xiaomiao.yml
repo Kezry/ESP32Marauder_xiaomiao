@@ -1,8 +1,10 @@
 name: Build XiaoMiao
 
 # Single-board build for XiaoMiao (学而思小喵掌机).
-# Uses ArminJo/arduino-test-compile EXACTLY like upstream build_parallel.yml so the
-# sketch-bundled libraries (esp32_marauder/libraries/) are auto-discovered.
+# All libraries are installed EXPLICITLY via actions/checkout at pinned versions
+# (mirroring upstream build_parallel.yml). The sketch-bundled submodule libs under
+# esp32_marauder/libraries/ are NOT used — they are stale (e.g. TFT_eSPI submodule
+# is 2.0.2 which lacks the 3-arg setTextColor Marauder needs).
 on:
   workflow_dispatch:
   push:
@@ -16,24 +18,14 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-        with:
-          # esp32_marauder/libraries/* are git submodules. Most are fine, but the
-          # submodule TFT_eSPI is 2.0.2 which lacks the 3-arg setTextColor() Marauder
-          # uses. We override TFT_eSPI with CustomTFT_eSPI@V2.5.34 below, so do NOT
-          # let the bundled copy clobber it (handled in the copy step).
-          submodules: true
+        # Do NOT init submodules: bundled esp32_marauder/libraries/* are stale and
+        # we override every one with pinned Custom* checkouts below.
 
       - name: Install Arduino CLI
         run: |
           curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
 
-      - name: Verify Installed Cores
-        run: arduino-cli core list || true
-
-      # Install ESP32 core at the pinned version via the same action upstream uses.
-      # arduino-test-compile installs the platform itself, but we also need it for the
-      # platform.txt patch step below, so install explicitly first.
       - name: Install ESP32 core v3.3.4
         run: |
           arduino-cli config init
@@ -41,99 +33,78 @@ jobs:
           arduino-cli core update-index
           arduino-cli core install esp32:esp32@3.3.4
 
-      # ---- All dependencies via git checkout at CI-pinned versions (mirrors build_parallel.yml) ----
-      - name: Install ESP32Ping
+      # ---- Every library via explicit checkout at CI-pinned versions ----
+      - name: ESP32Ping
         uses: actions/checkout@v3
-        with: { repository: marian-craciunescu/ESP32Ping, ref: 1.6, path: CustomESP32Ping }
-      - name: Install AsyncTCP
+        with: { repository: marian-craciunescu/ESP32Ping, ref: 1.6, path: libs/ESP32Ping }
+      - name: AsyncTCP
         uses: actions/checkout@v3
-        with: { repository: ESP32Async/AsyncTCP, ref: v3.4.8, path: CustomAsyncTCP }
-      - name: Install MicroNMEA
+        with: { repository: ESP32Async/AsyncTCP, ref: v3.4.8, path: libs/AsyncTCP }
+      - name: MicroNMEA
         uses: actions/checkout@v3
-        with: { repository: stevemarple/MicroNMEA, ref: v2.0.6, path: CustomMicroNMEA }
-      - name: Install ESPAsyncWebServer (fork)
+        with: { repository: stevemarple/MicroNMEA, ref: v2.0.6, path: libs/MicroNMEA }
+      - name: ESPAsyncWebServer (fork)
         uses: actions/checkout@v3
-        with: { repository: bigbrodude6119/ESPAsyncWebServer, ref: master, path: CustomESPAsyncWebServer }
-      - name: Install XPT2046_Touchscreen
+        with: { repository: bigbrodude6119/ESPAsyncWebServer, ref: master, path: libs/ESPAsyncWebServer }
+      - name: TFT_eSPI (V2.5.34 — has 3-arg setTextColor)
         uses: actions/checkout@v3
-        with: { repository: PaulStoffregen/XPT2046_Touchscreen, ref: v1.4, path: CustomXPT2046_Touchscreen }
-      - name: Install JPEGDecoder
+        with: { repository: Bodmer/TFT_eSPI, ref: V2.5.34, path: libs/TFT_eSPI }
+      - name: XPT2046_Touchscreen
         uses: actions/checkout@v3
-        with: { repository: Bodmer/JPEGDecoder, ref: 1.8.0, path: CustomJPEGDecoder }
-      - name: Install Adafruit_NeoPixel
+        with: { repository: PaulStoffregen/XPT2046_Touchscreen, ref: v1.4, path: libs/XPT2046_Touchscreen }
+      - name: lv_arduino
         uses: actions/checkout@v3
-        with: { repository: adafruit/Adafruit_NeoPixel, ref: 1.12.0, path: CustomAdafruit_NeoPixel }
-      - name: Install ArduinoJson
+        with: { repository: lvgl/lv_arduino, ref: 3.0.0, path: libs/lv_arduino }
+      - name: JPEGDecoder
         uses: actions/checkout@v3
-        with: { repository: bblanchon/ArduinoJson, ref: v6.18.2, path: CustomArduinoJson }
-      - name: Install LinkedList
+        with: { repository: Bodmer/JPEGDecoder, ref: 1.8.0, path: libs/JPEGDecoder }
+      - name: NimBLE-Arduino
         uses: actions/checkout@v3
-        with: { repository: ivanseidel/LinkedList, ref: v1.3.3, path: CustomLinkedList }
-      - name: Install EspSoftwareSerial
+        with: { repository: h2zero/NimBLE-Arduino, ref: 2.3.8, path: libs/NimBLE-Arduino }
+      - name: Adafruit_NeoPixel
         uses: actions/checkout@v3
-        with: { repository: plerup/espsoftwareserial, ref: 8.1.0, path: CustomEspSoftwareSerial }
-      - name: Install Adafruit_BusIO
+        with: { repository: adafruit/Adafruit_NeoPixel, ref: 1.12.0, path: libs/Adafruit_NeoPixel }
+      - name: ArduinoJson
         uses: actions/checkout@v3
-        with: { repository: adafruit/Adafruit_BusIO, ref: 1.15.0, path: CustomAdafruit_BusIO }
-      - name: Install Adafruit_MAX1704X
+        with: { repository: bblanchon/ArduinoJson, ref: v6.18.2, path: libs/ArduinoJson }
+      - name: LinkedList
         uses: actions/checkout@v3
-        with: { repository: adafruit/Adafruit_MAX1704X, ref: 1.0.2, path: CustomAdafruit_MAX1704X }
-      - name: Install Adafruit_TCA8418 (repo-bundled)
-        run: cp -r libraries/Adafruit_TCA8418 CustomAdafruit_TCA8418
+        with: { repository: ivanseidel/LinkedList, ref: v1.3.3, path: libs/LinkedList }
+      - name: EspSoftwareSerial
+        uses: actions/checkout@v3
+        with: { repository: plerup/espsoftwareserial, ref: 8.1.0, path: libs/EspSoftwareSerial }
+      - name: Adafruit_BusIO
+        uses: actions/checkout@v3
+        with: { repository: adafruit/Adafruit_BusIO, ref: 1.15.0, path: libs/Adafruit_BusIO }
+      - name: Adafruit_MAX1704X
+        uses: actions/checkout@v3
+        with: { repository: adafruit/Adafruit_MAX1704X, ref: 1.0.2, path: libs/Adafruit_MAX1704X }
+      - name: Adafruit_GFX
+        uses: actions/checkout@v3
+        with: { repository: adafruit/Adafruit-GFX-Library, ref: 1.11.9, path: libs/Adafruit_GFX }
+      # SwitchLib is a justcallmekoko lib bundled in the repo (not on its own repo).
+      - name: SwitchLib (repo-bundled)
+        run: cp -r libraries/SwitchLib libs/SwitchLib
+      - name: Adafruit_TCA8418 (repo-bundled)
+        run: cp -r libraries/Adafruit_TCA8418 libs/Adafruit_TCA8418
 
-      # TFT_eSPI: bundled submodule is 2.0.2 (lacks 3-arg setTextColor). Use Bodmer V2.5.34
-      # which matches what upstream CI installs (CustomTFT_eSPI in build_parallel.yml).
-      - name: Install TFT_eSPI (V2.5.34, overrides bundled 2.0.2)
-        uses: actions/checkout@v3
-        with: { repository: Bodmer/TFT_eSPI, ref: V2.5.34, path: CustomTFT_eSPI }
-
-      # NimBLE-Arduino: bundled submodule version may differ; pin to CI version explicitly.
-      # sketch-local lib discovery is unreliable across versions, so install it
-      # explicitly at the CI-pinned version to be safe.
-      - name: Install NimBLE-Arduino
-        uses: actions/checkout@v3
-        with: { repository: h2zero/NimBLE-Arduino, ref: 2.3.8, path: CustomNimBLE-Arduino }
-
-      - name: Place custom libs into Arduino library dir (correct names)
+      - name: Install libs into Arduino user library dir
         run: |
           arduino-cli config set directories.user "$HOME/Arduino"
           mkdir -p "$HOME/Arduino/libraries"
-          # Copy each Custom* dir to its proper library name (strip the Custom prefix)
-          # so arduino-cli resolves them by canonical name (TFT_eSPI, NimBLE-Arduino, etc.)
-          for d in Custom*/; do
-            name=$(basename "$d")
-            libname="${name#Custom}"
-            rm -rf "$HOME/Arduino/libraries/$libname"
-            cp -r "$d" "$HOME/Arduino/libraries/$libname"
-            echo "custom -> $libname"
-          done
-
-      # Copy remaining sketch-bundled submodule libs NOT already covered by Custom* above
-      # (lv_arduino, JPEGDecoder, LinkedList, Adafruit_NeoPixel, ArduinoJson, SwitchLib).
-      # TFT_eSPI and NimBLE-Arduino are skipped — we use the pinned Custom* versions.
-      - name: Copy remaining bundled libs into user library dir
-        run: |
-          SKIP="TFT_eSPI NimBLE-Arduino"
-          for d in esp32_marauder/libraries/*/; do
-            name=$(basename "$d")
-            case " $SKIP " in *" $name "*) echo "skip bundled $name (using pinned)"; continue;; esac
-            rm -rf "$HOME/Arduino/libraries/$name"
-            cp -r "$d" "$HOME/Arduino/libraries/$name"
-            echo "bundled -> $name"
-          done
+          cp -r libs/* "$HOME/Arduino/libraries/"
+          # remove sketch-bundled submodule libs so they cannot shadow the pinned ones
           rm -rf esp32_marauder/libraries
+          echo "--- installed libraries: ---"
+          ls "$HOME/Arduino/libraries/"
+          echo "--- TFT_eSPI version: ---"
+          grep -i version "$HOME/Arduino/libraries/TFT_eSPI/library.properties"
 
-      - name: Show libraries
-        run: ls "$HOME/Arduino/libraries/"
-
-      # Configure the pinned TFT_eSPI (V2.5.34) for XiaoMiao.
       - name: Configure TFT_eSPI for XiaoMiao
         run: |
           TFT="$HOME/Arduino/libraries/TFT_eSPI"
           cp User_*.h "$TFT/"
           sed -i 's|^//#include <User_Setup_xiaomiao.h>|#include <User_Setup_xiaomiao.h>|' "$TFT/User_Setup_Select.h"
-          echo "--- TFT_eSPI version: ---"
-          grep -i "version" "$TFT/library.properties" 2>/dev/null | head -1
           echo "--- active TFT_eSPI setup: ---"
           grep -nE "^#include <User_Setup" "$TFT/User_Setup_Select.h"
 
@@ -143,12 +114,8 @@ jobs:
             sed -i 's|compiler.c.elf.extra_flags=|compiler.c.elf.extra_flags=-Wl,-zmuldefs |' "$i"
           done
 
-      # Use bare arduino-cli (NOT arduino-test-compile, which re-inits config and
-      # ignores our directories.user / placed libs). All libs now live in the single
-      # user library dir, so resolution is straightforward.
       - name: Build XiaoMiao
         run: |
-          arduino-cli config set directories.user "$HOME/Arduino"
           arduino-cli compile \
             --fqbn "esp32:esp32:d32:PartitionScheme=min_spiffs" \
             --build-property "compiler.cpp.extra_flags=-DMARAUDER_XIAOMIAO" \
@@ -160,8 +127,7 @@ jobs:
           VERSION=$(grep '#define MARAUDER_VERSION' ./esp32_marauder/configs.h | sed -E 's/.*"v([^"]+)"/v\1/' | tr '.' '_')
           DATE=$(date -u +%Y%m%d)
           BUILD_DIR=./esp32_marauder/build/esp32.esp32.d32
-          echo "--- build dir contents ---"
-          ls -la "$BUILD_DIR"/ 2>/dev/null | head
+          ls -la "$BUILD_DIR"/esp32_marauder.ino.bin
           OUTPUT_BIN=esp32_marauder_${VERSION}_${DATE}_xiaomiao.bin
           cp "$BUILD_DIR/esp32_marauder.ino.bin" "$OUTPUT_BIN"
           ls -la "$OUTPUT_BIN"
