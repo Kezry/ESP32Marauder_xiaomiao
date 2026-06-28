@@ -17,9 +17,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
-          # esp32_marauder/libraries/* are git submodules (TFT_eSPI, NimBLE, lv_arduino...)
-          # and upstream CI relies on explicit Custom* checkouts instead, but init them
-          # anyway so any code that references them has content.
+          # esp32_marauder/libraries/* are git submodules. Most are fine, but the
+          # submodule TFT_eSPI is 2.0.2 which lacks the 3-arg setTextColor() Marauder
+          # uses. We override TFT_eSPI with CustomTFT_eSPI@V2.5.34 below, so do NOT
+          # let the bundled copy clobber it (handled in the copy step).
           submodules: true
 
       - name: Install Arduino CLI
@@ -80,43 +81,59 @@ jobs:
       - name: Install Adafruit_TCA8418 (repo-bundled)
         run: cp -r libraries/Adafruit_TCA8418 CustomAdafruit_TCA8418
 
-      # NimBLE-Arduino: upstream relies on the sketch-bundled copy, but arduino-cli's
+      # TFT_eSPI: bundled submodule is 2.0.2 (lacks 3-arg setTextColor). Use Bodmer V2.5.34
+      # which matches what upstream CI installs (CustomTFT_eSPI in build_parallel.yml).
+      - name: Install TFT_eSPI (V2.5.34, overrides bundled 2.0.2)
+        uses: actions/checkout@v3
+        with: { repository: Bodmer/TFT_eSPI, ref: V2.5.34, path: CustomTFT_eSPI }
+
+      # NimBLE-Arduino: bundled submodule version may differ; pin to CI version explicitly.
       # sketch-local lib discovery is unreliable across versions, so install it
       # explicitly at the CI-pinned version to be safe.
       - name: Install NimBLE-Arduino
         uses: actions/checkout@v3
         with: { repository: h2zero/NimBLE-Arduino, ref: 2.3.8, path: CustomNimBLE-Arduino }
 
-      - name: Place all custom libs into Arduino library dir
+      - name: Place custom libs into Arduino library dir (correct names)
         run: |
           arduino-cli config set directories.user "$HOME/Arduino"
           mkdir -p "$HOME/Arduino/libraries"
-          for d in Custom*/; do cp -r "$d" "$HOME/Arduino/libraries/"; done
+          # Copy each Custom* dir to its proper library name (strip the Custom prefix)
+          # so arduino-cli resolves them by canonical name (TFT_eSPI, NimBLE-Arduino, etc.)
+          for d in Custom*/; do
+            name=$(basename "$d")
+            libname="${name#Custom}"
+            rm -rf "$HOME/Arduino/libraries/$libname"
+            cp -r "$d" "$HOME/Arduino/libraries/$libname"
+            echo "custom -> $libname"
+          done
 
-      # sketch-bundled libs (esp32_marauder/libraries/) are NOT reliably auto-discovered
-      # by arduino-cli/arduino-test-compile on forks. Copy them into the user library dir
-      # too, so all libs resolve from one place. Repo versions win for bundled ones.
-      - name: Copy sketch-bundled libs into user library dir
+      # Copy remaining sketch-bundled submodule libs NOT already covered by Custom* above
+      # (lv_arduino, JPEGDecoder, LinkedList, Adafruit_NeoPixel, ArduinoJson, SwitchLib).
+      # TFT_eSPI and NimBLE-Arduino are skipped — we use the pinned Custom* versions.
+      - name: Copy remaining bundled libs into user library dir
         run: |
+          SKIP="TFT_eSPI NimBLE-Arduino"
           for d in esp32_marauder/libraries/*/; do
             name=$(basename "$d")
+            case " $SKIP " in *" $name "*) echo "skip bundled $name (using pinned)"; continue;; esac
             rm -rf "$HOME/Arduino/libraries/$name"
             cp -r "$d" "$HOME/Arduino/libraries/$name"
-            echo "bundled -> user lib: $name"
+            echo "bundled -> $name"
           done
-          # Remove the sketch-local libraries dir so the compiler resolves every lib
-          # from the single user library dir (avoids duplicate-resolution / .pde scan noise).
           rm -rf esp32_marauder/libraries
 
       - name: Show libraries
         run: ls "$HOME/Arduino/libraries/"
 
-      # Configure the TFT_eSPI now living in the user library dir for XiaoMiao.
+      # Configure the pinned TFT_eSPI (V2.5.34) for XiaoMiao.
       - name: Configure TFT_eSPI for XiaoMiao
         run: |
           TFT="$HOME/Arduino/libraries/TFT_eSPI"
           cp User_*.h "$TFT/"
           sed -i 's|^//#include <User_Setup_xiaomiao.h>|#include <User_Setup_xiaomiao.h>|' "$TFT/User_Setup_Select.h"
+          echo "--- TFT_eSPI version: ---"
+          grep -i "version" "$TFT/library.properties" 2>/dev/null | head -1
           echo "--- active TFT_eSPI setup: ---"
           grep -nE "^#include <User_Setup" "$TFT/User_Setup_Select.h"
 
