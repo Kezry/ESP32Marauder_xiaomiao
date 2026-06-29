@@ -199,15 +199,20 @@ void Display::RunSetup() {
 
 void Display::tftDrawGraphObjects(byte x_scale)
 {
-  //draw the graph objects
-  tft.fillRect(11, 5, x_scale+1, 120, TFT_BLACK); // positive start point
-  tft.fillRect(11, 121, x_scale+1, 119, TFT_BLACK); // negative start point
-  tft.drawFastVLine(10, 5, 230, TFT_WHITE); // y axis
-  tft.drawFastHLine(10, HEIGHT_1 - 1, 310, TFT_WHITE); // x axis
-  tft.setTextColor(TFT_YELLOW); tft.setTextSize(1); // set parameters for y axis labels
-  //tft.setCursor(3, 116); tft.print(midway);  // "0" at center of ya axis
-  tft.setCursor(3, 6); tft.print("+"); // "+' at top of y axis
-  tft.setCursor(3, 228); tft.print("0"); // "-" at bottom of y axis
+  // This graph layout uses 240x320 (ILI9341) coordinates (heights 120/119/230/310,
+  // y=228). It is only meaningful on full-screen boards. Guard so it cannot corrupt
+  // a 160x128 mini/landscape screen if ever called.
+  #ifdef HAS_FULL_SCREEN
+    //draw the graph objects
+    tft.fillRect(11, 5, x_scale+1, 120, TFT_BLACK); // positive start point
+    tft.fillRect(11, 121, x_scale+1, 119, TFT_BLACK); // negative start point
+    tft.drawFastVLine(10, 5, 230, TFT_WHITE); // y axis
+    tft.drawFastHLine(10, HEIGHT_1 - 1, 310, TFT_WHITE); // x axis
+    tft.setTextColor(TFT_YELLOW); tft.setTextSize(1); // set parameters for y axis labels
+    //tft.setCursor(3, 116); tft.print(midway);  // "0" at center of ya axis
+    tft.setCursor(3, 6); tft.print("+"); // "+' at top of y axis
+    tft.setCursor(3, 228); tft.print("0"); // "-" at bottom of y axis
+  #endif
 }
 
 void Display::tftDrawEapolColorKey(bool filter)
@@ -460,13 +465,13 @@ void Display::tftDrawExitScaleButtons(bool lnd_an) {
 void Display::twoPartDisplay(String center_text)
 {
   tft.setTextColor(TFT_BLACK, TFT_YELLOW);
-  tft.fillRect(0,16,HEIGHT_1,144, TFT_YELLOW);
-  //tft.drawCentreString(center_text,120,82,1);
+  // Fill the area below the status/title bar down to the bottom of the visible
+  // screen (was hardcoded 144 tall, which overflows a 128-tall landscape screen).
+  tft.fillRect(0, STATUS_BAR_WIDTH * 2, SCREEN_WIDTH, SCREEN_HEIGHT - (STATUS_BAR_WIDTH * 2), TFT_YELLOW);
   tft.setTextWrap(true);
   tft.setFreeFont(NULL);
-  //showCenterText(center_text, 82);
-  //tft.drawCentreString(center_text,120,82,1);
-  tft.setCursor(0, 82);
+  // Centre vertically in the visible area.
+  tft.setCursor(0, SCREEN_HEIGHT / 2);
   tft.println(center_text);
   tft.setFreeFont(MENU_FONT);
   tft.setTextWrap(false);

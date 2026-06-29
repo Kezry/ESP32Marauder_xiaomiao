@@ -2077,7 +2077,7 @@
       // to landscape the other way vs rotation 1, correcting an upside-down display.
       #define CHAN_PER_PAGE 7
 
-      #define SCREEN_CHAR_WIDTH 40
+      #define SCREEN_CHAR_WIDTH (SCREEN_WIDTH / CHAR_WIDTH)
       #define TFT_MISO 19
       #define TFT_MOSI 23
       #define TFT_SCLK 18

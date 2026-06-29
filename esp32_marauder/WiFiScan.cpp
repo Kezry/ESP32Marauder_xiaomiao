@@ -397,7 +397,7 @@ extern "C" {
                   display_string.concat(" MAC: ");
                   display_string.concat(mac);
                   int temp_len = display_string.length();
-                  for (int i = 0; i < 40 - temp_len; i++)
+                  for (int i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
                   {
                     display_string.concat(" ");
                   }
@@ -495,7 +495,7 @@ extern "C" {
       
               #ifdef HAS_SCREEN
                 uint8_t temp_len = display_string.length();
-                for (uint8_t i = 0; i < 40 - temp_len; i++)
+                for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
                 {
                   display_string.concat(" ");
                 }
@@ -740,7 +740,7 @@ extern "C" {
                 }
 
                 uint8_t temp_len = display_string.length();
-                for (uint8_t i = 0; i < 40 - temp_len; i++) {
+                for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++) {
                   display_string.concat(" ");
                 }
 
@@ -788,7 +788,7 @@ extern "C" {
                       display_string.concat(" ");
                       display_string.concat(advertisedDevice->getName().c_str());
                       uint8_t temp_len = display_string.length();
-                      for (uint8_t i = 0; i < 40 - temp_len; i++)
+                      for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
                       {
                         display_string.concat(" ");
                       }
@@ -894,7 +894,7 @@ extern "C" {
 
                 #ifdef HAS_SCREEN
                   uint8_t temp_len = display_string.length();
-                  for (uint8_t i = 0; i < 40 - temp_len; i++)
+                  for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
                   {
                     display_string.concat(" ");
                   }
@@ -1001,7 +1001,7 @@ extern "C" {
                   display_string.concat(F(" MAC: "));
                   display_string.concat(mac);
                   uint8_t temp_len = display_string.length();
-                  for (uint8_t i = 0; i < 40 - temp_len; i++)
+                  for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
                   {
                     display_string.concat(" ");
                   }
@@ -1089,7 +1089,7 @@ extern "C" {
       
               #ifdef HAS_SCREEN
                 uint8_t temp_len = display_string.length();
-                for (uint8_t i = 0; i < 40 - temp_len; i++)
+                for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
                 {
                   display_string.concat(" ");
                 }
@@ -1217,7 +1217,7 @@ extern "C" {
                 }
 
                 uint8_t temp_len = display_string.length();
-                for (uint8_t i = 0; i < 40 - temp_len; i++) {
+                for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++) {
                   display_string.concat(" ");
                 }
 
@@ -1257,7 +1257,7 @@ extern "C" {
                       display_string.concat(" ");
                       display_string.concat(name);
                       uint8_t temp_len = display_string.length();
-                      for (uint8_t i = 0; i < 40 - temp_len; i++)
+                      for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
                       {
                         display_string.concat(" ");
                       }
@@ -1363,7 +1363,7 @@ extern "C" {
 
                 #ifdef HAS_SCREEN
                   uint8_t temp_len = display_string.length();
-                  for (uint8_t i = 0; i < 40 - temp_len; i++)
+                  for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
                   {
                     display_string.concat(" ");
                   }
@@ -5428,15 +5428,25 @@ void WiFiScan::RunBluetoothScan(uint8_t scan_mode, uint16_t color) {
     }
     else if (scan_mode == BT_SCAN_SKIMMERS) {
       #ifdef HAS_SCREEN
-        display_obj.TOP_FIXED_AREA_2 = 160;
-        display_obj.tteBar = true;
-        display_obj.tft.fillScreen(TFT_DARKGREY);
-        display_obj.tft.setTextWrap(false);
-        display_obj.tft.setTextColor(TFT_BLACK, color);
-        display_obj.tft.fillRect(0,16,SCREEN_WIDTH,16, color);
-        display_obj.tft.drawCentreString(text_table4[42],SCREEN_WIDTH / 2,16,2);
-        display_obj.twoPartDisplay(text_table4[43]);
-        display_obj.tft.setTextColor(TFT_BLACK, TFT_DARKGREY);
+        // The full-screen title bar + 144px yellow band + TOP_FIXED_AREA_2=160
+        // below is designed for ILI9341-class 240x320 panels. On mini/landscape
+        // screens (e.g. XiaoMiao 160x128) it paints off-screen and underflows the
+        // scroll area (yArea = 128-160 = underflow). Mini screens use the default
+        // scrolling text output instead.
+        #ifdef HAS_FULL_SCREEN
+          display_obj.TOP_FIXED_AREA_2 = STATUS_BAR_WIDTH * 2;
+          display_obj.tteBar = true;
+          display_obj.tft.fillScreen(TFT_DARKGREY);
+          display_obj.tft.setTextWrap(false);
+          display_obj.tft.setTextColor(TFT_BLACK, color);
+          display_obj.tft.fillRect(0,16,SCREEN_WIDTH,16, color);
+          display_obj.tft.drawCentreString(text_table4[42],SCREEN_WIDTH / 2,16,2);
+          display_obj.twoPartDisplay(text_table4[43]);
+          display_obj.tft.setTextColor(TFT_BLACK, TFT_DARKGREY);
+        #else
+          this->setupScanDisplayArea(TFT_BLACK, color);
+          display_obj.tft.setTextColor(TFT_GREEN, TFT_BLACK);
+        #endif
       #endif
       #ifndef HAS_NIMBLE_2
         pBLEScan->setAdvertisedDeviceCallbacks(new bluetoothScanAllCallback(), false);
@@ -5672,7 +5682,7 @@ void WiFiScan::apSnifferCallbackFull(void* buf, wifi_promiscuous_pkt_type_t type
         bssid.concat(addr);
   
         int temp_len = display_string.length();
-        for (int i = 0; i < 50 - temp_len; i++)
+        for (int i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
         {
           display_string.concat(" ");
         }
@@ -5864,7 +5874,7 @@ void WiFiScan::apSnifferCallbackFull(void* buf, wifi_promiscuous_pkt_type_t type
     int temp_len = display_string.length();
 
     #ifdef HAS_SCREEN
-      for (int i = 0; i < 50 - temp_len; i++)
+      for (int i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
       {
         display_string.concat(" ");
       }
@@ -6473,7 +6483,7 @@ void WiFiScan::pineScanSnifferCallback(void* buf, wifi_promiscuous_pkt_type_t ty
             display_string.concat(" RSSI: " + String(snifferPacket->rx_ctrl.rssi));
 
             int temp_len = display_string.length();
-            for (int i = 0; i < 40 - temp_len; i++) {
+            for (int i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++) {
               display_string.concat(" ");
             }
             
@@ -6484,7 +6494,7 @@ void WiFiScan::pineScanSnifferCallback(void* buf, wifi_promiscuous_pkt_type_t ty
             display_string.concat(" SSID: " + essid);
 
             temp_len = display_string.length();
-            for (int i = 0; i < 40 - temp_len; i++) {
+            for (int i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++) {
               display_string.concat(" ");
             }
 
@@ -6503,7 +6513,7 @@ void WiFiScan::pineScanSnifferCallback(void* buf, wifi_promiscuous_pkt_type_t ty
             display_string.concat(" CH: " + String(ap_channel));
 
             int temp_len = display_string.length();
-            for (int i = 0; i < 40 - temp_len; i++) {
+            for (int i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++) {
               display_string.concat(" ");
             }
             
@@ -6515,7 +6525,7 @@ void WiFiScan::pineScanSnifferCallback(void* buf, wifi_promiscuous_pkt_type_t ty
             display_string.concat(" DET: " + detection);
 
             temp_len = display_string.length();
-            for (int i = 0; i < 40 - temp_len; i++) {
+            for (int i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++) {
               display_string.concat(" ");
             }
 
@@ -6526,7 +6536,7 @@ void WiFiScan::pineScanSnifferCallback(void* buf, wifi_promiscuous_pkt_type_t ty
             display_string.concat("SSID: " + essid);
 
             temp_len = display_string.length();
-            for (int i = 0; i < 40 - temp_len; i++) {
+            for (int i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++) {
               display_string.concat(" ");
             }
 
@@ -6756,7 +6766,7 @@ void WiFiScan::multiSSIDSnifferCallback(void* buf, wifi_promiscuous_pkt_type_t t
         display_string.concat(" SSID: " + essid);
 
         int temp_len = display_string.length();
-        for (int i = 0; i < 40 - temp_len; i++) {
+        for (int i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++) {
           display_string.concat(" ");
         }
         
@@ -7105,7 +7115,7 @@ void WiFiScan::beaconSnifferCallback(void* buf, wifi_promiscuous_pkt_type_t type
           int temp_len = display_string.length();
 
           #ifdef HAS_SCREEN
-            for (int i = 0; i < 40 - temp_len; i++)
+            for (int i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
             {
               display_string.concat(" ");
             }
@@ -7170,7 +7180,7 @@ void WiFiScan::beaconSnifferCallback(void* buf, wifi_promiscuous_pkt_type_t type
           // The same characters print from previous lines so I just overwrite them
           // with spaces.
           #ifdef HAS_SCREEN
-            for (int i = 0; i < 19 - snifferPacket->payload[25]; i++)
+            for (int i = 0; i < SCREEN_CHAR_WIDTH - snifferPacket->payload[25]; i++)
             {
               display_string.concat(" ");
             }
@@ -7488,7 +7498,7 @@ void WiFiScan::beaconSnifferCallback(void* buf, wifi_promiscuous_pkt_type_t type
           display_string.concat(" > ");
           display_string.concat(macToString(dst_addr));
 
-          for (int i = 0; i < 19 - snifferPacket->payload[37]; i++)
+          for (int i = 0; i < SCREEN_CHAR_WIDTH - snifferPacket->payload[37]; i++)
           {
             display_string.concat(" ");
           }
@@ -8308,7 +8318,7 @@ void WiFiScan::wifiSnifferCallback(void* buf, wifi_promiscuous_pkt_type_t type) 
 
     #ifdef HAS_SCREEN
       // Fill blank space
-      for (int i = 0; i < 40 - temp_len; i++)
+      for (int i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
       {
         display_string.concat(" ");
       }
@@ -9607,7 +9617,7 @@ bool WiFiScan::checkHostPort(IPAddress ip, uint16_t port, uint16_t timeout) {
             output_line = check_ip.toString();
             display_string.concat(output_line);
             uint8_t temp_len = display_string.length();
-            for (uint8_t i = 0; i < 40 - temp_len; i++)
+            for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
             {
               display_string.concat(" ");
             }
@@ -9634,7 +9644,7 @@ bool WiFiScan::checkHostPort(IPAddress ip, uint16_t port, uint16_t timeout) {
           output_line = check_ip.toString();
           display_string.concat(output_line);
           uint8_t temp_len = display_string.length();
-          for (uint8_t i = 0; i < 40 - temp_len; i++)
+          for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
           {
             display_string.concat(" ");
           }
@@ -9669,7 +9679,7 @@ void WiFiScan::pingScan(uint8_t scan_mode) {
         output_line = this->current_scan_ip.toString();
         display_string.concat(output_line);
         uint8_t temp_len = display_string.length();
-        for (uint8_t i = 0; i < 40 - temp_len; i++)
+        for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
         {
           display_string.concat(" ");
         }
@@ -9744,7 +9754,7 @@ void WiFiScan::portScan(uint8_t scan_mode, uint16_t targ_port) {
         String output_line = this->current_scan_ip.toString() + ": " + (String)this->current_scan_port;
         display_string.concat(output_line);
         uint8_t temp_len = display_string.length();
-        for (uint8_t i = 0; i < 40 - temp_len; i++)
+        for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
         {
           display_string.concat(" ");
         }
@@ -9770,7 +9780,7 @@ void WiFiScan::portScan(uint8_t scan_mode, uint16_t targ_port) {
       String output_line = this->current_scan_ip.toString() + ": " + (String)targ_port;
       display_string.concat(output_line);
       uint8_t temp_len = display_string.length();
-      for (uint8_t i = 0; i < 40 - temp_len; i++)
+      for (uint8_t i = 0; i < SCREEN_CHAR_WIDTH - temp_len; i++)
       {
         display_string.concat(" ");
       }
