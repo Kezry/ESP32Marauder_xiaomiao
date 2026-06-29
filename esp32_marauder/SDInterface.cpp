@@ -1,5 +1,8 @@
 #include "SDInterface.h"
 #include "lang_var.h"
+#ifdef MARAUDER_XIAOMIAO
+  #include "SdFat.h"
+#endif
 
 #ifdef HAS_C5_SD
   SDInterface::SDInterface(SPIClass* spi, int cs)
