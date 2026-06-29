@@ -120,30 +120,30 @@ void MenuFunctions::displayMenuButtons() {
 
       // Draw horizontal line on left
       display_obj.tft.drawLine(0, 
-                              TFT_HEIGHT / 3 * (i),
-                              (TFT_WIDTH / 12) / 2,
-                              TFT_HEIGHT / 3 * (i),
+                              SCREEN_HEIGHT / 3 * (i),
+                              (SCREEN_WIDTH / 12) / 2,
+                              SCREEN_HEIGHT / 3 * (i),
                               TFT_FARTGRAY);
 
       // Draw horizontal line on right
-      display_obj.tft.drawLine(TFT_WIDTH - 1 - ((TFT_WIDTH / 12) / 2), 
-                              TFT_HEIGHT / 3 * (i),
-                              TFT_WIDTH,
-                              TFT_HEIGHT / 3 * (i),
+      display_obj.tft.drawLine(SCREEN_WIDTH - 1 - ((SCREEN_WIDTH / 12) / 2), 
+                              SCREEN_HEIGHT / 3 * (i),
+                              SCREEN_WIDTH,
+                              SCREEN_HEIGHT / 3 * (i),
                               TFT_FARTGRAY);
 
       // Draw vertical line on left
       display_obj.tft.drawLine(0, 
-                              (TFT_HEIGHT / 3 * (i)) - ((TFT_WIDTH / 12) / 2),
+                              (SCREEN_HEIGHT / 3 * (i)) - ((SCREEN_WIDTH / 12) / 2),
                               0,
-                              (TFT_HEIGHT / 3 * (i)) + ((TFT_WIDTH / 12) / 2),
+                              (SCREEN_HEIGHT / 3 * (i)) + ((SCREEN_WIDTH / 12) / 2),
                               TFT_FARTGRAY);
 
       // Draw vertical line on right
-      display_obj.tft.drawLine(TFT_WIDTH - 1, 
-                              (TFT_HEIGHT / 3 * (i)) - ((TFT_WIDTH / 12) / 2),
-                              TFT_WIDTH - 1,
-                              (TFT_HEIGHT / 3 * (i)) + ((TFT_WIDTH / 12) / 2),
+      display_obj.tft.drawLine(SCREEN_WIDTH - 1, 
+                              (SCREEN_HEIGHT / 3 * (i)) - ((SCREEN_WIDTH / 12) / 2),
+                              SCREEN_WIDTH - 1,
+                              (SCREEN_HEIGHT / 3 * (i)) + ((SCREEN_WIDTH / 12) / 2),
                               TFT_FARTGRAY);
     }
   #endif
@@ -244,8 +244,8 @@ void MenuFunctions::main(uint32_t currentTime)
   #ifdef HAS_ILI9341
     if (pressed && (wifi_scan_obj.currentScanMode == WIFI_SCAN_OFF ||
                     wifi_scan_obj.currentScanMode == WIFI_CONNECTED)) {
-      uint16_t zoneUp = TFT_HEIGHT * 25 / 100;
-      uint16_t zoneDown = TFT_HEIGHT * 75 / 100;
+      uint16_t zoneUp = SCREEN_HEIGHT * 25 / 100;
+      uint16_t zoneDown = SCREEN_HEIGHT * 75 / 100;
       if (t_y < zoneUp || t_y >= zoneDown) {
         uint32_t hold_start = millis();
         uint16_t hx, hy;
@@ -1096,7 +1096,7 @@ void MenuFunctions::updateStatusBar()
   if ((current_channel != wifi_scan_obj.old_channel) || (status_changed)) {
     wifi_scan_obj.old_channel = current_channel;
     #if defined(MARAUDER_MINI) || defined(MARAUDER_M5STICKC) || defined(MARAUDER_REV_FEATHER) || defined(MARAUDER_CARDPUTER) || defined(MARAUDER_CARDPUTER_ADV) || defined(MARAUDER_MINI_V3)
-      display_obj.tft.fillRect(TFT_WIDTH/4, 0, CHAR_WIDTH * 6, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
+      display_obj.tft.fillRect(SCREEN_WIDTH/4, 0, CHAR_WIDTH * 6, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
     #elif defined(HAS_DUAL_BAND)
       display_obj.tft.fillRect(50, 0, (CHAR_WIDTH / 2) * 8, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
     #else
@@ -1107,7 +1107,7 @@ void MenuFunctions::updateStatusBar()
     #endif
 
     #ifdef HAS_MINI_SCREEN
-      display_obj.tft.drawString("CH:" + (String)wifi_scan_obj.old_channel, TFT_WIDTH/4, 0, 1);
+      display_obj.tft.drawString("CH:" + (String)wifi_scan_obj.old_channel, SCREEN_WIDTH/4, 0, 1);
     #endif
   }
 
@@ -1126,7 +1126,7 @@ void MenuFunctions::updateStatusBar()
   #endif
 
   #ifdef HAS_MINI_SCREEN
-    display_obj.tft.drawString(String(getDRAMUsagePercent()) + "%", TFT_WIDTH/1.75, 0, 1);
+    display_obj.tft.drawString(String(getDRAMUsagePercent()) + "%", SCREEN_WIDTH/1.75, 0, 1);
   #endif
   }
 
@@ -1180,7 +1180,7 @@ void MenuFunctions::updateStatusBar()
 
   #ifdef HAS_MINI_SCREEN
     display_obj.tft.setTextColor(the_color, STATUSBAR_COLOR, true);
-    display_obj.tft.drawString("SD", TFT_WIDTH - 12, 0, 1);
+    display_obj.tft.drawString("SD", SCREEN_WIDTH - 12, 0, 1);
   #endif
 
   // WiFi connection status stuff
@@ -1278,16 +1278,16 @@ void MenuFunctions::drawStatusBar()
     wifi_scan_obj.old_channel = wifi_scan_obj.set_channel;
 
   #ifdef HAS_MINI_SCREEN
-    display_obj.tft.fillRect(43, 0, TFT_WIDTH * 0.21, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
+    display_obj.tft.fillRect(43, 0, SCREEN_WIDTH * 0.21, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
   #else
-    display_obj.tft.fillRect(50, 0, TFT_WIDTH * 0.21, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
+    display_obj.tft.fillRect(50, 0, SCREEN_WIDTH * 0.21, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
   #endif
   #ifdef HAS_FULL_SCREEN
     display_obj.tft.drawString("CH: " + (String)wifi_scan_obj.old_channel, 50, 0, 2);
   #endif
 
   #ifdef HAS_MINI_SCREEN
-    display_obj.tft.drawString("CH:" + (String)wifi_scan_obj.old_channel, TFT_WIDTH/4, 0, 1);
+    display_obj.tft.drawString("CH:" + (String)wifi_scan_obj.old_channel, SCREEN_WIDTH/4, 0, 1);
   #endif
 
   // RAM Stuff
@@ -1304,7 +1304,7 @@ void MenuFunctions::drawStatusBar()
   #endif
 
   #ifdef HAS_MINI_SCREEN
-    display_obj.tft.drawString(String(getDRAMUsagePercent()) + "%", TFT_WIDTH/1.75, 0, 1);
+    display_obj.tft.drawString(String(getDRAMUsagePercent()) + "%", SCREEN_WIDTH/1.75, 0, 1);
   #endif
 
 
@@ -1359,7 +1359,7 @@ void MenuFunctions::drawStatusBar()
 
   #ifdef HAS_MINI_SCREEN
     display_obj.tft.setTextColor(the_color, STATUSBAR_COLOR);
-    display_obj.tft.drawString("SD", TFT_WIDTH - 12, 0, 1);
+    display_obj.tft.drawString("SD", SCREEN_WIDTH - 12, 0, 1);
   #endif
 
   // WiFi connection status stuff
@@ -2927,12 +2927,12 @@ void MenuFunctions::RunSetup()
       });
       this->addNodes(&gpsPOIMenu, "Mark POI", TFTCYAN, GPS_MENU, [this]() {
         wifi_scan_obj.currentScanMode = GPS_POI;
-        display_obj.tft.setCursor(0, TFT_HEIGHT / 2);
+        display_obj.tft.setCursor(0, SCREEN_HEIGHT / 2);
         display_obj.clearScreen();
         if (wifi_scan_obj.RunGPSInfo(true, false, true))
-          display_obj.showCenterText("POI Logged", TFT_HEIGHT / 2);
+          display_obj.showCenterText("POI Logged", SCREEN_HEIGHT / 2);
         else
-          display_obj.showCenterText("POI Log Failed", TFT_HEIGHT / 2);
+          display_obj.showCenterText("POI Log Failed", SCREEN_HEIGHT / 2);
         wifi_scan_obj.currentScanMode = WIFI_SCAN_OFF;
         delay(2000);
         this->changeMenu(&gpsPOIMenu, true);
@@ -3557,16 +3557,16 @@ float MenuFunctions::graphScaleCheckSmall(const uint8_t array[CHAN_PER_PAGE]) {
 }
 
 void MenuFunctions::drawMaxLine(int16_t value, uint16_t color) {
-  display_obj.tft.drawLine(0, TFT_HEIGHT - (value * this->_graph_scale), TFT_WIDTH, TFT_HEIGHT - (value * this->_graph_scale), color);
-  display_obj.tft.setCursor(0, TFT_HEIGHT - (value * this->_graph_scale));
+  display_obj.tft.drawLine(0, SCREEN_HEIGHT - (value * this->_graph_scale), SCREEN_WIDTH, SCREEN_HEIGHT - (value * this->_graph_scale), color);
+  display_obj.tft.setCursor(0, SCREEN_HEIGHT - (value * this->_graph_scale));
   display_obj.tft.setTextColor(color, TFT_BLACK);
   display_obj.tft.setTextSize(1);
   display_obj.tft.println((String)(value / BASE_MULTIPLIER));
 }
 
 void MenuFunctions::drawMaxLine(uint8_t value, uint16_t color) {
-  //display_obj.tft.drawLine(0, TFT_HEIGHT - (value * this->_graph_scale), TFT_WIDTH, TFT_HEIGHT - (value * this->_graph_scale), color);
-  display_obj.tft.setCursor(0, TFT_HEIGHT - (value * this->_graph_scale));
+  //display_obj.tft.drawLine(0, SCREEN_HEIGHT - (value * this->_graph_scale), SCREEN_WIDTH, SCREEN_HEIGHT - (value * this->_graph_scale), color);
+  display_obj.tft.setCursor(0, SCREEN_HEIGHT - (value * this->_graph_scale));
   display_obj.tft.setTextColor(color, TFT_BLACK);
   display_obj.tft.setTextSize(1);
   display_obj.tft.println((String)value);
@@ -3577,7 +3577,7 @@ void MenuFunctions::drawGraphSmall(uint8_t *values) {
   //(i + (CHAN_PER_PAGE * (this->activity_page - 1)))
 
   int bar_width = SCREEN_WIDTH / (CHAN_PER_PAGE * 2);
-  //display_obj.tft.fillRect(0, TFT_HEIGHT / 2 + 1, SCREEN_WIDTH, (TFT_HEIGHT / 2) + 1, TFT_BLACK);
+  //display_obj.tft.fillRect(0, SCREEN_HEIGHT / 2 + 1, SCREEN_WIDTH, (SCREEN_HEIGHT / 2) + 1, TFT_BLACK);
 
   #ifndef HAS_DUAL_BAND
     for (int i = 1; i < CHAN_PER_PAGE + 1; i++) {
@@ -3620,7 +3620,7 @@ void MenuFunctions::drawGraphSmall(uint8_t *values) {
 
 void MenuFunctions::drawGraph(int16_t *values) {
   #if !defined(MARAUDER_CARDPUTER) && !defined(MARAUDER_CARDPUTER_ADV)
-    int width = TFT_WIDTH;
+    int width = SCREEN_WIDTH;
   #else
     int width = SCREEN_WIDTH;
   #endif
@@ -3634,11 +3634,11 @@ void MenuFunctions::drawGraph(int16_t *values) {
         maxValue = values[i];
       }
       #if !defined(MARAUDER_CARDPUTER) && !defined(MARAUDER_CARDPUTER_ADV)
-        display_obj.tft.drawLine(i, TFT_HEIGHT, i, TFT_HEIGHT - GRAPH_VERT_LIM, TFT_BLACK);
-        display_obj.tft.drawLine(i, TFT_HEIGHT, i, TFT_HEIGHT - (values[i] * this->_graph_scale), TFT_CYAN);
+        display_obj.tft.drawLine(i, SCREEN_HEIGHT, i, SCREEN_HEIGHT - GRAPH_VERT_LIM, TFT_BLACK);
+        display_obj.tft.drawLine(i, SCREEN_HEIGHT, i, SCREEN_HEIGHT - (values[i] * this->_graph_scale), TFT_CYAN);
       #else
-        display_obj.tft.drawLine(i, TFT_WIDTH, i, TFT_WIDTH - GRAPH_VERT_LIM, TFT_BLACK);
-        display_obj.tft.drawLine(i, TFT_WIDTH, i, TFT_WIDTH - (values[i] * this->_graph_scale), TFT_CYAN);
+        display_obj.tft.drawLine(i, SCREEN_WIDTH, i, SCREEN_WIDTH - GRAPH_VERT_LIM, TFT_BLACK);
+        display_obj.tft.drawLine(i, SCREEN_WIDTH, i, SCREEN_WIDTH - (values[i] * this->_graph_scale), TFT_CYAN);
         display_obj.tft.setCursor(0, 0);
         display_obj.tft.setTextColor(TFT_WHITE, TFT_BLACK);
       #endif
@@ -3646,13 +3646,13 @@ void MenuFunctions::drawGraph(int16_t *values) {
     else {
       int16_t ch_val = values[i] * -1;
       #if !defined(MARAUDER_CARDPUTER) && !defined(MARAUDER_CARDPUTER_ADV)
-        display_obj.tft.drawLine(i, TFT_HEIGHT, i, TFT_HEIGHT - GRAPH_VERT_LIM, TFT_BLACK);
-        display_obj.tft.drawLine(i, TFT_HEIGHT, i, TFT_HEIGHT - GRAPH_VERT_LIM, TFT_RED);
-        display_obj.tft.setCursor(i, TFT_HEIGHT - GRAPH_VERT_LIM);
+        display_obj.tft.drawLine(i, SCREEN_HEIGHT, i, SCREEN_HEIGHT - GRAPH_VERT_LIM, TFT_BLACK);
+        display_obj.tft.drawLine(i, SCREEN_HEIGHT, i, SCREEN_HEIGHT - GRAPH_VERT_LIM, TFT_RED);
+        display_obj.tft.setCursor(i, SCREEN_HEIGHT - GRAPH_VERT_LIM);
       #else
-        display_obj.tft.drawLine(i, TFT_WIDTH, i, TFT_WIDTH - GRAPH_VERT_LIM, TFT_BLACK);
-        display_obj.tft.drawLine(i, TFT_WIDTH, i, TFT_WIDTH - GRAPH_VERT_LIM, TFT_RED);
-        display_obj.tft.setCursor(i, TFT_WIDTH - GRAPH_VERT_LIM);
+        display_obj.tft.drawLine(i, SCREEN_WIDTH, i, SCREEN_WIDTH - GRAPH_VERT_LIM, TFT_BLACK);
+        display_obj.tft.drawLine(i, SCREEN_WIDTH, i, SCREEN_WIDTH - GRAPH_VERT_LIM, TFT_RED);
+        display_obj.tft.setCursor(i, SCREEN_WIDTH - GRAPH_VERT_LIM);
       #endif
       display_obj.tft.setTextColor(TFT_BLACK, TFT_RED);
       display_obj.tft.setTextSize(1);
@@ -3661,7 +3661,7 @@ void MenuFunctions::drawGraph(int16_t *values) {
   }
 
   this->drawMaxLine(maxValue, TFT_GREEN); // Draw max
-  this->drawMaxLine((int16_t)(total / TFT_WIDTH), TFT_ORANGE); // Draw average
+  this->drawMaxLine((int16_t)(total / SCREEN_WIDTH), TFT_ORANGE); // Draw average
 }
 
 void MenuFunctions::renderGraphUI(uint8_t scan_mode) {
@@ -3774,10 +3774,10 @@ void MenuFunctions::buildButtons(Menu *menu, int starting_index, const char* but
   }
 
   for (int i = BUTTON_ARRAY_LEN; i < BUTTON_ARRAY_LEN + 3; i++) {
-    uint16_t x = TFT_WIDTH / 2;
-    uint16_t y = TFT_HEIGHT / 3 * (i - BUTTON_ARRAY_LEN) + ((TFT_HEIGHT / 3) / 2);
-    uint16_t w = TFT_WIDTH;
-    uint16_t h = TFT_HEIGHT / 3 - 1;
+    uint16_t x = SCREEN_WIDTH / 2;
+    uint16_t y = SCREEN_HEIGHT / 3 * (i - BUTTON_ARRAY_LEN) + ((SCREEN_HEIGHT / 3) / 2);
+    uint16_t w = SCREEN_WIDTH;
+    uint16_t h = SCREEN_HEIGHT / 3 - 1;
 
     display_obj.key[i].initButton(&display_obj.tft,
                                   x,
@@ -3889,29 +3889,29 @@ void MenuFunctions::displayCurrentMenu(int start_index)
 
     display_obj.tft.fillScreen(TFT_BLACK);
     display_obj.tft.setTextColor(TFT_CYAN, TFT_BLACK);
-    display_obj.tft.drawCentreString("BRIGHTNESS", TFT_WIDTH/2, 30, 2);
+    display_obj.tft.drawCentreString("BRIGHTNESS", SCREEN_WIDTH/2, 30, 2);
 
     display_obj.tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
-    display_obj.tft.drawCentreString("TAP TOP = BRIGHTER", TFT_WIDTH/2, 10, 1);
-    display_obj.tft.drawCentreString("TAP BOTTOM = DIMMER", TFT_WIDTH/2, TFT_HEIGHT - 20, 1);
+    display_obj.tft.drawCentreString("TAP TOP = BRIGHTER", SCREEN_WIDTH/2, 10, 1);
+    display_obj.tft.drawCentreString("TAP BOTTOM = DIMMER", SCREEN_WIDTH/2, SCREEN_HEIGHT - 20, 1);
     display_obj.tft.setTextColor(TFT_RED, TFT_BLACK);
-    display_obj.tft.drawCentreString("TAP MIDDLE or WAIT 3s = SAVE", TFT_WIDTH/2, TFT_HEIGHT/2 + 50, 1);
+    display_obj.tft.drawCentreString("TAP MIDDLE or WAIT 3s = SAVE", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 50, 1);
 
     auto drawBar = [&]() {
-      uint16_t barX = 30, barY = TFT_HEIGHT/2 - 25, barW = TFT_WIDTH - 60, barH = 30;
+      uint16_t barX = 30, barY = SCREEN_HEIGHT/2 - 25, barW = SCREEN_WIDTH - 60, barH = 30;
       display_obj.tft.drawRect(barX, barY, barW, barH, TFT_WHITE);
       uint16_t fillW = (barW - 4) * (level + 1) / numLevels;
       display_obj.tft.fillRect(barX + 2, barY + 2, barW - 4, barH - 4, TFT_BLACK);
       display_obj.tft.fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_CYAN);
-      display_obj.tft.fillRect(0, barY + barH + 5, TFT_WIDTH, 20, TFT_BLACK);
+      display_obj.tft.fillRect(0, barY + barH + 5, SCREEN_WIDTH, 20, TFT_BLACK);
       display_obj.tft.setTextColor(TFT_WHITE, TFT_BLACK);
       String pct = String(levels[level] * 100 / 255) + "%";
-      display_obj.tft.drawCentreString(pct, TFT_WIDTH/2, barY + barH + 8, 2);
+      display_obj.tft.drawCentreString(pct, SCREEN_WIDTH/2, barY + barH + 8, 2);
     };
     drawBar();
 
-    uint16_t zoneUp = TFT_HEIGHT * 25 / 100;
-    uint16_t zoneDown = TFT_HEIGHT * 75 / 100;
+    uint16_t zoneUp = SCREEN_HEIGHT * 25 / 100;
+    uint16_t zoneDown = SCREEN_HEIGHT * 75 / 100;
     uint32_t lastTouch = millis();
 
     while (true) {

@@ -212,7 +212,7 @@ class MenuFunctions
     void drawMaxLine(uint8_t value, uint16_t color);
     float calculateGraphScale(int16_t value);
     float calculateGraphScale(uint8_t value);
-    float graphScaleCheck(const int16_t array[TFT_WIDTH]);
+    float graphScaleCheck(const int16_t array[SCREEN_WIDTH]);
     #ifndef HAS_DUAL_BAND
       float graphScaleCheckSmall(const uint8_t array[MAX_CHANNEL]);
     #else

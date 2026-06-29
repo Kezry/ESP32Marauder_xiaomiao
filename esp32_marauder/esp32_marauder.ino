@@ -316,13 +316,13 @@ void setup()
 
   #ifdef HAS_SCREEN
     #if !defined(MARAUDER_CARDPUTER) && !defined(MARAUDER_CARDPUTER_ADV)
-      display_obj.tft.drawCentreString("ESP32 Marauder", TFT_WIDTH/2, TFT_HEIGHT * 0.33, 1);
-      display_obj.tft.drawCentreString("JustCallMeKoko", TFT_WIDTH/2, TFT_HEIGHT * 0.5, 1);
-      display_obj.tft.drawCentreString(display_obj.version_number, TFT_WIDTH/2, TFT_HEIGHT * 0.66, 1);
+      display_obj.tft.drawCentreString("ESP32 Marauder", SCREEN_WIDTH/2, SCREEN_HEIGHT * 0.33, 1);
+      display_obj.tft.drawCentreString("JustCallMeKoko", SCREEN_WIDTH/2, SCREEN_HEIGHT * 0.5, 1);
+      display_obj.tft.drawCentreString(display_obj.version_number, SCREEN_WIDTH/2, SCREEN_HEIGHT * 0.66, 1);
     #else
-      display_obj.tft.drawCentreString("ESP32 Marauder", TFT_HEIGHT/2, TFT_WIDTH * 0.33, 1);
-      display_obj.tft.drawCentreString("JustCallMeKoko", TFT_HEIGHT/2, TFT_WIDTH * 0.5, 1);
-      display_obj.tft.drawCentreString(display_obj.version_number, TFT_HEIGHT/2, TFT_WIDTH * 0.66, 1);
+      display_obj.tft.drawCentreString("ESP32 Marauder", SCREEN_HEIGHT/2, SCREEN_WIDTH * 0.33, 1);
+      display_obj.tft.drawCentreString("JustCallMeKoko", SCREEN_HEIGHT/2, SCREEN_WIDTH * 0.5, 1);
+      display_obj.tft.drawCentreString(display_obj.version_number, SCREEN_HEIGHT/2, SCREEN_WIDTH * 0.66, 1);
     #endif
   #endif
 
@@ -364,7 +364,7 @@ void setup()
 
   #ifdef HAS_SCREEN
     display_obj.tft.setTextColor(TFT_GREEN, TFT_BLACK);
-    display_obj.tft.drawCentreString("Initializing...", TFT_WIDTH/2, TFT_HEIGHT * 0.82, 1);
+    display_obj.tft.drawCentreString("Initializing...", SCREEN_WIDTH/2, SCREEN_HEIGHT * 0.82, 1);
   #endif
 
   evil_portal_obj.setup();

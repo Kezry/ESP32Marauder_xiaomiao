@@ -8,13 +8,13 @@ extern Display display_obj;
 
 // Keyboard will occupy the bottom half of the screen.
 static inline int16_t kbHeight() {
-  return TFT_HEIGHT / 2;
+  return SCREEN_HEIGHT / 2;
 }
 static inline int16_t kbYStart() {
-  return TFT_HEIGHT - kbHeight();
+  return SCREEN_HEIGHT - kbHeight();
 }
 static inline int16_t kbWidth() {
-  return TFT_WIDTH;
+  return SCREEN_WIDTH;
 }
 static inline int16_t kbXStart() {
   return 0;
@@ -40,10 +40,10 @@ enum KeyboardLayout {
 };
 
 static void drawTextArea(const char *title, const char *buffer) {
-  int16_t areaHeight = TFT_HEIGHT - kbHeight();
+  int16_t areaHeight = SCREEN_HEIGHT - kbHeight();
 
   // Clear text area
-  display_obj.tft.fillRect(0, 0, TFT_WIDTH, areaHeight, TFT_BLACK);
+  display_obj.tft.fillRect(0, 0, SCREEN_WIDTH, areaHeight, TFT_BLACK);
 
   int16_t cursorY = 2;
 

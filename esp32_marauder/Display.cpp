@@ -48,8 +48,8 @@ uint8_t Display::updateTouch(uint16_t *x, uint16_t *y, uint16_t threshold) {
         if (this->touchscreen.tirqTouched() && this->touchscreen.touched()) {
           TS_Point p = this->touchscreen.getPoint();
 
-          //*x = map(p.x, 200, 3700, 1, TFT_WIDTH);
-          //*y = map(p.y, 240, 3800, 1, TFT_HEIGHT);
+          //*x = map(p.x, 200, 3700, 1, SCREEN_WIDTH);
+          //*y = map(p.y, 240, 3800, 1, SCREEN_HEIGHT);
 
           uint8_t rot = this->tft.getRotation();
 
@@ -59,20 +59,20 @@ uint8_t Display::updateTouch(uint16_t *x, uint16_t *y, uint16_t threshold) {
 
           switch (rot) {
             case 0: // Standard Protrait
-              *x = map(p.x, 200, 3700, 1, TFT_WIDTH);
-              *y = map(p.y, 240, 3800, 1, TFT_HEIGHT);
+              *x = map(p.x, 200, 3700, 1, SCREEN_WIDTH);
+              *y = map(p.y, 240, 3800, 1, SCREEN_HEIGHT);
               break;
             case 1:
-              *x = map(p.y, 143, 3715, 0, TFT_HEIGHT);     // Horizontal (Y axis in touch, X on screen)
-              *y = map(p.x, 3786, 216, 0, TFT_WIDTH);    // Vertical (X axis in touch, Y on screen)
+              *x = map(p.y, 143, 3715, 0, SCREEN_HEIGHT);     // Horizontal (Y axis in touch, X on screen)
+              *y = map(p.x, 3786, 216, 0, SCREEN_WIDTH);    // Vertical (X axis in touch, Y on screen)
               break;
             case 2:
-              *x = map(p.x, 3700, 200, 1, TFT_WIDTH);
-              *y = map(p.y, 3800, 240, 1, TFT_HEIGHT);
+              *x = map(p.x, 3700, 200, 1, SCREEN_WIDTH);
+              *y = map(p.y, 3800, 240, 1, SCREEN_HEIGHT);
               break;
             case 3:
-              *x = map(p.y, 3800, 240, 1, TFT_WIDTH);
-              *y = map(p.x, 200, 3700, 1, TFT_HEIGHT);
+              *x = map(p.y, 3800, 240, 1, SCREEN_WIDTH);
+              *y = map(p.x, 200, 3700, 1, SCREEN_HEIGHT);
               break;
           }
           return 1;
@@ -466,7 +466,7 @@ void Display::touchToExit()
 {
   tft.setTextColor(TFT_BLACK, TFT_LIGHTGREY);
   tft.fillRect(0,32,HEIGHT_1,16, TFT_LIGHTGREY);
-  tft.drawCentreString(text11,TFT_WIDTH / 2,32,2);
+  tft.drawCentreString(text11,SCREEN_WIDTH / 2,32,2);
 }
 
 
@@ -478,10 +478,10 @@ void Display::clearScreen()
     tft.fillScreen(TFT_BLACK);
     tft.setCursor(0, 0);
   #elif defined(MARAUDER_MINI) || defined(MARAUDER_MINI_V3)
-    tft.fillRect(0, 0, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK);
+    tft.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, TFT_BLACK);
     tft.setCursor(0, 0);
   #else
-    tft.fillRect(0, 0, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK);
+    tft.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, TFT_BLACK);
     tft.setCursor(0, 0);
   #endif
 }
@@ -523,8 +523,8 @@ void Display::processAndPrintString(TFT_eSPI& tft, const String& originalString)
   }
 
   // Characters that fit across the visible (post-rotation) width. On landscape
-  // boards like XiaoMiao, SCREEN_WIDTH (160) != portrait TFT_WIDTH (128); using
-  // TFT_WIDTH here left the right portion of each line uncleared/overflowing.
+  // boards like XiaoMiao, SCREEN_WIDTH (160) != portrait SCREEN_WIDTH (128); using
+  // SCREEN_WIDTH here left the right portion of each line uncleared/overflowing.
   int count = SCREEN_WIDTH / CHAR_WIDTH;
 
   char buf[count + 1];

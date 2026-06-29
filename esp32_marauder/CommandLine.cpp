@@ -1171,17 +1171,17 @@ void CommandLine::runCommand(String input) {
         else if (mark_sw != -1) {
           wifi_scan_obj.currentScanMode = GPS_POI;
           #ifdef HAS_SCREEN
-            display_obj.tft.setCursor(0, TFT_HEIGHT / 2);
+            display_obj.tft.setCursor(0, SCREEN_HEIGHT / 2);
             display_obj.clearScreen();
           #endif
           if (wifi_scan_obj.RunGPSInfo(true, false, true)) {
             #ifdef HAS_SCREEN
-              display_obj.showCenterText("POI Logged", TFT_HEIGHT / 2);
+              display_obj.showCenterText("POI Logged", SCREEN_HEIGHT / 2);
             #endif
           }
           else {
             #ifdef HAS_SCREEN
-              display_obj.showCenterText("POI Log Failed", TFT_HEIGHT / 2);
+              display_obj.showCenterText("POI Log Failed", SCREEN_HEIGHT / 2);
             #endif
           }
           wifi_scan_obj.currentScanMode = WIFI_SCAN_OFF;

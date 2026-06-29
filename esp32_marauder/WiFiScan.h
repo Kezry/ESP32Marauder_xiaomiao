@@ -812,8 +812,8 @@ class WiFiScan
 
     #ifdef HAS_SCREEN
       #if !defined(MARAUDER_CARDPUTER) && !defined(MARAUDER_CARDPUTER_ADV)
-        int16_t _analyzer_values[TFT_WIDTH];
-        int16_t _temp_analyzer_values[TFT_WIDTH];
+        int16_t _analyzer_values[SCREEN_WIDTH];
+        int16_t _temp_analyzer_values[SCREEN_WIDTH];
       #else
         int16_t _analyzer_values[SCREEN_WIDTH];
         int16_t _temp_analyzer_values[SCREEN_WIDTH];

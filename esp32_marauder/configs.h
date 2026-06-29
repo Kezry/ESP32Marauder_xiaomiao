@@ -2102,27 +2102,27 @@
         #define TFT_HEIGHT 160   // physical portrait height
       #endif
 
-      #define GRAPH_VERT_LIM TFT_HEIGHT/2 - 1
+      #define GRAPH_VERT_LIM SCREEN_HEIGHT/2 - 1
 
       #define EXT_BUTTON_WIDTH 0
 
       #define SCREEN_ORIENTATION 3   // 270 deg -> landscape 160x128 (corrects upside-down)
 
       #define CHAR_WIDTH 6
-      #define SCREEN_WIDTH  TFT_HEIGHT  // 160 in landscape
-      #define SCREEN_HEIGHT TFT_WIDTH   // 128 in landscape
-      #define HEIGHT_1 TFT_WIDTH
-      #define WIDTH_1  TFT_WIDTH
-      #define STANDARD_FONT_CHAR_LIMIT (TFT_WIDTH/6)
-      #define TEXT_HEIGHT (TFT_HEIGHT/10)
+      #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      #define HEIGHT_1 SCREEN_WIDTH
+      #define WIDTH_1  SCREEN_WIDTH
+      #define STANDARD_FONT_CHAR_LIMIT (SCREEN_WIDTH/6)
+      #define TEXT_HEIGHT (SCREEN_HEIGHT/10)
       #define BOT_FIXED_AREA 0
       #define TOP_FIXED_AREA 48
-      #define YMAX TFT_HEIGHT
+      #define YMAX SCREEN_HEIGHT
       #define minimum(a,b)     (((a) < (b)) ? (a) : (b))
       #define MENU_FONT &FreeMono9pt7b
       #define BUTTON_SCREEN_LIMIT 9
       #define BUTTON_ARRAY_LEN BUTTON_SCREEN_LIMIT
-      #define STATUS_BAR_WIDTH (TFT_HEIGHT/16)
+      #define STATUS_BAR_WIDTH (SCREEN_HEIGHT/16)
       #define LVGL_TICK_PERIOD 6
 
       #define FRAME_X 100
