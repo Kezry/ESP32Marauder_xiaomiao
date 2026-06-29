@@ -542,6 +542,12 @@ void Display::processAndPrintString(TFT_eSPI& tft, const String& originalString)
   // SCREEN_WIDTH here left the right portion of each line uncleared/overflowing.
   int count = SCREEN_WIDTH / CHAR_WIDTH;
 
+  // Truncate the line so it never draws past the right edge. With setTextWrap(false)
+  // an over-length line (e.g. a long probe ESSID "aa:bb:.. -> VeryLongNetworkName")
+  // would paint off-screen at x>160. Clip to the visible char count.
+  if ((int)new_string.length() > count)
+    new_string.remove(count);
+
   char buf[count + 1];
   memset(buf, ' ', count);
   buf[count] = '\0';
@@ -594,7 +600,10 @@ void Display::displayBuffer(bool do_clear)
           #ifdef HAS_TOUCH
             tft.setCursor(xPos, (i * 12) + ((SCREEN_HEIGHT / 6) * 1.3));
           #else
-            tft.setCursor(xPos, (i * 12) + (SCREEN_HEIGHT / 6));
+            // Stack MAX_SCREEN_BUFFER rows inside the visible height below the
+            // status/title band. Row pitch 12 with start y=STATUS_BAR_WIDTH*2 keeps
+            // all rows within 128 (last row bottom = start + (N-1)*12 + 12 <= 128).
+            tft.setCursor(xPos, (i * 12) + (STATUS_BAR_WIDTH * 2));
           #endif
 
           this->processAndPrintString(tft, this->screen_buffer->get(i));
