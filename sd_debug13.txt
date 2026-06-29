@@ -1,0 +1,203 @@
+﻿ Jun  8 2016 00:22:57
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0030,len:4744
+load:0x40078000,len:15672
+load:0x40080400,len:3164
+entry 0x4008059c
+E (537) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+E (538) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+ESP-IDF version is: v5.5.1-710-g8410210c9a
+Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.
+
+Core  1 register dump:
+PC      : 0x40090d44  PS      : 0x00060530  A0      : 0x80127acc  A1      : 0x3ffd6c90  
+A2      : 0x3ffc7df0  A3      : 0x00060020  A4      : 0x00000024  A5      : 0x3ffc7df0  
+A6      : 0x0000000e  A7      : 0x00000002  A8      : 0xc0000000  A9      : 0x3ffd6c60  
+A10     : 0x00000000  A11     : 0x00000003  A12     : 0x00000007  A13     : 0x0000ff00  
+A14     : 0x00ff0000  A15     : 0x00000c00  SAR     : 0x00000018  EXCCAUSE: 0x0000001c  
+EXCVADDR: 0x00060020  LBEG    : 0x4009151d  LEND    : 0x4009152d  LCOUNT  : 0xfffffffd  
+
+
+Backtrace: 0x40090d41:0x3ffd6c90 0x40127ac9:0x3ffd6ca0 0x400fbb1e:0x3ffd6cc0 0x4012f21e:0x3ffd6d80 0x40094ec5:0x3ffd6da0
+
+
+
+
+ELF file SHA256: 0045d9c5a
+
+Rebooting...
+ets Jun  8 2016 00:22:57
+
+rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0030,len:4744
+load:0x40078000,len:15672
+load:0x40080400,len:3164
+entry 0x4008059c
+E (537) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+E (538) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+ESP-IDF version is: v5.5.1-710-g8410210c9a
+Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.
+
+Core  1 register dump:
+PC      : 0x40090d44  PS      : 0x00060530  A0      : 0x80127acc  A1      : 0x3ffd6c90  
+A2      : 0x3ffc7df0  A3      : 0x00060020  A4      : 0x00000024  A5      : 0x3ffc7df0  
+A6      : 0x0000000e  A7      : 0x00000002  A8      : 0xc0000000  A9      : 0x3ffd6c60  
+A10     : 0x00000000  A11     : 0x00000003  A12     : 0x00000007  A13     : 0x0000ff00  
+A14     : 0x00ff0000  A15     : 0x00000c00  SAR     : 0x00000018  EXCCAUSE: 0x0000001c  
+EXCVADDR: 0x00060020  LBEG    : 0x4009151d  LEND    : 0x4009152d  LCOUNT  : 0xfffffffd  
+
+
+Backtrace: 0x40090d41:0x3ffd6c90 0x40127ac9:0x3ffd6ca0 0x400fbb1e:0x3ffd6cc0 0x4012f21e:0x3ffd6d80 0x40094ec5:0x3ffd6da0
+
+
+
+
+ELF file SHA256: 0045d9c5a
+
+Rebooting...
+ets Jun  8 2016 00:22:57
+
+rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0030,len:4744
+load:0x40078000,len:15672
+load:0x40080400,len:3164
+entry 0x4008059c
+E (537) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+E (538) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+ESP-IDF version is: v5.5.1-710-g8410210c9a
+Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.
+
+Core  1 register dump:
+PC      : 0x40090d44  PS      : 0x00060530  A0      : 0x80127acc  A1      : 0x3ffd6c90  
+A2      : 0x3ffc7df0  A3      : 0x00060020  A4      : 0x00000024  A5      : 0x3ffc7df0  
+A6      : 0x0000000e  A7      : 0x00000002  A8      : 0xc0000000  A9      : 0x3ffd6c60  
+A10     : 0x00000000  A11     : 0x00000003  A12     : 0x00000007  A13     : 0x0000ff00  
+A14     : 0x00ff0000  A15     : 0x00000c00  SAR     : 0x00000018  EXCCAUSE: 0x0000001c  
+EXCVADDR: 0x00060020  LBEG    : 0x4009151d  LEND    : 0x4009152d  LCOUNT  : 0xfffffffd  
+
+
+Backtrace: 0x40090d41:0x3ffd6c90 0x40127ac9:0x3ffd6ca0 0x400fbb1e:0x3ffd6cc0 0x4012f21e:0x3ffd6d80 0x40094ec5:0x3ffd6da0
+
+
+
+
+ELF file SHA256: 0045d9c5a
+
+Rebooting...
+ets Jun  8 2016 00:22:57
+
+rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0030,len:4744
+load:0x40078000,len:15672
+load:0x40080400,len:3164
+entry 0x4008059c
+E (537) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+E (538) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+ESP-IDF version is: v5.5.1-710-g8410210c9a
+Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.
+
+Core  1 register dump:
+PC      : 0x40090d44  PS      : 0x00060530  A0      : 0x80127acc  A1      : 0x3ffd6c90  
+A2      : 0x3ffc7df0  A3      : 0x00060020  A4      : 0x00000024  A5      : 0x3ffc7df0  
+A6      : 0x0000000e  A7      : 0x00000002  A8      : 0xc0000000  A9      : 0x3ffd6c60  
+A10     : 0x00000000  A11     : 0x00000003  A12     : 0x00000007  A13     : 0x0000ff00  
+A14     : 0x00ff0000  A15     : 0x00000c00  SAR     : 0x00000018  EXCCAUSE: 0x0000001c  
+EXCVADDR: 0x00060020  LBEG    : 0x4009151d  LEND    : 0x4009152d  LCOUNT  : 0xfffffffd  
+
+
+Backtrace: 0x40090d41:0x3ffd6c90 0x40127ac9:0x3ffd6ca0 0x400fbb1e:0x3ffd6cc0 0x4012f21e:0x3ffd6d80 0x40094ec5:0x3ffd6da0
+
+
+
+
+ELF file SHA256: 0045d9c5a
+
+Rebooting...
+ets Jun  8 2016 00:22:57
+
+rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0030,len:4744
+load:0x40078000,len:15672
+load:0x40080400,len:3164
+entry 0x4008059c
+E (537) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+E (538) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+ESP-IDF version is: v5.5.1-710-g8410210c9a
+Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.
+
+Core  1 register dump:
+PC      : 0x40090d44  PS      : 0x00060530  A0      : 0x80127acc  A1      : 0x3ffd6c90  
+A2      : 0x3ffc7df0  A3      : 0x00060020  A4      : 0x00000024  A5      : 0x3ffc7df0  
+A6      : 0x0000000e  A7      : 0x00000002  A8      : 0xc0000000  A9      : 0x3ffd6c60  
+A10     : 0x00000000  A11     : 0x00000003  A12     : 0x00000007  A13     : 0x0000ff00  
+A14     : 0x00ff0000  A15     : 0x00000c00  SAR     : 0x00000018  EXCCAUSE: 0x0000001c  
+EXCVADDR: 0x00060020  LBEG    : 0x4009151d  LEND    : 0x4009152d  LCOUNT  : 0xfffffffd  
+
+
+Backtrace: 0x40090d41:0x3ffd6c90 0x40127ac9:0x3ffd6ca0 0x400fbb1e:0x3ffd6cc0 0x4012f21e:0x3ffd6d80 0x40094ec5:0x3ffd6da0
+
+
+
+
+ELF file SHA256: 0045d9c5a
+
+Rebooting...
+ets Jun  8 2016 00:22:57
+
+rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0030,len:4744
+load:0x40078000,len:15672
+load:0x40080400,len:3164
+entry 0x4008059c
+E (537) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+E (538) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+ESP-IDF version is: v5.5.1-710-g8410210c9a
+Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.
+
+Core  1 register dump:
+PC      : 0x40090d44  PS      : 0x00060530  A0      : 0x80127acc  A1      : 0x3ffd6c90  
+A2      : 0x3ffc7df0  A3      : 0x00060020  A4      : 0x00000024  A5      : 0x3ffc7df0  
+A6      : 0x0000000e  A7      : 0x00000002  A8      : 0xc0000000  A9      : 0x3ffd6c60  
+A10     : 0x00000000  A11     : 0x00000003  A12     : 0x00000007  A13     : 0x0000ff00  
+A14     : 0x00ff0000  A15     : 0x00000c00  SAR     : 0x00000018  EXCCAUSE: 0x0000001c  
+EXCVADDR: 0x00060020  LBEG    : 0x4009151d  LEND    : 0x4009152d  LCOUNT  : 0xfffffffd  
+
+
+Backtrace: 0x40090d41:0x3ffd6c90 0x40127ac9:0x3ffd6ca0 0x400fbb1e:0x3ffd6cc0 0x4012f21e:0x3ffd6d80 0x40094ec5:0x3ffd6da0
+
+
+
+
+ELF file SHA256: 0045d9c5a
+
+Rebooting...
+ets Jun  8 2016 00:22:57
+
+rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0030,len:4744
+load:0x40078000,len:15672
+load:0x40080400,len:3164
+entry 0x4008059c
+

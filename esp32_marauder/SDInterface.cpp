@@ -134,9 +134,9 @@ void SDInterface::listDirToLinkedList(LinkedList<String>* file_names, String str
         break;
       if (entry.isDirectory())
         continue;
-      char namebuf[64];
-      entry.getName(namebuf, sizeof(namebuf));
-      String file_name = String(namebuf);
+      
+      
+      String file_name = entry.name();
       if (ext != "") {
         if (file_name.endsWith(ext))
           file_names->add(file_name);
@@ -154,9 +154,9 @@ void SDInterface::listDir(String str_dir){
       File entry = dir.openNextFile();
       if (!entry)
         break;
-      char namebuf[64];
-      entry.getName(namebuf, sizeof(namebuf));
-      Serial.print(namebuf);
+      
+      
+      Serial.print(entry.name());
       Serial.print("\t");
       Serial.println(entry.size());
       entry.close();
