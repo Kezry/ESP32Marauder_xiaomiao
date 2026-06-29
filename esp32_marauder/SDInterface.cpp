@@ -25,15 +25,14 @@ bool SDInterface::initSD() {
     // the SPI bus so GPIO19 is MISO (input). Use an explicit SPIClass with the correct
     // pins, matching the shared bus (SCK=18, MISO=19, MOSI=23).
     #ifdef MARAUDER_XIAOMIAO
-      // GPIO19 is shared between TFT RST and SD MISO. After tft.init() set it as
-      // OUTPUT(HIGH), we must fully reset the GPIO so the SPI peripheral can take
-      // it over as MISO input. gpio_reset_pin clears the RTC/matrix/IO config.
+      Serial.println(F("XiaoMiao SD: reclaiming GPIO19 as MISO..."));
       gpio_reset_pin(GPIO_NUM_19);
       delay(10);
-      // Re-init VSPI with explicit pins so MISO=19 is properly attached.
       SPI.begin(18, 19, 23, SD_CS);
       delay(10);
+      Serial.println(F("XiaoMiao SD: beginning SD.init..."));
       if (!SD.begin(SD_CS, SPI, 4000000)) {
+        Serial.println(F("XiaoMiao SD: SD.begin FAILED"));
     #else
     delay(10);
     #if (defined(MARAUDER_M5STICKC)) || (defined(HAS_CYD_TOUCH)) || (defined(MARAUDER_CARDPUTER)) || (defined(MARAUDER_CARDPUTER_ADV)) || (defined(HAS_SEPARATE_SD))
