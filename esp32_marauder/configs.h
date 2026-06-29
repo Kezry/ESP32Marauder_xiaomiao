@@ -576,6 +576,7 @@
     //#define HAS_GPS
     #define HAS_SD
     #define USE_SD
+    #define HAS_SIMPLEX_DISPLAY
     #define HAS_TEMP_SENSOR
     #define HAS_NIMBLE_2
     #define HAS_IDF_3
