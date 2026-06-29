@@ -13,6 +13,7 @@ void MenuFunctions::drawMiniMenuButton(int b, int x, bool selected) {
   MenuNode mini_node = current_menu->list->get(x);
   bool is_setting_node = (mini_node.icon == SETTINGS && mini_node.color == TFTLIGHTGREY);
   uint16_t color = is_setting_node ? (mini_node.selected ? TFT_GREEN : TFT_RED) : this->getColor(mini_node.color);
+  uint16_t icon_color = is_setting_node ? TFT_LIGHTGREY : color;
   int16_t button_x = KEY_X - (KEY_W / 2);
   int16_t button_y = (KEY_Y + (b * (KEY_H + KEY_SPACING_Y))) - (KEY_H / 2);
 
@@ -23,14 +24,34 @@ void MenuFunctions::drawMiniMenuButton(int b, int x, bool selected) {
   display_obj.tft.setTextSize(1);
   display_obj.tft.setTextWrap(false);
   display_obj.tft.fillRect(button_x, button_y - 4, KEY_W, KEY_H, background);
+
+  // Draw the menu icon on the left of the row (icon data lives in Assets.h as
+  // menu_icons[icon_index], 22x24 XBM). Only when this entry actually has an icon
+  // assigned and is not the "Back" item (text09). Matches the HAS_FULL_SCREEN path.
+  uint8_t icon_idx = current_menu->list->get(x).icon;
+  bool has_icon = (current_menu->list->get(x).name != text09) && (icon_idx != 255);
+  // Left padding: icon (if present) then a gap before the text.
+  int16_t text_x = button_x + BUTTON_PADDING;
+  if (has_icon) {
+    display_obj.tft.drawXBitmap(button_x + 1,
+                                button_y - (ICON_H / 2),
+                                menu_icons[icon_idx],
+                                ICON_W,
+                                ICON_H,
+                                icon_color,
+                                background);
+    // Shift text to the right of the icon.
+    text_x = button_x + ICON_W + 3;
+  }
+
   display_obj.tft.setTextColor(text_color, background);
-  display_obj.tft.setCursor(button_x + BUTTON_PADDING, button_y + (KEY_H / 2) - 8);
+  display_obj.tft.setCursor(text_x, button_y + (KEY_H / 2) - 8);
 
   // Truncate the label so it never overflows the button's right edge on narrow
   // landscape screens (e.g. XiaoMiao 160px wide). Available text width is the
   // button width minus padding on both sides.
   String label = current_menu->list->get(x).name;
-  int16_t max_w = KEY_W - (BUTTON_PADDING * 2);
+  int16_t max_w = KEY_W - (text_x - button_x) - BUTTON_PADDING;
   if (max_w > 4 && display_obj.tft.textWidth(label) > max_w) {
     // Trim character-by-character until it fits (leave room for "..").
     while (label.length() > 1 && display_obj.tft.textWidth(label + "..") > max_w) {
