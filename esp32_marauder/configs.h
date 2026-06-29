@@ -2440,9 +2440,9 @@
     #define COMMAND_PREFIX "!"
 
     #define KEY_X (SCREEN_WIDTH/2)
-    #define KEY_Y 23
+    #define KEY_Y 26
     #define KEY_W SCREEN_WIDTH
-    #define KEY_H 12
+    #define KEY_H 11
     #define KEY_SPACING_X 0
     #define KEY_SPACING_Y 1
     #define KEY_TEXTSIZE 1
