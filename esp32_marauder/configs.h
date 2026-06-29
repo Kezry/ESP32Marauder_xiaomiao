@@ -575,7 +575,6 @@
     #define HAS_MINI_SCREEN
     //#define HAS_GPS
     #define HAS_SD
-    #define HAS_SEPARATE_SD
     #define USE_SD
     #define HAS_TEMP_SENSOR
     #define HAS_NIMBLE_2
