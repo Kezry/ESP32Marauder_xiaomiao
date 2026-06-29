@@ -28,7 +28,7 @@ bool SDInterface::initSD() {
       // XiaoMiao: SD MISO (GPIO19) is shared with TFT RST. Use SdFat with
       // SHARED_SPI mode + a new SPIClass to avoid DMA conflicts with TFT_eSPI.
       Serial.println(F("XiaoMiao SD: Arduino SD init (GPIO19 released by Display::init)..."));
-      SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
+      SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI);
       delay(10);
       if (!SD.begin(SD_CS)) {
         Serial.println(F("XiaoMiao SD: SD.begin FAILED"));
@@ -57,7 +57,7 @@ bool SDInterface::initSD() {
         this->spiExt = new SPIClass(FSPI);
       #endif
       Serial.println(F("Using external SPI configuration..."));
-      SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
+      SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI);
       if (!SD.begin(SD_CS, *(&SPI))) {
     #elif defined(HAS_C5_SD)
       if (!SD.begin(SD_CS, *_spi)) {
@@ -72,8 +72,8 @@ bool SDInterface::initSD() {
     else {
       this->supported = true;
       #ifdef MARAUDER_XIAOMIAO
-        this->cardType = SD.card()->type();
-        this->cardSizeMB = (SD.card()->sectorCount() * 512) / (1024 * 1024);
+        this->cardType = SD.cardType();
+        this->cardSizeMB = SD.cardSize() / (1024 * 1024);
       #else
         this->cardType = SD.cardType();
         this->cardSizeMB = SD.cardSize() / (1024 * 1024);
