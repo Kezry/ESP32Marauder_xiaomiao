@@ -2091,7 +2091,7 @@
 
       // SD card shares SPI bus with TFT (SPI2: SCK=18, MOSI=23, MISO=19),
       // uses chip select (CS) for time-division multiplexing.
-      #define HAS_SEPARATE_SD
+
       #define SD_SCK   TFT_SCLK
       #define SD_MISO  TFT_MISO
       #define SD_MOSI  TFT_MOSI
