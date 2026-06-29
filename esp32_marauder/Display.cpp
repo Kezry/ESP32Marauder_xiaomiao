@@ -349,8 +349,14 @@ void Display::tftDrawChannelScaleButtons(int set_channel, bool lnd_an) {
   key[CHAN_MINUS_INDEX].setLabelDatum(1, 5, MC_DATUM);
   key[CHAN_PLUS_INDEX].setLabelDatum(1, 5, MC_DATUM);
 
-  key[CHAN_MINUS_INDEX].drawButton();
-  key[CHAN_PLUS_INDEX].drawButton();
+  // Only draw the on-screen +/- channel buttons when the board actually has
+  // external touch buttons (EXT_BUTTON_WIDTH > 0). On boards without them
+  // (e.g. XiaoMiao mini-screen, EXT_BUTTON_WIDTH=0) initButton gets w=h=0 and
+  // drawButton corrupts the scan display area.
+  #if EXT_BUTTON_WIDTH > 0
+    key[CHAN_MINUS_INDEX].drawButton();
+    key[CHAN_PLUS_INDEX].drawButton();
+  #endif
 }
 
 void Display::tftDrawChanHopButton(bool lnd_an, bool en) {
@@ -408,7 +414,9 @@ void Display::tftDrawChanHopButton(bool lnd_an, bool en) {
 
   key[CHAN_HOP_INDEX].setLabelDatum(1, 5, MC_DATUM);
 
-  key[CHAN_HOP_INDEX].drawButton();
+  #if EXT_BUTTON_WIDTH > 0
+    key[CHAN_HOP_INDEX].drawButton();
+  #endif
 }
 
 void Display::tftDrawExitScaleButtons(bool lnd_an) {
@@ -444,7 +452,9 @@ void Display::tftDrawExitScaleButtons(bool lnd_an) {
 
   key[EXIT_BUTTON_INDEX].setLabelDatum(1, 5, MC_DATUM);
 
-  key[EXIT_BUTTON_INDEX].drawButton();
+  #if EXT_BUTTON_WIDTH > 0
+    key[EXIT_BUTTON_INDEX].drawButton();
+  #endif
 }
 
 void Display::twoPartDisplay(String center_text)
