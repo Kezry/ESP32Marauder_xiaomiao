@@ -143,7 +143,7 @@ jobs:
           exec 2>&1  # send stderr (set -x) to the log via tee below
           {
           DATE=$(date -u +%Y%m%d)
-          OUTPUT_BIN=esp32_marauder_v0_0_5_${DATE}_xiaomiao.bin
+          OUTPUT_BIN=esp32_marauder_v0_0_6_${DATE}_xiaomiao.bin
           BUILD_OUT="$GITHUB_WORKSPACE/build_out"
           echo "=== build_out *.bin ==="
           ls -la "$BUILD_OUT"/*.bin 2>&1
@@ -172,13 +172,13 @@ jobs:
           path: ${{ env.artifact_name }}
           retention-days: 14
 
-      # Publish the firmware as GitHub Release v0.0.5 using the built-in GITHUB_TOKEN
+      # Publish the firmware as GitHub Release v0.0.6 using the built-in GITHUB_TOKEN
       # (no user gh auth needed). softprops/action-gh-release is what upstream CI uses.
-      - name: Create Release v0.0.5 with firmware
+      - name: Create Release v0.0.6 with firmware
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v0.0.5
-          name: XiaoMiao v0.0.5
+          tag_name: v0.0.6
+          name: XiaoMiao v0.0.6
           body: |
             ESP32 Marauder firmware for the 学而思小喵掌机 (XiaoMiao).
 
