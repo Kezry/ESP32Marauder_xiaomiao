@@ -230,6 +230,7 @@ class MenuFunctions
     void buttonNotSelected(int b, int x = -1);
     #ifdef HAS_MINI_SCREEN
       void drawMiniMenuButton(int b, int x, bool selected);
+      void drawMiniMenuIcon(int16_t x, int16_t y, const uint8_t *icon, uint16_t fg, uint16_t bg);
     #endif
     //#if (!defined(HAS_ILI9341) && defined(HAS_BUTTONS))
     #ifdef HAS_MINI_KB

@@ -6,6 +6,29 @@
 extern const unsigned char menu_icons[][66];
 
 #ifdef HAS_MINI_SCREEN
+// Draw an XBM icon scaled down by an integer factor (e.g. div=2 -> half size).
+// TFT_eSPI's drawXBitmap has no scaling, and the menu icons are 22x24 which is
+// far taller than an 11px menu row. This samples every Nth source pixel.
+void MenuFunctions::drawMiniMenuIcon(int16_t x, int16_t y, const uint8_t *icon,
+                                     uint16_t fg, uint16_t bg) {
+  const int src_w = ICON_W;     // 22
+  const int src_h = ICON_H + 2; // 24 (66 bytes / 22 = 24 rows)
+  const int div = 2;            // 2:1 downscale -> 11x12, fits an 11px row
+  int dw = src_w / div;         // 11
+  int dh = src_h / div;         // 12
+  for (int sy = 0; sy < dh; sy++) {
+    for (int sx = 0; sx < dw; sx++) {
+      int srcX = sx * div;
+      int srcY = sy * div;
+      // XBM is byte-aligned, 1 bit per pixel, bit=0 means foreground (drawn).
+      uint16_t byte_idx = (srcY * src_w + srcX) / 8;
+      uint8_t bit_idx = (srcY * src_w + srcX) % 8;
+      bool fg_pixel = !(icon[byte_idx] & (1 << bit_idx));
+      display_obj.tft.drawPixel(x + sx, y + sy, fg_pixel ? fg : bg);
+    }
+  }
+}
+
 void MenuFunctions::drawMiniMenuButton(int b, int x, bool selected) {
   if (!current_menu || !current_menu->list || x < 0 || x >= current_menu->list->size())
     return;
@@ -25,23 +48,23 @@ void MenuFunctions::drawMiniMenuButton(int b, int x, bool selected) {
   display_obj.tft.setTextWrap(false);
   display_obj.tft.fillRect(button_x, button_y - 4, KEY_W, KEY_H, background);
 
-  // Draw the menu icon on the left of the row (icon data lives in Assets.h as
-  // menu_icons[icon_index], 22x24 XBM). Only when this entry actually has an icon
-  // assigned and is not the "Back" item (text09). Matches the HAS_FULL_SCREEN path.
+  // Draw the menu icon on the left of the row, scaled to fit the row height.
+  // Icons are 22x24 XBM; drawMiniMenuIcon downscales 2:1 to 11x12 so the icon
+  // never exceeds the KEY_H row height. Only when this entry has an icon and is
+  // not the "Back" item (text09).
   uint8_t icon_idx = current_menu->list->get(x).icon;
   bool has_icon = (current_menu->list->get(x).name != text09) && (icon_idx != 255);
-  // Left padding: icon (if present) then a gap before the text.
+  // Icon width after 2:1 downscale = 11; text starts after it + a small gap.
+  const int mini_icon_w = ICON_W / 2;  // 11
   int16_t text_x = button_x + BUTTON_PADDING;
   if (has_icon) {
-    display_obj.tft.drawXBitmap(button_x + 1,
-                                button_y - (ICON_H / 2),
-                                menu_icons[icon_idx],
-                                ICON_W,
-                                ICON_H,
-                                icon_color,
-                                background);
-    // Shift text to the right of the icon.
-    text_x = button_x + ICON_W + 3;
+    // Vertically centre the 12px-tall icon in the row.
+    this->drawMiniMenuIcon(button_x + 1,
+                           button_y - 1,
+                           menu_icons[icon_idx],
+                           icon_color,
+                           background);
+    text_x = button_x + mini_icon_w + 3;
   }
 
   display_obj.tft.setTextColor(text_color, background);
