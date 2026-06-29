@@ -2109,8 +2109,8 @@
       #define SCREEN_ORIENTATION 3   // 270 deg -> landscape 160x128 (corrects upside-down)
 
       #define CHAR_WIDTH 6
-      #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
-      #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      #define SCREEN_WIDTH  TFT_HEIGHT  // 160 in landscape
+      #define SCREEN_HEIGHT TFT_WIDTH   // 128 in landscape
       #define HEIGHT_1 SCREEN_WIDTH
       #define WIDTH_1  SCREEN_WIDTH
       #define STANDARD_FONT_CHAR_LIMIT (SCREEN_WIDTH/6)
