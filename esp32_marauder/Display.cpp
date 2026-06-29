@@ -110,7 +110,15 @@ bool Display::isTouchHeld(uint16_t threshold) {
 }
 
 void Display::init() {
-  tft.init();
+  // Only send the panel init command sequence once. tft.init() re-initializes the
+  // ST7735 and causes a brief white/garbage flash, which shows up as a white screen
+  // every time orientDisplay() runs (e.g. pressing A to stop a scan and return to
+  // the menu). The panel is already initialized after the first call, so subsequent
+  // calls just need the rotation/cursor reset that the caller performs.
+  if (!display_initialized) {
+    tft.init();
+    display_initialized = true;
+  }
 
   #if defined(HAS_DUAL_BAND) && !defined(MARAUDER_MINI_V3)
     digitalWrite(TFT_BL, HIGH);
