@@ -1,6 +1,10 @@
 #include "SDInterface.h"
 #include "lang_var.h"
 
+#ifdef MARAUDER_XIAOMIAO
+  SdFat SD;
+#endif
+
 #ifdef HAS_C5_SD
   SDInterface::SDInterface(SPIClass* spi, int cs)
     : _spi(spi), _cs(cs) {}
@@ -25,14 +29,14 @@ bool SDInterface::initSD() {
     // the SPI bus so GPIO19 is MISO (input). Use an explicit SPIClass with the correct
     // pins, matching the shared bus (SCK=18, MISO=19, MOSI=23).
     #ifdef MARAUDER_XIAOMIAO
-      Serial.println(F("XiaoMiao SD: reclaiming GPIO19 as MISO..."));
-      gpio_reset_pin(GPIO_NUM_19);
+      Serial.println(F("XiaoMiao SD: init with SdFat SHARED_SPI..."));
+      // Use SdFat with SHARED_SPI — the Arduino SD library fails on this board
+      // because the SD MISO (GPIO19) is shared with TFT RST. SdFat's SHARED_SPI
+      // mode correctly handles SPI bus sharing with TFT_eSPI.
+      SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
       delay(10);
-      SPI.begin(18, 19, 23, -1);
-      delay(10);
-      Serial.println(F("XiaoMiao SD: beginning SD.init at 400kHz..."));
-      if (!SD.begin(SD_CS, SPI, 400000)) {
-        Serial.println(F("XiaoMiao SD: SD.begin FAILED"));
+      if (!SD.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(20), &SPI))) {
+        Serial.println(F("XiaoMiao SD: SdFat begin FAILED"));
     #else
     delay(10);
     #if (defined(MARAUDER_M5STICKC)) || (defined(HAS_CYD_TOUCH)) || (defined(MARAUDER_CARDPUTER)) || (defined(MARAUDER_CARDPUTER_ADV)) || (defined(HAS_SEPARATE_SD))
