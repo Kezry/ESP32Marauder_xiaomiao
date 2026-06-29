@@ -9,12 +9,7 @@
 #ifdef HAS_C5_SD
   #include "FS.h"
 #endif
-#ifdef MARAUDER_XIAOMIAO
-  #include "SdFat.h"
-  extern SdFat SD;
-#else
-  #include "SD.h"
-#endif
+#include "SD.h"
 #ifdef HAS_C5_SD
   #include "SPI.h"
 #endif

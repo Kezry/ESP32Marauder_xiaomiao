@@ -175,13 +175,13 @@ jobs:
           path: ${{ env.artifact_name }}
           retention-days: 14
 
-      # Publish the firmware as GitHub Release v1.0.0 using the built-in GITHUB_TOKEN
+      # Publish the firmware as GitHub Release v1.0.1 using the built-in GITHUB_TOKEN
       # (no user gh auth needed). softprops/action-gh-release is what upstream CI uses.
-      - name: Create Release v1.0.0 with firmware
+      - name: Create Release v1.0.1 with firmware
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v1.0.0
-          name: XiaoMiao v1.0.0
+          tag_name: v1.0.1
+          name: XiaoMiao v1.0.1
           body: |
             ESP32 Marauder firmware for the 学而思小喵掌机 (XiaoMiao).
 
