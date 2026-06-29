@@ -25,11 +25,13 @@ bool SDInterface::initSD() {
     // the SPI bus so GPIO19 is MISO (input). Use an explicit SPIClass with the correct
     // pins, matching the shared bus (SCK=18, MISO=19, MOSI=23).
     #ifdef MARAUDER_XIAOMIAO
-      // GPIO19 is shared between TFT RST and SD MISO. After TFT_eSPI's tft.init()
-      // set GPIO19 as OUTPUT (RST, held HIGH), SD cannot read via MISO.
-      // Re-initialize the SPI bus with explicit pin map so GPIO19 is reclaimed
-      // as MISO (input) before SD.begin().
-      SPI.begin(18, 19, 23, SD_CS);  // sck, miso, mosi, ss — forces pin reconfig
+      // GPIO19 is shared between TFT RST and SD MISO. After tft.init() set it as
+      // OUTPUT(HIGH), we must fully reset the GPIO so the SPI peripheral can take
+      // it over as MISO input. gpio_reset_pin clears the RTC/matrix/IO config.
+      gpio_reset_pin(GPIO_NUM_19);
+      delay(10);
+      // Re-init VSPI with explicit pins so MISO=19 is properly attached.
+      SPI.begin(18, 19, 23, SD_CS);
       delay(10);
       if (!SD.begin(SD_CS, SPI, 4000000)) {
     #else
