@@ -1,32 +1,468 @@
-Sketch uses 1648059 bytes (83%) of program storage space. Maximum is 1966080 bytes.
-Global variables use 77696 bytes (23%) of dynamic memory, leaving 249984 bytes for local variables. Maximum is 327680 bytes.
--rw-r--r-- 1 runner runner 1648208 Jun 28 16:24 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
--rw-r--r-- 1 runner runner   23664 Jun 28 16:22 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
--rw-r--r-- 1 runner runner 4194304 Jun 28 16:24 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.merged.bin
--rw-r--r-- 1 runner runner    3072 Jun 28 16:24 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
+In file included from /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/settings.h:6,
+                 from /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Buffer.h:8,
+                 from /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Buffer.cpp:1:
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:103:34: note: in expansion of macro 'SCREEN_WIDTH'
+  103 |     uint8_t current_banner_pos = SCREEN_WIDTH;
+      |                                  ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2120:20: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2120 |       #define YMAX SCREEN_HEIGHT
+      |                    ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:112:22: note: in expansion of macro 'YMAX'
+  112 |     uint16_t yDraw = YMAX - BOT_FIXED_AREA - TEXT_HEIGHT;
+      |                      ^~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2117:28: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2117 |       #define TEXT_HEIGHT (SCREEN_HEIGHT/10)
+      |                            ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:112:46: note: in expansion of macro 'TEXT_HEIGHT'
+  112 |     uint16_t yDraw = YMAX - BOT_FIXED_AREA - TEXT_HEIGHT;
+      |                                              ^~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2120:20: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2120 |       #define YMAX SCREEN_HEIGHT
+      |                    ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:120:22: note: in expansion of macro 'YMAX'
+  120 |     uint16_t yArea = YMAX - TOP_FIXED_AREA_2 - BOT_FIXED_AREA;
+      |                      ^~~~
+In file included from /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/CommandLine.h:6,
+                 from /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/CommandLine.cpp:1:
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:103:34: note: in expansion of macro 'SCREEN_WIDTH'
+  103 |     uint8_t current_banner_pos = SCREEN_WIDTH;
+      |                                  ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2120:20: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2120 |       #define YMAX SCREEN_HEIGHT
+      |                    ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:112:22: note: in expansion of macro 'YMAX'
+  112 |     uint16_t yDraw = YMAX - BOT_FIXED_AREA - TEXT_HEIGHT;
+      |                      ^~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2117:28: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2117 |       #define TEXT_HEIGHT (SCREEN_HEIGHT/10)
+      |                            ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:112:46: note: in expansion of macro 'TEXT_HEIGHT'
+  112 |     uint16_t yDraw = YMAX - BOT_FIXED_AREA - TEXT_HEIGHT;
+      |                                              ^~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2120:20: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2120 |       #define YMAX SCREEN_HEIGHT
+      |                    ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:120:22: note: in expansion of macro 'YMAX'
+  120 |     uint16_t yArea = YMAX - TOP_FIXED_AREA_2 - BOT_FIXED_AREA;
+      |                      ^~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/WiFiScan.h:815:34: note: in expansion of macro 'SCREEN_WIDTH'
+  815 |         int16_t _analyzer_values[SCREEN_WIDTH];
+      |                                  ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/WiFiScan.h:816:39: note: in expansion of macro 'SCREEN_WIDTH'
+  816 |         int16_t _temp_analyzer_values[SCREEN_WIDTH];
+      |                                       ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/MenuFunctions.h:215:47: note: in expansion of macro 'SCREEN_WIDTH'
+  215 |     float graphScaleCheck(const int16_t array[SCREEN_WIDTH]);
+      |                                               ^~~~~~~~~~~~
+In file included from /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:6,
+                 from /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:1:
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:103:34: note: in expansion of macro 'SCREEN_WIDTH'
+  103 |     uint8_t current_banner_pos = SCREEN_WIDTH;
+      |                                  ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2120:20: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2120 |       #define YMAX SCREEN_HEIGHT
+      |                    ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:112:22: note: in expansion of macro 'YMAX'
+  112 |     uint16_t yDraw = YMAX - BOT_FIXED_AREA - TEXT_HEIGHT;
+      |                      ^~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2117:28: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2117 |       #define TEXT_HEIGHT (SCREEN_HEIGHT/10)
+      |                            ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:112:46: note: in expansion of macro 'TEXT_HEIGHT'
+  112 |     uint16_t yDraw = YMAX - BOT_FIXED_AREA - TEXT_HEIGHT;
+      |                                              ^~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2120:20: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2120 |       #define YMAX SCREEN_HEIGHT
+      |                    ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:120:22: note: in expansion of macro 'YMAX'
+  120 |     uint16_t yArea = YMAX - TOP_FIXED_AREA_2 - BOT_FIXED_AREA;
+      |                      ^~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp: In member function 'void Display::tftDrawGraphObjects(byte)':
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2114:24: note: in expansion of macro 'SCREEN_WIDTH'
+ 2114 |       #define HEIGHT_1 SCREEN_WIDTH
+      |                        ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:206:25: note: in expansion of macro 'HEIGHT_1'
+  206 |   tft.drawFastHLine(10, HEIGHT_1 - 1, 310, TFT_WHITE); // x axis
+      |                         ^~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp: In member function 'void Display::tftDrawChannelScaleButtons(int, bool)':
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2125:33: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2125 |       #define STATUS_BAR_WIDTH (SCREEN_HEIGHT/16)
+      |                                 ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:329:28: note: in expansion of macro 'STATUS_BAR_WIDTH'
+  329 |                           (STATUS_BAR_WIDTH * 2) + (EXT_BUTTON_WIDTH / 2), // x, y, w, h, outline, fill, text
+      |                            ^~~~~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp: In member function 'void Display::tftDrawChanHopButton(bool, bool)':
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2125:33: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2125 |       #define STATUS_BAR_WIDTH (SCREEN_HEIGHT/16)
+      |                                 ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:387:26: note: in expansion of macro 'STATUS_BAR_WIDTH'
+  387 |                         (STATUS_BAR_WIDTH * 2) + (EXT_BUTTON_WIDTH / 2), // x, y, w, h, outline, fill, text
+      |                          ^~~~~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2125:33: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2125 |       #define STATUS_BAR_WIDTH (SCREEN_HEIGHT/16)
+      |                                 ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:398:26: note: in expansion of macro 'STATUS_BAR_WIDTH'
+  398 |                         (STATUS_BAR_WIDTH * 2) + (EXT_BUTTON_WIDTH / 2), // x, y, w, h, outline, fill, text
+      |                          ^~~~~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp: In member function 'void Display::tftDrawExitScaleButtons(bool)':
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2125:33: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2125 |       #define STATUS_BAR_WIDTH (SCREEN_HEIGHT/16)
+      |                                 ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:435:24: note: in expansion of macro 'STATUS_BAR_WIDTH'
+  435 |                       (STATUS_BAR_WIDTH * 2) + (EXT_BUTTON_WIDTH / 2), // x, y, w, h, outline, fill, text
+      |                        ^~~~~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp: In member function 'void Display::twoPartDisplay(String)':
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2114:24: note: in expansion of macro 'SCREEN_WIDTH'
+ 2114 |       #define HEIGHT_1 SCREEN_WIDTH
+      |                        ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:453:21: note: in expansion of macro 'HEIGHT_1'
+  453 |   tft.fillRect(0,16,HEIGHT_1,144, TFT_YELLOW);
+      |                     ^~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp: In member function 'void Display::touchToExit()':
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2114:24: note: in expansion of macro 'SCREEN_WIDTH'
+ 2114 |       #define HEIGHT_1 SCREEN_WIDTH
+      |                        ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:468:21: note: in expansion of macro 'HEIGHT_1'
+  468 |   tft.fillRect(0,32,HEIGHT_1,16, TFT_LIGHTGREY);
+      |                     ^~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp: In member function 'void Display::processAndPrintString(TFT_eSPI&, const String&)':
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:528:15: note: in expansion of macro 'SCREEN_WIDTH'
+  528 |   int count = SCREEN_WIDTH / CHAR_WIDTH;
+      |               ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp: In member function 'void Display::displayBuffer(bool)':
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:582:45: note: in expansion of macro 'SCREEN_HEIGHT'
+  582 |             tft.setCursor(xPos, (i * 12) + (SCREEN_HEIGHT / 6));
+      |                                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp: In member function 'void Display::showCenterText(const char*, int, bool)':
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:604:20: note: in expansion of macro 'SCREEN_WIDTH'
+  604 |     tft.setCursor((SCREEN_WIDTH - (len * (6 * BANNER_TEXT_SIZE))) / 2, y);
+      |                    ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:606:20: note: in expansion of macro 'SCREEN_WIDTH'
+  606 |     tft.setCursor((SCREEN_WIDTH - (len * 6)) / 2, y);
+      |                    ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp: In member function 'void Display::buildBanner(String, int)':
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2117:28: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2117 |       #define TEXT_HEIGHT (SCREEN_HEIGHT/10)
+      |                            ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:620:11: note: in expansion of macro 'TEXT_HEIGHT'
+  620 |   int h = TEXT_HEIGHT;
+      |           ^~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.cpp:627:43: note: in expansion of macro 'SCREEN_WIDTH'
+  627 |   this->tft.fillRect(0, STATUS_BAR_WIDTH, SCREEN_WIDTH, TEXT_HEIGHT + (banner_y - STATUS_BAR_WIDTH), TFT_BLACK);
+      |                                           ^~~~~~~~~~~~
+In file included from /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/EvilPortal.h:11,
+                 from /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/EvilPortal.cpp:1:
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: error: 'SCREEN_WIDTH' was not declared in this scope
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:103:34: note: in expansion of macro 'SCREEN_WIDTH'
+  103 |     uint8_t current_banner_pos = SCREEN_WIDTH;
+      |                                  ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2120:20: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2120 |       #define YMAX SCREEN_HEIGHT
+      |                    ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:112:22: note: in expansion of macro 'YMAX'
+  112 |     uint16_t yDraw = YMAX - BOT_FIXED_AREA - TEXT_HEIGHT;
+      |                      ^~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2117:28: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2117 |       #define TEXT_HEIGHT (SCREEN_HEIGHT/10)
+      |                            ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:112:46: note: in expansion of macro 'TEXT_HEIGHT'
+  112 |     uint16_t yDraw = YMAX - BOT_FIXED_AREA - TEXT_HEIGHT;
+      |                                              ^~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2112:29: error: 'SCREEN_HEIGHT' was not declared in this scope
+ 2112 |       #define SCREEN_WIDTH  SCREEN_HEIGHT  // 160 in landscape
+      |                             ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2113:29: note: in expansion of macro 'SCREEN_WIDTH'
+ 2113 |       #define SCREEN_HEIGHT SCREEN_WIDTH   // 128 in landscape
+      |                             ^~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/configs.h:2120:20: note: in expansion of macro 'SCREEN_HEIGHT'
+ 2120 |       #define YMAX SCREEN_HEIGHT
+      |                    ^~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Display.h:120:22: note: in expansion of macro 'YMAX'
+  120 |     uint16_t yArea = YMAX - TOP_FIXED_AREA_2 - BOT_FIXED_AREA;
+      |                      ^~~~
+
+[92mUsed library[0m        [92mVersion[0m [90mPath[0m
+[93mWiFi[0m                3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/WiFi[0m
+[93mNetworking[0m          3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/Network[0m
+[93mArduinoJson[0m         6.18.2  [90m/home/runner/Arduino/libraries/ArduinoJson[0m
+[93mNimBLE-Arduino[0m      2.3.8   [90m/home/runner/Arduino/libraries/NimBLE-Arduino[0m
+[93mESP32Ping[0m           1.6     [90m/home/runner/Arduino/libraries/ESP32Ping[0m
+[93mESP Async WebServer[0m 2.10.4  [90m/home/runner/Arduino/libraries/ESPAsyncWebServer[0m
+[93mFS[0m                  3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/FS[0m
+[93mAsync TCP[0m           3.4.8   [90m/home/runner/Arduino/libraries/AsyncTCP[0m
+[93mDNSServer[0m           3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/DNSServer[0m
+[93mESP32 Async UDP[0m     3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/AsyncUDP[0m
+[93mSPIFFS[0m              3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/SPIFFS[0m
+[93mLinkedList[0m          1.3.3   [90m/home/runner/Arduino/libraries/LinkedList[0m
+[93mSPI[0m                 3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/SPI[0m
+[93mTFT_eSPI[0m            2.5.34  [90m/home/runner/Arduino/libraries/TFT_eSPI[0m
+[93mSD[0m                  3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/SD[0m
+[93mUpdate[0m              3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/Update[0m
+[93mWire[0m                3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/Wire[0m
+[93mPreferences[0m         3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/Preferences[0m
+[93mMicroNMEA[0m           2.0.6   [90m/home/runner/Arduino/libraries/MicroNMEA[0m
+[93mEspSoftwareSerial[0m   8.1.0   [90m/home/runner/Arduino/libraries/EspSoftwareSerial[0m
+
+[92mUsed platform[0m [92mVersion[0m [90mPath[0m
+[93mesp32:esp32[0m   3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4[0m
+Error during build: exit status 1
+-rw-r--r-- 1 runner runner 23664 Jun 29 00:19 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
 ++ date -u +%Y%m%d
-+ DATE=20260628
-+ OUTPUT_BIN=esp32_marauder_v0_0_2_20260628_xiaomiao.bin
++ DATE=20260629
++ OUTPUT_BIN=esp32_marauder_v0_0_2_20260629_xiaomiao.bin
 + BUILD_OUT=/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out
 + echo '=== build_out *.bin ==='
 === build_out *.bin ===
-+ ls -la /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.merged.bin /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
--rw-r--r-- 1 runner runner 1648208 Jun 28 16:24 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
--rw-r--r-- 1 runner runner   23664 Jun 28 16:22 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
--rw-r--r-- 1 runner runner 4194304 Jun 28 16:24 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.merged.bin
--rw-r--r-- 1 runner runner    3072 Jun 28 16:24 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
++ ls -la /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
+-rw-r--r-- 1 runner runner 23664 Jun 29 00:19 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
 + INPUT_BIN=/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
 + '[' '!' -f /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin ']'
-+ '[' -z /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin ']'
-+ '[' '!' -f /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin ']'
-+ cp /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin esp32_marauder_v0_0_2_20260628_xiaomiao.bin
-+ ls -la esp32_marauder_v0_0_2_20260628_xiaomiao.bin
--rw-r--r-- 1 runner runner 1648208 Jun 28 16:24 esp32_marauder_v0_0_2_20260628_xiaomiao.bin
-+ echo artifact_name=esp32_marauder_v0_0_2_20260628_xiaomiao.bin
-+ cp /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin bootloader_xiaomiao.bin
-+ cp /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin partitions_xiaomiao.bin
-+ ls -la bootloader_xiaomiao.bin partitions_xiaomiao.bin
--rw-r--r-- 1 runner runner 23664 Jun 28 16:24 bootloader_xiaomiao.bin
--rw-r--r-- 1 runner runner  3072 Jun 28 16:24 partitions_xiaomiao.bin
++ echo 'expected bin missing, searching build_out...'
+expected bin missing, searching build_out...
+++ find /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out -name '*.ino.bin' -type f
+++ head -1
++ INPUT_BIN=
++ '[' -z '' ']'
++ echo 'NO BIN FOUND'
+NO BIN FOUND
++ ls -laR /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out
++ head -50
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out:
+total 1216
+drwxr-xr-x  4 runner runner    4096 Jun 29 00:19 .
+drwxr-xr-x 23 runner runner    4096 Jun 29 00:19 ..
+-rw-r--r--  1 runner runner     759 Jun 29 00:19 build.options.json
+-rw-r--r--  1 runner runner       0 Jun 29 00:19 build_opt.h
+-rw-r--r--  1 runner runner   23664 Jun 29 00:19 esp32_marauder.ino.bootloader.bin
+-rw-r--r--  1 runner runner       0 Jun 29 00:19 file_opts
+-rw-r--r--  1 runner runner 1079850 Jun 29 00:19 includes.cache
+drwxr-xr-x 20 runner runner    4096 Jun 29 00:19 libraries
+-rw-r--r--  1 runner runner    1492 Jun 29 00:19 libraries.cache
+-rw-r--r--  1 runner runner     304 Jun 29 00:19 partitions.csv
+-rw-r--r--  1 runner runner  110071 Jun 29 00:19 sdkconfig
+drwxr-xr-x  3 runner runner    4096 Jun 29 00:19 sketch
+
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/libraries:
+total 80
+drwxr-xr-x 20 runner runner 4096 Jun 29 00:19 .
+drwxr-xr-x  4 runner runner 4096 Jun 29 00:19 ..
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 AsyncTCP
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 AsyncUDP
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 DNSServer
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 ESP32Ping
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 ESPAsyncWebServer
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 EspSoftwareSerial
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 FS
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 MicroNMEA
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 Network
+drwxr-xr-x  3 runner runner 4096 Jun 29 00:19 NimBLE-Arduino
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 Preferences
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 SD
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 SPI
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 SPIFFS
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 TFT_eSPI
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 Update
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 WiFi
+drwxr-xr-x  2 runner runner 4096 Jun 29 00:19 Wire
+
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/libraries/AsyncTCP:
+total 36
+drwxr-xr-x  2 runner runner  4096 Jun 29 00:19 .
+drwxr-xr-x 20 runner runner  4096 Jun 29 00:19 ..
+-rw-r--r--  1 runner runner 27487 Jun 29 00:19 AsyncTCP.cpp.libsdetect.d
+
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/libraries/AsyncUDP:
+total 36
+drwxr-xr-x  2 runner runner  4096 Jun 29 00:19 .
+drwxr-xr-x 20 runner runner  4096 Jun 29 00:19 ..
+-rw-r--r--  1 runner runner 28487 Jun 29 00:19 AsyncUDP.cpp.libsdetect.d
+
+ls: write error: Broken pipe
++ exit 1
 
 === artifact search (rename step) ===
