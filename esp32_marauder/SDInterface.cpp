@@ -30,12 +30,12 @@ bool SDInterface::initSD() {
     // pins, matching the shared bus (SCK=18, MISO=19, MOSI=23).
     #ifdef MARAUDER_XIAOMIAO
       // XiaoMiao: SD MISO (GPIO19) is shared with TFT RST. Use SdFat with
-      // SHARED_SPI mode (same as the NES emulator project on this hardware).
-      // SdFat correctly handles the shared SPI bus; Arduino SD library does not.
-      Serial.println(F("XiaoMiao SD: SdFat SHARED_SPI init..."));
-      SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
+      // DEDICATED_SPI mode + a new SPIClass to avoid DMA conflicts with TFT_eSPI.
+      Serial.println(F("XiaoMiao SD: SdFat DEDICATED_SPI init..."));
+      this->spiExt = new SPIClass(VSPI);
+      this->spiExt->begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
       delay(10);
-      if (!SD.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(20), &SPI))) {
+      if (!SD.begin(SdSpiConfig(SD_CS, DEDICATED_SPI, SD_SCK_MHZ(20), this->spiExt))) {
         Serial.println(F("XiaoMiao SD: SdFat init FAILED"));
     #else
     delay(10);
