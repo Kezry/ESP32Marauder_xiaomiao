@@ -197,17 +197,21 @@ jobs:
 
       # Always commit the compile output + rename diagnostics back to the branch so
       # failures are readable via plain git (no gh auth needed).
-      - name: Commit log to branch
+      - name: Commit log + firmware to branch
         if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          mkdir -p doc
+          mkdir -p doc Release\ Bins
           cp /tmp/compile_output.log doc/last_compile_error.log
           {
             echo ""
             echo "=== artifact search (rename step) ==="
           } >> doc/last_compile_error.log
-          git add doc/last_compile_error.log
-          git commit -m "Update compile log (CI run ${{ github.run_id }})" || echo "nothing to commit"
+          # Also commit the built firmware bin so it can be pulled via git
+          if [ -f "${{ env.artifact_name }}" ]; then
+            cp "${{ env.artifact_name }}" "Release Bins/"
+          fi
+          git add doc/last_compile_error.log "Release Bins/" || true
+          git commit -m "Update compile log + firmware (CI run ${{ github.run_id }})" || echo "nothing to commit"
           git push || echo "push skipped"
