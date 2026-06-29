@@ -28,10 +28,10 @@ bool SDInterface::initSD() {
       Serial.println(F("XiaoMiao SD: reclaiming GPIO19 as MISO..."));
       gpio_reset_pin(GPIO_NUM_19);
       delay(10);
-      SPI.begin(18, 19, 23, SD_CS);
+      SPI.begin(18, 19, 23, -1);
       delay(10);
-      Serial.println(F("XiaoMiao SD: beginning SD.init..."));
-      if (!SD.begin(SD_CS, SPI, 4000000)) {
+      Serial.println(F("XiaoMiao SD: beginning SD.init at 400kHz..."));
+      if (!SD.begin(SD_CS, SPI, 400000)) {
         Serial.println(F("XiaoMiao SD: SD.begin FAILED"));
     #else
     delay(10);
