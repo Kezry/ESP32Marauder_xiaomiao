@@ -2428,10 +2428,9 @@
   #endif
 
   #ifdef MARAUDER_XIAOMIAO
-  #ifdef MARAUDER_XIAOMIAO
     // Landscape menu layout (160 wide x 128 tall visible after 270deg rotation).
-    // Full-size 22x24 icons (no scaling - scaling turns the thin-line icons
-    // last row bottom = 128 (fills the screen exactly).
+    // Full-size 22x24 icons (no scaling - scaling destroys the thin-line shapes).
+    // 5 rows/page, KEY_H=22 fits the 24px icon (2px overflow OK), last row bottom <= 128.
     #define BANNER_TIME 50
 
     #define COMMAND_PREFIX "!"
