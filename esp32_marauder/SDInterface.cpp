@@ -25,12 +25,16 @@ bool SDInterface::initSD() {
     // the SPI bus so GPIO19 is MISO (input). Use an explicit SPIClass with the correct
     // pins, matching the shared bus (SCK=18, MISO=19, MOSI=23).
     #ifdef MARAUDER_XIAOMIAO
-      // GPIO19 is shared between TFT RST and SD MISO. Reclaim it as SPI MISO input
-      // before SD init. Use SPI (the global bus that TFT_eSPI already set up on
-      // VSPI pins SCK=18/MISO=19/MOSI=23) with CS=22 for the SD card.
+      // GPIO19 is shared between TFT RST and SD MISO. After TFT_eSPI configured
+      // GPIO19 as RST (output), we must reclaim it as VSPI MISO input. Use the
+      // ESP32 GPIO matrix to route GPIO19 -> VSPI Q (MISO) signal, plus pinMode INPUT.
+      #include "esp_rom_gpio.h"
       pinMode(TFT_MISO, INPUT);
+      gpio_pad_select_gpio(TFT_MISO);
+      esp_rom_gpio_connect_in_signal(TFT_MISO, VSPIQ_IN_IDX, 0);
       digitalWrite(SD_CS, HIGH);
       delay(10);
+      SPI.begin();
       if (!SD.begin(SD_CS, SPI, 4000000)) {
     #else
     delay(10);
