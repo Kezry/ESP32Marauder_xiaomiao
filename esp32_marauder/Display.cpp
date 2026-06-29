@@ -600,7 +600,6 @@ void Display::displayBuffer(bool do_clear)
         if (row_h < 1) row_h = 12;
         int y = STATUS_BAR_WIDTH * 2;          // first row below the status/title band
         int y_max = SCREEN_HEIGHT;             // bottom of visible area
-        bool prev_wrap = tft.getTextWrap();
         tft.setTextWrap(true);
         for (int i = 0; i < this->screen_buffer->size(); i++) {
           String entry = this->screen_buffer->get(i);
@@ -611,7 +610,7 @@ void Display::displayBuffer(bool do_clear)
           this->processAndPrintString(tft, entry);
           y += rows * row_h;
         }
-        tft.setTextWrap(prev_wrap);
+        tft.setTextWrap(false);
       //#endif
 
       print_count--;
