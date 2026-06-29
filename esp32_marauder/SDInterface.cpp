@@ -2,6 +2,7 @@
 #include "lang_var.h"
 #ifdef MARAUDER_XIAOMIAO
   #include "SdFat.h"
+  SdFat SD;
 #endif
 
 #ifdef HAS_C5_SD
@@ -28,27 +29,14 @@ bool SDInterface::initSD() {
     // the SPI bus so GPIO19 is MISO (input). Use an explicit SPIClass with the correct
     // pins, matching the shared bus (SCK=18, MISO=19, MOSI=23).
     #ifdef MARAUDER_XIAOMIAO
-      // XiaoMiao: SD MISO (GPIO19) is shared with TFT RST. Arduino SD library
-      // fails because TFT_eSPI leaves GPIO19 configured as output. SdFat handles
-      // the shared SPI bus correctly. Strategy: use SdFat to initialize the SD
-      // card into SPI mode (this also reconfigures GPIO19 as MISO), then let
-      // Arduino SD take over for file operations.
-      Serial.println(F("XiaoMiao SD: phase 1 SdFat SHARED_SPI init..."));
+      // XiaoMiao: SD MISO (GPIO19) is shared with TFT RST. Use SdFat with
+      // SHARED_SPI mode (same as the NES emulator project on this hardware).
+      // SdFat correctly handles the shared SPI bus; Arduino SD library does not.
+      Serial.println(F("XiaoMiao SD: SdFat SHARED_SPI init..."));
       SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
       delay(10);
-      {
-        SdFat sdfat;
-        if (!sdfat.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(20), &SPI))) {
-          Serial.println(F("XiaoMiao SD: SdFat init FAILED"));
-          Serial.println(F("Failed to mount SD Card"));
-          this->supported = false;
-          return false;
-        }
-        Serial.println(F("XiaoMiao SD: SdFat OK, handing off to Arduino SD..."));
-      }
-      // Now Arduino SD should be able to mount (card is in SPI mode, GPIO19 reclaimed)
-      if (!SD.begin(SD_CS, SPI, 20000000)) {
-        Serial.println(F("XiaoMiao SD: Arduino SD mount FAILED after SdFat"));
+      if (!SD.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(20), &SPI))) {
+        Serial.println(F("XiaoMiao SD: SdFat init FAILED"));
     #else
     delay(10);
     #if (defined(MARAUDER_M5STICKC)) || (defined(HAS_CYD_TOUCH)) || (defined(MARAUDER_CARDPUTER)) || (defined(MARAUDER_CARDPUTER_ADV)) || (defined(HAS_SEPARATE_SD))
@@ -88,9 +76,13 @@ bool SDInterface::initSD() {
     }
     else {
       this->supported = true;
-      this->cardType = SD.cardType();
-
-      this->cardSizeMB = SD.cardSize() / (1024 * 1024);
+      #ifdef MARAUDER_XIAOMIAO
+        this->cardType = SD.card()->type();
+        this->cardSizeMB = (SD.card()->sectorCount() * 512) / (1024 * 1024);
+      #else
+        this->cardType = SD.cardType();
+        this->cardSizeMB = SD.cardSize() / (1024 * 1024);
+      #endif
     
       if (this->supported) {
         const int NUM_DIGITS = log10(this->cardSizeMB) + 1;
@@ -122,14 +114,22 @@ bool SDInterface::initSD() {
   #endif
 }
 
+#ifdef MARAUDER_XIAOMIAO
+FsFile SDInterface::getFile(String path) {
+  if (this->supported) {
+    FsFile file = SD.open(path, O_READ);
+    return file;
+  }
+  return FsFile();
+}
+#else
 File SDInterface::getFile(String path) {
   if (this->supported) {
     File file = SD.open(path, FILE_READ);
-
-    //if (file)
     return file;
   }
 }
+#endif
 
 bool SDInterface::removeFile(String file_path) {
   if (SD.remove(file_path))
@@ -140,49 +140,73 @@ bool SDInterface::removeFile(String file_path) {
 
 void SDInterface::listDirToLinkedList(LinkedList<String>* file_names, String str_dir, String ext) {
   if (this->supported) {
-    File dir = SD.open(str_dir);
-    while (true)
-    {
-      File entry = dir.openNextFile();
-      if (!entry)
+    #ifdef MARAUDER_XIAOMIAO
+      FsFile dir = SD.open(str_dir);
+      while (true)
       {
-        break;
-      }
-
-      if (entry.isDirectory())
-        continue;
-
-      String file_name = entry.name();
-      if (ext != "") {
-        if (file_name.endsWith(ext)) {
+        FsFile entry = dir.openNextFile();
+        if (!entry)
+          break;
+        if (entry.isDirectory())
+          continue;
+        char namebuf[64];
+        entry.getName(namebuf, sizeof(namebuf));
+        String file_name = String(namebuf);
+        if (ext != "") {
+          if (file_name.endsWith(ext))
+            file_names->add(file_name);
+        } else
           file_names->add(file_name);
-        }
       }
-      else
-        file_names->add(file_name);
-    }
+    #else
+      File dir = SD.open(str_dir);
+      while (true)
+      {
+        File entry = dir.openNextFile();
+        if (!entry)
+          break;
+        if (entry.isDirectory())
+          continue;
+        String file_name = entry.name();
+        if (ext != "") {
+          if (file_name.endsWith(ext))
+            file_names->add(file_name);
+        } else
+          file_names->add(file_name);
+      }
+    #endif
   }
 }
 
 void SDInterface::listDir(String str_dir){
   if (this->supported) {
-    File dir = SD.open(str_dir);
-    while (true)
-    {
-      File entry = dir.openNextFile();
-      if (! entry)
+    #ifdef MARAUDER_XIAOMIAO
+      FsFile dir = SD.open(str_dir);
+      while (true)
       {
-        break;
+        FsFile entry = dir.openNextFile();
+        if (!entry)
+          break;
+        char namebuf[64];
+        entry.getName(namebuf, sizeof(namebuf));
+        Serial.print(namebuf);
+        Serial.print("\t");
+        Serial.println(entry.size());
+        entry.close();
       }
-      //for (uint8_t i = 0; i < numTabs; i++)
-      //{
-      //  Serial.print('\t');
-      //}
-      Serial.print(entry.name());
-      Serial.print("\t");
-      Serial.println(entry.size());
-      entry.close();
-    }
+    #else
+      File dir = SD.open(str_dir);
+      while (true)
+      {
+        File entry = dir.openNextFile();
+        if (! entry)
+          break;
+        Serial.print(entry.name());
+        Serial.print("\t");
+        Serial.println(entry.size());
+        entry.close();
+      }
+    #endif
   }
 }
 
@@ -200,7 +224,11 @@ void SDInterface::runUpdate(String file_name) {
     display_obj.tft.println("Opening " + file_name + "...");
   #endif
 
-  File updateBin = SD.open(file_name);
+  #ifdef MARAUDER_XIAOMIAO
+    FsFile updateBin = SD.open(file_name, O_READ);
+  #else
+    File updateBin = SD.open(file_name);
+  #endif
 
   if (updateBin) {
     if(updateBin.isDirectory()){

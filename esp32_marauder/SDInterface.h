@@ -9,7 +9,12 @@
 #ifdef HAS_C5_SD
   #include "FS.h"
 #endif
-#include "SD.h"
+#ifdef MARAUDER_XIAOMIAO
+  #include "SdFat.h"
+  extern SdFat SD;
+#else
+  #include "SD.h"
+#endif
 #ifdef HAS_C5_SD
   #include "SPI.h"
 #endif
@@ -63,7 +68,11 @@ class SDInterface {
 
     void listDir(String str_dir);
     void listDirToLinkedList(LinkedList<String>* file_names, String str_dir = "/", String ext = "");
-    File getFile(String path);
+    #ifdef MARAUDER_XIAOMIAO
+      FsFile getFile(String path);
+    #else
+      File getFile(String path);
+    #endif
     void runUpdate(String file_name = "");
     void performUpdate(Stream &updateSource, size_t updateSize);
     bool removeFile(String file_path);
