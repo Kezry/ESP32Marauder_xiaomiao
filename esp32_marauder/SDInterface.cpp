@@ -25,12 +25,13 @@ bool SDInterface::initSD() {
     // the SPI bus so GPIO19 is MISO (input). Use an explicit SPIClass with the correct
     // pins, matching the shared bus (SCK=18, MISO=19, MOSI=23).
     #ifdef MARAUDER_XIAOMIAO
-      pinMode(TFT_MISO, INPUT);  // reclaim GPIO19 as MISO input
-      digitalWrite(SD_CS, HIGH); // deselect SD
+      // GPIO19 is shared between TFT RST and SD MISO. Reclaim it as SPI MISO input
+      // before SD init. Use SPI (the global bus that TFT_eSPI already set up on
+      // VSPI pins SCK=18/MISO=19/MOSI=23) with CS=22 for the SD card.
+      pinMode(TFT_MISO, INPUT);
+      digitalWrite(SD_CS, HIGH);
       delay(10);
-      this->spiExt = new SPIClass(VSPI);
-      this->spiExt->begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
-      if (!SD.begin(SD_CS, *(this->spiExt))) {
+      if (!SD.begin(SD_CS, SPI, 4000000)) {
     #else
     delay(10);
     #if (defined(MARAUDER_M5STICKC)) || (defined(HAS_CYD_TOUCH)) || (defined(MARAUDER_CARDPUTER)) || (defined(MARAUDER_CARDPUTER_ADV)) || (defined(HAS_SEPARATE_SD))
