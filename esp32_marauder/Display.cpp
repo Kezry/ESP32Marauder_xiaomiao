@@ -537,26 +537,19 @@ void Display::processAndPrintString(TFT_eSPI& tft, const String& originalString)
     }
   }
 
-  // Characters that fit across the visible (post-rotation) width. On landscape
-  // boards like XiaoMiao, SCREEN_WIDTH (160) != portrait SCREEN_WIDTH (128); using
-  // SCREEN_WIDTH here left the right portion of each line uncleared/overflowing.
+  // Characters that fit across the visible (post-rotation) width.
   int count = SCREEN_WIDTH / CHAR_WIDTH;
 
-  // Truncate the line so it never draws past the right edge. With setTextWrap(false)
-  // an over-length line (e.g. a long probe ESSID "aa:bb:.. -> VeryLongNetworkName")
-  // would paint off-screen at x>160. Clip to the visible char count.
-  if ((int)new_string.length() > count)
-    new_string.remove(count);
+  // Clear the background for as many rows as this string will occupy (it may
+  // wrap when setTextWrap is on), so residue from a previous longer line is gone.
+  int rows = ((int)new_string.length() + count - 1) / count;
+  if (rows < 1) rows = 1;
+  tft.fillRect(0, tft.getCursorY(), SCREEN_WIDTH, rows * TEXT_HEIGHT, background_color);
 
-  char buf[count + 1];
-  memset(buf, ' ', count);
-  buf[count] = '\0';
-
-  String spaces(buf);
-
-  // Set text color and print the string
+  // Set text color and print the string. Text wrap is controlled by the caller
+  // (displayBuffer enables it so long lines wrap instead of being clipped).
   tft.setTextColor(text_color, background_color);
-  tft.print(new_string + spaces);
+  tft.print(new_string);
 }
 
 void Display::displayBuffer(bool do_clear)
@@ -596,18 +589,29 @@ void Display::displayBuffer(bool do_clear)
 
         screen_buffer->add(display_buffer->shift());
 
+        // Render the buffer with automatic line wrapping so long entries (e.g. a
+        // probe line "aa:bb:cc:dd:ee:ff -> VeryLongESSID") wrap onto multiple rows
+        // instead of being clipped at the right edge. Y advances by the number of
+        // rows each entry actually consumed, and we stop once the visible area is
+        // full — so content is never drawn past the bottom (128) either.
+        int chars_per_row = SCREEN_WIDTH / CHAR_WIDTH;
+        if (chars_per_row < 1) chars_per_row = 1;
+        int row_h = TEXT_HEIGHT;
+        if (row_h < 1) row_h = 12;
+        int y = STATUS_BAR_WIDTH * 2;          // first row below the status/title band
+        int y_max = SCREEN_HEIGHT;             // bottom of visible area
+        bool prev_wrap = tft.getTextWrap();
+        tft.setTextWrap(true);
         for (int i = 0; i < this->screen_buffer->size(); i++) {
-          #ifdef HAS_TOUCH
-            tft.setCursor(xPos, (i * 12) + ((SCREEN_HEIGHT / 6) * 1.3));
-          #else
-            // Stack MAX_SCREEN_BUFFER rows inside the visible height below the
-            // status/title band. Row pitch 12 with start y=STATUS_BAR_WIDTH*2 keeps
-            // all rows within 128 (last row bottom = start + (N-1)*12 + 12 <= 128).
-            tft.setCursor(xPos, (i * 12) + (STATUS_BAR_WIDTH * 2));
-          #endif
-
-          this->processAndPrintString(tft, this->screen_buffer->get(i));
+          String entry = this->screen_buffer->get(i);
+          int rows = ((int)entry.length() + chars_per_row - 1) / chars_per_row;
+          if (rows < 1) rows = 1;
+          if (y + rows * row_h > y_max) break;  // would overflow the bottom — stop
+          tft.setCursor(xPos, y);
+          this->processAndPrintString(tft, entry);
+          y += rows * row_h;
         }
+        tft.setTextWrap(prev_wrap);
       //#endif
 
       print_count--;
