@@ -34,7 +34,10 @@ bool SDInterface::initSD() {
       Serial.println(F("XiaoMiao SD: SdFat SHARED_SPI init..."));
             SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
       delay(10);
-      if (!SD.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(20), &SPI))) {
+      // Use low speed (1MHz) to avoid DMA issues on arduino-esp32 3.x.
+      // The NES project uses 20MHz on espressif32@6.x (arduino-esp32 2.x);
+      // arduino-esp32 3.x has a DMA buffer alignment bug in its SPI driver.
+      if (!SD.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(1), &SPI))) {
         Serial.println(F("XiaoMiao SD: SdFat init FAILED"));
     #else
     delay(10);
