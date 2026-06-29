@@ -1,0 +1,22 @@
+﻿#sniffprobe
+StartingProbe sniff. Stop with stopscan
+> -93 Ch: 1 Client: ca:d2:02:07:16:3a Requesting: 
+-91 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-93 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-91 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-89 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-92 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-90 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-91 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-91 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-92 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-92 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-90 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-92 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-91 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-79 Ch: 1 Client: 8a:7b:82:d6:be:01 Requesting: 
+-79 Ch: 1 Client: 8a:7b:82:d6:be:01 Requesting: 
+-93 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-89 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+-91 Ch: 1 Client: b4:43:0d:cf:97:75 Requesting: TP-LINK
+

@@ -1,0 +1,61 @@
+﻿ts Jun  8 2016 00:22:57
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0030,len:4744
+load:0x40078000,len:15672
+load:0x40080400,len:3164
+entry 0x4008059c
+E (542) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+E (543) gpio: gpio_pullup_en(78): GPIO number error (input-only pad has no internal PU)
+ESP-IDF version is: v5.5.1-710-g8410210c9a
+XiaoMiao SD: reclaiming GPIO19 as MISO...
+XiaoMiao SD: beginning SD.init at 400kHz...
+XiaoMiao SD: SD.begin FAILED
+Failed to mount SD Card
+SD Card NOT Supported
+Finished settings nodes
+Changing to main menu...
+0
+
+              @@@@@@                        
+              @@@@@@@@                      
+              @@@@@@@@@@@                   
+             @@@@@@  @@@@@@                 
+          @@@@@@@      @@@@@@@              
+        @@@@@@            @@@@@@            
+     @@@@@@@                @@@@@@@         
+   @@@@@@                      @@@@@@       
+@@@@@@@              @@@@@@@@@@@@@@@@       
+@@@@@                 @@@@@@@@@@@@@@@       
+@@@@@                   @@@@@@@             
+@@@@@                      @@@@@@           
+@@@@@@                       @@@@@@@        
+  @@@@@@                        @@@@@@@@@@@@
+    @@@@@@@                          @@@@@@ 
+       @@@@@@                     @@@@@@    
+         @@@@@@@                @@@@@@      
+            @@@@@@           @@@@@@         
+              @@@@@@@      @@@@@@           
+                 @@@@@@ @@@@@@              
+                   @@@@@@@@@                
+                      @@@@@@                
+                        @@@@                
+
+
+
+
+--------------------------------
+
+         ESP32 Marauder      
+
+            v1.12.3
+
+       By: justcallmekoko
+
+--------------------------------
+
+
+> 

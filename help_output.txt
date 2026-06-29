@@ -1,0 +1,62 @@
+﻿#help
+============ Commands ============
+channel [-s <channel>]
+settings [-s <setting> enable/disable>]/[-r]
+clearlist -a/-c/-s
+reboot
+update -s/-w
+ls <directory>
+led -s <hex color>/-p <rainbow>
+gpsdata
+gps [-t] [-g] <fix/sat/lon/lat/alt/date/accuracy/text/nmea>
+    [-n] <native/all/gps/glonass/galileo/navic/qzss/beidou>
+         [-b = use BD vs GB for beidou]
+nmea
+gpspoi -s/-m/-e
+gpstracker -c <start/stop>
+evilportal [-c start [-w html.html]/sethtml <html.html>]
+karma -p <index>
+packetcount
+pingscan
+arpscan [-f]
+portscan [-a -t <ip index>]/[-s <ssh/telnet/dns/http/smtp/https/rdp>]
+sigmon
+scanall
+sniffraw
+sniffbeacon
+sniffprobe
+sniffpwn
+sniffpinescan
+sniffmultissid
+sniffdeauth
+sniffpmkid [-c <channel>][-d][-l]
+sniffsae
+stopscan [-f]
+mactrack
+attack -t <quiet/csa/sae/beacon [-l/-r/-a]/deauth [-c]/[-s <src mac>] [-d <dst mac>]/probe/rickroll/badmsg [-c]/sleep [-c]>
+info [-a <index>]
+list -s
+list -a
+list -c
+list -t
+list -i
+list -p
+select -a/-s/-c <index (comma separated)>/-f "equals <String> or contains <String>"
+ssid -a [-g <count>/-n <name>]
+ssid -r <index>
+save -a/-s
+load -a/-s
+join -a <index> -p <password>/-s
+randapmac
+randstamac
+cloneapmac [-a <index>]
+clonestamac [-s <index>]
+add -a -b <mac> [-ch <channel>] [-e <ssid>]
+add -c -b <mac> -ap <ap_index>
+sniffbt [-t] <airtag/flipper/flock/meta>
+blespam -t <sourapple/applejuice/google/samsung/windows/flipper/all>
+spoofat -t <index>
+sniffskim
+brightness [-c cycle] [-s <0-9>]
+==================================
+> 
