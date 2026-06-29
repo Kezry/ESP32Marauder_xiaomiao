@@ -30,12 +30,11 @@ bool SDInterface::initSD() {
     // pins, matching the shared bus (SCK=18, MISO=19, MOSI=23).
     #ifdef MARAUDER_XIAOMIAO
       // XiaoMiao: SD MISO (GPIO19) is shared with TFT RST. Use SdFat with
-      // DEDICATED_SPI mode + a new SPIClass to avoid DMA conflicts with TFT_eSPI.
-      Serial.println(F("XiaoMiao SD: SdFat DEDICATED_SPI init..."));
-      this->spiExt = new SPIClass(VSPI);
-      this->spiExt->begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
+      // SHARED_SPI mode + a new SPIClass to avoid DMA conflicts with TFT_eSPI.
+      Serial.println(F("XiaoMiao SD: SdFat SHARED_SPI init..."));
+            SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
       delay(10);
-      if (!SD.begin(SdSpiConfig(SD_CS, DEDICATED_SPI, SD_SCK_MHZ(20), this->spiExt))) {
+      if (!SD.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(20), &SPI))) {
         Serial.println(F("XiaoMiao SD: SdFat init FAILED"));
     #else
     delay(10);
@@ -62,8 +61,8 @@ bool SDInterface::initSD() {
         this->spiExt = new SPIClass(FSPI);
       #endif
       Serial.println(F("Using external SPI configuration..."));
-      this->spiExt->begin(SPI_SCK, SPI_MISO, SPI_MOSI, SD_CS);
-      if (!SD.begin(SD_CS, *(this->spiExt))) {
+      SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
+      if (!SD.begin(SD_CS, *(&SPI))) {
     #elif defined(HAS_C5_SD)
       if (!SD.begin(SD_CS, *_spi)) {
     #else
