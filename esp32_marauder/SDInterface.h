@@ -12,6 +12,12 @@
 #ifdef MARAUDER_XIAOMIAO
   #include "SdFat.h"
   extern SdFat SD;
+  // Alias so all Marauder code using 'File' / 'FILE_READ' / 'FILE_WRITE' compiles
+  // unchanged with SdFat. FsFile is SdFat's file type; O_READ/O_WRITE are its flags.
+  #define File FsFile
+  #define FILE_READ O_READ
+  #define FILE_WRITE (O_RDWR | O_CREAT | O_TRUNC)
+  #define FILE_APPEND (O_WRITE | O_APPEND | O_CREAT)
 #else
   #include "SD.h"
 #endif
@@ -68,11 +74,7 @@ class SDInterface {
 
     void listDir(String str_dir);
     void listDirToLinkedList(LinkedList<String>* file_names, String str_dir = "/", String ext = "");
-    #ifdef MARAUDER_XIAOMIAO
-      FsFile getFile(String path);
-    #else
-      File getFile(String path);
-    #endif
+    File getFile(String path);
     void runUpdate(String file_name = "");
     void performUpdate(Stream &updateSource, size_t updateSize);
     bool removeFile(String file_path);

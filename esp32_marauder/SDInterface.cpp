@@ -114,22 +114,13 @@ bool SDInterface::initSD() {
   #endif
 }
 
-#ifdef MARAUDER_XIAOMIAO
-FsFile SDInterface::getFile(String path) {
-  if (this->supported) {
-    FsFile file = SD.open(path, O_READ);
-    return file;
-  }
-  return FsFile();
-}
-#else
 File SDInterface::getFile(String path) {
   if (this->supported) {
     File file = SD.open(path, FILE_READ);
     return file;
   }
+  return File();
 }
-#endif
 
 bool SDInterface::removeFile(String file_path) {
   if (SD.remove(file_path))
@@ -140,73 +131,41 @@ bool SDInterface::removeFile(String file_path) {
 
 void SDInterface::listDirToLinkedList(LinkedList<String>* file_names, String str_dir, String ext) {
   if (this->supported) {
-    #ifdef MARAUDER_XIAOMIAO
-      FsFile dir = SD.open(str_dir);
-      while (true)
-      {
-        FsFile entry = dir.openNextFile();
-        if (!entry)
-          break;
-        if (entry.isDirectory())
-          continue;
-        char namebuf[64];
-        entry.getName(namebuf, sizeof(namebuf));
-        String file_name = String(namebuf);
-        if (ext != "") {
-          if (file_name.endsWith(ext))
-            file_names->add(file_name);
-        } else
+    File dir = SD.open(str_dir);
+    while (true)
+    {
+      File entry = dir.openNextFile();
+      if (!entry)
+        break;
+      if (entry.isDirectory())
+        continue;
+      char namebuf[64];
+      entry.getName(namebuf, sizeof(namebuf));
+      String file_name = String(namebuf);
+      if (ext != "") {
+        if (file_name.endsWith(ext))
           file_names->add(file_name);
-      }
-    #else
-      File dir = SD.open(str_dir);
-      while (true)
-      {
-        File entry = dir.openNextFile();
-        if (!entry)
-          break;
-        if (entry.isDirectory())
-          continue;
-        String file_name = entry.name();
-        if (ext != "") {
-          if (file_name.endsWith(ext))
-            file_names->add(file_name);
-        } else
-          file_names->add(file_name);
-      }
-    #endif
+      } else
+        file_names->add(file_name);
+    }
   }
 }
 
 void SDInterface::listDir(String str_dir){
   if (this->supported) {
-    #ifdef MARAUDER_XIAOMIAO
-      FsFile dir = SD.open(str_dir);
-      while (true)
-      {
-        FsFile entry = dir.openNextFile();
-        if (!entry)
-          break;
-        char namebuf[64];
-        entry.getName(namebuf, sizeof(namebuf));
-        Serial.print(namebuf);
-        Serial.print("\t");
-        Serial.println(entry.size());
-        entry.close();
-      }
-    #else
-      File dir = SD.open(str_dir);
-      while (true)
-      {
-        File entry = dir.openNextFile();
-        if (! entry)
-          break;
-        Serial.print(entry.name());
-        Serial.print("\t");
-        Serial.println(entry.size());
-        entry.close();
-      }
-    #endif
+    File dir = SD.open(str_dir);
+    while (true)
+    {
+      File entry = dir.openNextFile();
+      if (!entry)
+        break;
+      char namebuf[64];
+      entry.getName(namebuf, sizeof(namebuf));
+      Serial.print(namebuf);
+      Serial.print("\t");
+      Serial.println(entry.size());
+      entry.close();
+    }
   }
 }
 
@@ -224,11 +183,7 @@ void SDInterface::runUpdate(String file_name) {
     display_obj.tft.println("Opening " + file_name + "...");
   #endif
 
-  #ifdef MARAUDER_XIAOMIAO
-    FsFile updateBin = SD.open(file_name, O_READ);
-  #else
-    File updateBin = SD.open(file_name);
-  #endif
+  File updateBin = SD.open(file_name);
 
   if (updateBin) {
     if(updateBin.isDirectory()){
