@@ -1,11 +1,34 @@
-/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/EvilPortal.cpp: In member function 'bool EvilPortal::setHtml()':
-/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/EvilPortal.cpp:151:36: error: conversion from 'FsFile' to non-scalar type 'fs::File' requested
-  151 |     File html_file = sd_obj.getFile("/" + this->target_html_name);
-      |                      ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/EvilPortal.cpp: In member function 'bool EvilPortal::setAP(LinkedList<ssid>*, LinkedList<AccessPoint>*)':
-/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/EvilPortal.cpp:208:43: error: conversion from 'FsFile' to non-scalar type 'fs::File' requested
-  208 |       File ap_config_file = sd_obj.getFile("/ap.config.txt");
-      |                             ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/WiFiScan.cpp: In member function 'void WiFiScan::startPcap(const char*)':
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/WiFiScan.cpp:2842:24: error: cannot convert 'SdFat*' {aka 'SdFs*'} to 'fs::FS*'
+ 2842 |       sd_obj.supported ? &SD :
+      |                        ^
+      |                        |
+      |                        SdFat* {aka SdFs*}
+In file included from /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/SDInterface.h:27,
+                 from /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/EvilPortal.h:17,
+                 from /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/WiFiScan.h:26,
+                 from /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/WiFiScan.cpp:2:
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Buffer.h:22:50: note:   initializing argument 2 of 'void Buffer::pcapOpen(const char*, fs::FS*, bool)'
+   22 |     void pcapOpen(const char* file_name, fs::FS* fs, bool serial);
+      |                                          ~~~~~~~~^~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/WiFiScan.cpp: In member function 'void WiFiScan::startLog(const char*)':
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/WiFiScan.cpp:2853:24: error: cannot convert 'SdFat*' {aka 'SdFs*'} to 'fs::FS*'
+ 2853 |       sd_obj.supported ? &SD :
+      |                        ^
+      |                        |
+      |                        SdFat* {aka SdFs*}
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Buffer.h:23:49: note:   initializing argument 2 of 'void Buffer::logOpen(const char*, fs::FS*, bool)'
+   23 |     void logOpen(const char* file_name, fs::FS* fs, bool serial);
+      |                                         ~~~~~~~~^~
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/WiFiScan.cpp: In member function 'void WiFiScan::startGPX(const char*)':
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/WiFiScan.cpp:2864:24: error: cannot convert 'SdFat*' {aka 'SdFs*'} to 'fs::FS*'
+ 2864 |       sd_obj.supported ? &SD :
+      |                        ^
+      |                        |
+      |                        SdFat* {aka SdFs*}
+/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/Buffer.h:24:49: note:   initializing argument 2 of 'void Buffer::gpxOpen(const char*, fs::FS*, bool)'
+   24 |     void gpxOpen(const char* file_name, fs::FS* fs, bool serial);
+      |                                         ~~~~~~~~^~
 
 [92mUsed library[0m        [92mVersion[0m [90mPath[0m
 [93mWiFi[0m                3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/WiFi[0m
@@ -32,7 +55,7 @@
 [92mUsed platform[0m [92mVersion[0m [90mPath[0m
 [93mesp32:esp32[0m   3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4[0m
 Error during build: exit status 1
--rw-r--r-- 1 runner runner 23664 Jun 29 16:56 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
+-rw-r--r-- 1 runner runner 23664 Jun 29 17:01 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
 ++ date -u +%Y%m%d
 + DATE=20260629
 + OUTPUT_BIN=esp32_marauder_v1_0_0_20260629_xiaomiao.bin
@@ -40,7 +63,7 @@ Error during build: exit status 1
 + echo '=== build_out *.bin ==='
 === build_out *.bin ===
 + ls -la /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
--rw-r--r-- 1 runner runner 23664 Jun 29 16:56 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
+-rw-r--r-- 1 runner runner 23664 Jun 29 17:01 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
 + INPUT_BIN=/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
 + '[' '!' -f /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin ']'
 + echo 'expected bin missing, searching build_out...'
@@ -55,53 +78,53 @@ NO BIN FOUND
 + head -50
 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out:
 total 1372
-drwxr-xr-x  4 runner runner    4096 Jun 29 16:57 .
-drwxr-xr-x 23 runner runner    4096 Jun 29 16:56 ..
--rw-r--r--  1 runner runner     759 Jun 29 16:56 build.options.json
--rw-r--r--  1 runner runner       0 Jun 29 16:56 build_opt.h
--rw-r--r--  1 runner runner   23664 Jun 29 16:56 esp32_marauder.ino.bootloader.bin
--rw-r--r--  1 runner runner       0 Jun 29 16:56 file_opts
--rw-r--r--  1 runner runner 1237957 Jun 29 16:57 includes.cache
-drwxr-xr-x 20 runner runner    4096 Jun 29 16:56 libraries
--rw-r--r--  1 runner runner    1456 Jun 29 16:57 libraries.cache
--rw-r--r--  1 runner runner     304 Jun 29 16:56 partitions.csv
--rw-r--r--  1 runner runner  110071 Jun 29 16:56 sdkconfig
-drwxr-xr-x  3 runner runner    4096 Jun 29 16:57 sketch
+drwxr-xr-x  4 runner runner    4096 Jun 29 17:01 .
+drwxr-xr-x 23 runner runner    4096 Jun 29 17:01 ..
+-rw-r--r--  1 runner runner     759 Jun 29 17:01 build.options.json
+-rw-r--r--  1 runner runner       0 Jun 29 17:01 build_opt.h
+-rw-r--r--  1 runner runner   23664 Jun 29 17:01 esp32_marauder.ino.bootloader.bin
+-rw-r--r--  1 runner runner       0 Jun 29 17:01 file_opts
+-rw-r--r--  1 runner runner 1237957 Jun 29 17:01 includes.cache
+drwxr-xr-x 20 runner runner    4096 Jun 29 17:01 libraries
+-rw-r--r--  1 runner runner    1456 Jun 29 17:01 libraries.cache
+-rw-r--r--  1 runner runner     304 Jun 29 17:01 partitions.csv
+-rw-r--r--  1 runner runner  110071 Jun 29 17:01 sdkconfig
+drwxr-xr-x  3 runner runner    4096 Jun 29 17:02 sketch
 
 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/libraries:
 total 80
-drwxr-xr-x 20 runner runner 4096 Jun 29 16:56 .
-drwxr-xr-x  4 runner runner 4096 Jun 29 16:57 ..
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 AsyncTCP
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 AsyncUDP
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 DNSServer
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 ESP32Ping
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 ESPAsyncWebServer
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 EspSoftwareSerial
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 FS
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 MicroNMEA
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 Network
-drwxr-xr-x  3 runner runner 4096 Jun 29 16:57 NimBLE-Arduino
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 Preferences
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 SPI
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 SPIFFS
-drwxr-xr-x  9 runner runner 4096 Jun 29 16:57 SdFat
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 TFT_eSPI
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 Update
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 WiFi
-drwxr-xr-x  2 runner runner 4096 Jun 29 16:57 Wire
+drwxr-xr-x 20 runner runner 4096 Jun 29 17:01 .
+drwxr-xr-x  4 runner runner 4096 Jun 29 17:01 ..
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 AsyncTCP
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 AsyncUDP
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 DNSServer
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 ESP32Ping
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 ESPAsyncWebServer
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 EspSoftwareSerial
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 FS
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 MicroNMEA
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 Network
+drwxr-xr-x  3 runner runner 4096 Jun 29 17:01 NimBLE-Arduino
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 Preferences
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 SPI
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 SPIFFS
+drwxr-xr-x  9 runner runner 4096 Jun 29 17:01 SdFat
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 TFT_eSPI
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 Update
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 WiFi
+drwxr-xr-x  2 runner runner 4096 Jun 29 17:01 Wire
 
 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/libraries/AsyncTCP:
 total 36
-drwxr-xr-x  2 runner runner  4096 Jun 29 16:57 .
-drwxr-xr-x 20 runner runner  4096 Jun 29 16:56 ..
--rw-r--r--  1 runner runner 27487 Jun 29 16:57 AsyncTCP.cpp.libsdetect.d
+drwxr-xr-x  2 runner runner  4096 Jun 29 17:01 .
+drwxr-xr-x 20 runner runner  4096 Jun 29 17:01 ..
+-rw-r--r--  1 runner runner 27487 Jun 29 17:01 AsyncTCP.cpp.libsdetect.d
 
 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/libraries/AsyncUDP:
 total 36
-drwxr-xr-x  2 runner runner  4096 Jun 29 16:57 .
-drwxr-xr-x 20 runner runner  4096 Jun 29 16:56 ..
--rw-r--r--  1 runner runner 28487 Jun 29 16:57 AsyncUDP.cpp.libsdetect.d
+drwxr-xr-x  2 runner runner  4096 Jun 29 17:01 .
+drwxr-xr-x 20 runner runner  4096 Jun 29 17:01 ..
+-rw-r--r--  1 runner runner 28487 Jun 29 17:01 AsyncUDP.cpp.libsdetect.d
 
 ls: write error: Broken pipe
 + exit 1
