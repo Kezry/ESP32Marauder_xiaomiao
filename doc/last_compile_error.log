@@ -1,106 +1,32 @@
-/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/SDInterface.cpp: In member function 'bool SDInterface::initSD()':
-/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/SDInterface.cpp:33:7: error: 'gpio_pad_select_gpio' was not declared in this scope; did you mean 'esp_rom_gpio_pad_select_gpio'?
-   33 |       gpio_pad_select_gpio(TFT_MISO);
-      |       ^~~~~~~~~~~~~~~~~~~~
-      |       esp_rom_gpio_pad_select_gpio
-
-[92mUsed library[0m        [92mVersion[0m [90mPath[0m
-[93mWiFi[0m                3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/WiFi[0m
-[93mNetworking[0m          3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/Network[0m
-[93mArduinoJson[0m         6.18.2  [90m/home/runner/Arduino/libraries/ArduinoJson[0m
-[93mNimBLE-Arduino[0m      2.3.8   [90m/home/runner/Arduino/libraries/NimBLE-Arduino[0m
-[93mESP32Ping[0m           1.6     [90m/home/runner/Arduino/libraries/ESP32Ping[0m
-[93mESP Async WebServer[0m 2.10.4  [90m/home/runner/Arduino/libraries/ESPAsyncWebServer[0m
-[93mFS[0m                  3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/FS[0m
-[93mAsync TCP[0m           3.4.8   [90m/home/runner/Arduino/libraries/AsyncTCP[0m
-[93mDNSServer[0m           3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/DNSServer[0m
-[93mESP32 Async UDP[0m     3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/AsyncUDP[0m
-[93mSPIFFS[0m              3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/SPIFFS[0m
-[93mLinkedList[0m          1.3.3   [90m/home/runner/Arduino/libraries/LinkedList[0m
-[93mSPI[0m                 3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/SPI[0m
-[93mTFT_eSPI[0m            2.5.34  [90m/home/runner/Arduino/libraries/TFT_eSPI[0m
-[93mSD[0m                  3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/SD[0m
-[93mUpdate[0m              3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/Update[0m
-[93mWire[0m                3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/Wire[0m
-[93mPreferences[0m         3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4/libraries/Preferences[0m
-[93mMicroNMEA[0m           2.0.6   [90m/home/runner/Arduino/libraries/MicroNMEA[0m
-[93mEspSoftwareSerial[0m   8.1.0   [90m/home/runner/Arduino/libraries/EspSoftwareSerial[0m
-
-[92mUsed platform[0m [92mVersion[0m [90mPath[0m
-[93mesp32:esp32[0m   3.3.4   [90m/home/runner/.arduino15/packages/esp32/hardware/esp32/3.3.4[0m
-Error during build: exit status 1
--rw-r--r-- 1 runner runner 23664 Jun 29 11:47 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
+Sketch uses 1647079 bytes (83%) of program storage space. Maximum is 1966080 bytes.
+Global variables use 77680 bytes (23%) of dynamic memory, leaving 250000 bytes for local variables. Maximum is 327680 bytes.
+-rw-r--r-- 1 runner runner 1647232 Jun 29 11:54 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
+-rw-r--r-- 1 runner runner   23664 Jun 29 11:52 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
+-rw-r--r-- 1 runner runner 4194304 Jun 29 11:54 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.merged.bin
+-rw-r--r-- 1 runner runner    3072 Jun 29 11:54 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
 ++ date -u +%Y%m%d
 + DATE=20260629
-+ OUTPUT_BIN=esp32_marauder_v0_0_4_20260629_xiaomiao.bin
++ OUTPUT_BIN=esp32_marauder_v0_0_5_20260629_xiaomiao.bin
 + BUILD_OUT=/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out
 + echo '=== build_out *.bin ==='
 === build_out *.bin ===
-+ ls -la /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
--rw-r--r-- 1 runner runner 23664 Jun 29 11:47 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
++ ls -la /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.merged.bin /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
+-rw-r--r-- 1 runner runner 1647232 Jun 29 11:54 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
+-rw-r--r-- 1 runner runner   23664 Jun 29 11:52 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
+-rw-r--r-- 1 runner runner 4194304 Jun 29 11:54 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.merged.bin
+-rw-r--r-- 1 runner runner    3072 Jun 29 11:54 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
 + INPUT_BIN=/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
 + '[' '!' -f /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin ']'
-+ echo 'expected bin missing, searching build_out...'
-expected bin missing, searching build_out...
-++ find /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out -name '*.ino.bin' -type f
-++ head -1
-+ INPUT_BIN=
-+ '[' -z '' ']'
-+ echo 'NO BIN FOUND'
-NO BIN FOUND
-+ ls -laR /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out
-+ head -50
-/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out:
-total 1216
-drwxr-xr-x  4 runner runner    4096 Jun 29 11:48 .
-drwxr-xr-x 23 runner runner    4096 Jun 29 11:47 ..
--rw-r--r--  1 runner runner     759 Jun 29 11:47 build.options.json
--rw-r--r--  1 runner runner       0 Jun 29 11:47 build_opt.h
--rw-r--r--  1 runner runner   23664 Jun 29 11:47 esp32_marauder.ino.bootloader.bin
--rw-r--r--  1 runner runner       0 Jun 29 11:47 file_opts
--rw-r--r--  1 runner runner 1079850 Jun 29 11:48 includes.cache
-drwxr-xr-x 20 runner runner    4096 Jun 29 11:48 libraries
--rw-r--r--  1 runner runner    1492 Jun 29 11:48 libraries.cache
--rw-r--r--  1 runner runner     304 Jun 29 11:47 partitions.csv
--rw-r--r--  1 runner runner  110071 Jun 29 11:47 sdkconfig
-drwxr-xr-x  3 runner runner    4096 Jun 29 11:48 sketch
-
-/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/libraries:
-total 80
-drwxr-xr-x 20 runner runner 4096 Jun 29 11:48 .
-drwxr-xr-x  4 runner runner 4096 Jun 29 11:48 ..
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 AsyncTCP
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 AsyncUDP
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 DNSServer
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 ESP32Ping
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 ESPAsyncWebServer
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 EspSoftwareSerial
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 FS
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 MicroNMEA
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 Network
-drwxr-xr-x  3 runner runner 4096 Jun 29 11:48 NimBLE-Arduino
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 Preferences
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 SD
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 SPI
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 SPIFFS
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 TFT_eSPI
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 Update
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 WiFi
-drwxr-xr-x  2 runner runner 4096 Jun 29 11:48 Wire
-
-/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/libraries/AsyncTCP:
-total 36
-drwxr-xr-x  2 runner runner  4096 Jun 29 11:48 .
-drwxr-xr-x 20 runner runner  4096 Jun 29 11:48 ..
--rw-r--r--  1 runner runner 27487 Jun 29 11:48 AsyncTCP.cpp.libsdetect.d
-
-/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/libraries/AsyncUDP:
-total 36
-drwxr-xr-x  2 runner runner  4096 Jun 29 11:48 .
-drwxr-xr-x 20 runner runner  4096 Jun 29 11:48 ..
--rw-r--r--  1 runner runner 28487 Jun 29 11:48 AsyncUDP.cpp.libsdetect.d
-
-ls: write error: Broken pipe
-+ exit 1
++ '[' -z /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin ']'
++ '[' '!' -f /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin ']'
++ cp /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin esp32_marauder_v0_0_5_20260629_xiaomiao.bin
++ ls -la esp32_marauder_v0_0_5_20260629_xiaomiao.bin
+-rw-r--r-- 1 runner runner 1647232 Jun 29 11:54 esp32_marauder_v0_0_5_20260629_xiaomiao.bin
++ echo artifact_name=esp32_marauder_v0_0_5_20260629_xiaomiao.bin
++ cp /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin bootloader_xiaomiao.bin
++ cp /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin partitions_xiaomiao.bin
++ ls -la bootloader_xiaomiao.bin partitions_xiaomiao.bin
+-rw-r--r-- 1 runner runner 23664 Jun 29 11:54 bootloader_xiaomiao.bin
+-rw-r--r-- 1 runner runner  3072 Jun 29 11:54 partitions_xiaomiao.bin
 
 === artifact search (rename step) ===
