@@ -6,25 +6,27 @@
 extern const unsigned char menu_icons[][66];
 
 #ifdef HAS_MINI_SCREEN
-// Draw an XBM icon scaled down by an integer factor (e.g. div=2 -> half size).
-// TFT_eSPI's drawXBitmap has no scaling, and the menu icons are 22x24 which is
-// far taller than an 11px menu row. This samples every Nth source pixel.
+// Draw an XBM icon scaled down to fit the menu row. TFT_eSPI's drawXBitmap has no
+// scaling; the menu icons are 22x24 but the row is only ~16px tall. This samples
+// the source with a 3:2 ratio (22x24 -> ~15x16) so the icon stays legible.
 void MenuFunctions::drawMiniMenuIcon(int16_t x, int16_t y, const uint8_t *icon,
                                      uint16_t fg, uint16_t bg) {
-  const int src_w = ICON_W;     // 22
-  const int src_h = ICON_H + 2; // 24 (66 bytes / 22 = 24 rows)
-  const int div = 2;            // 2:1 downscale -> 11x12, fits an 11px row
-  int dw = src_w / div;         // 11
-  int dh = src_h / div;         // 12
-  for (int sy = 0; sy < dh; sy++) {
-    for (int sx = 0; sx < dw; sx++) {
-      int srcX = sx * div;
-      int srcY = sy * div;
-      // XBM is byte-aligned, 1 bit per pixel, bit=0 means foreground (drawn).
+  const int src_w = 22;     // source XBM width
+  const int src_h = 24;     // source XBM height (66 bytes / 22 = 24 rows)
+  const int dw = ICON_W;    // destination width (15 for xiaomiao)
+  const int dh = KEY_H;     // destination height (16, matches row height)
+  for (int dy = 0; dy < dh; dy++) {
+    for (int dx = 0; dx < dw; dx++) {
+      // Map destination pixel back to nearest source pixel (3:2 ratio).
+      int srcX = (dx * src_w) / dw;
+      int srcY = (dy * src_h) / dh;
+      if (srcX >= src_w) srcX = src_w - 1;
+      if (srcY >= src_h) srcY = src_h - 1;
+      // XBM: byte-aligned, 1 bit/pixel, bit=0 means foreground (drawn).
       uint16_t byte_idx = (srcY * src_w + srcX) / 8;
       uint8_t bit_idx = (srcY * src_w + srcX) % 8;
       bool fg_pixel = !(icon[byte_idx] & (1 << bit_idx));
-      display_obj.tft.drawPixel(x + sx, y + sy, fg_pixel ? fg : bg);
+      display_obj.tft.drawPixel(x + dx, y + dy, fg_pixel ? fg : bg);
     }
   }
 }
@@ -48,23 +50,20 @@ void MenuFunctions::drawMiniMenuButton(int b, int x, bool selected) {
   display_obj.tft.setTextWrap(false);
   display_obj.tft.fillRect(button_x, button_y - 4, KEY_W, KEY_H, background);
 
-  // Draw the menu icon on the left of the row, scaled to fit the row height.
-  // Icons are 22x24 XBM; drawMiniMenuIcon downscales 2:1 to 11x12 so the icon
-  // never exceeds the KEY_H row height. Only when this entry has an icon and is
-  // not the "Back" item (text09).
+  // Draw the menu icon on the left of the row, scaled 3:2 to fit the row height
+  // (22x24 -> ~15x16). Only when this entry has an icon and is not the "Back"
+  // item (text09).
   uint8_t icon_idx = current_menu->list->get(x).icon;
   bool has_icon = (current_menu->list->get(x).name != text09) && (icon_idx != 255);
-  // Icon width after 2:1 downscale = 11; text starts after it + a small gap.
-  const int mini_icon_w = ICON_W / 2;  // 11
   int16_t text_x = button_x + BUTTON_PADDING;
   if (has_icon) {
-    // Vertically centre the 12px-tall icon in the row.
+    // ICON_W is the scaled width (15); vertically centre the icon in the row.
     this->drawMiniMenuIcon(button_x + 1,
-                           button_y - 1,
+                           button_y - (KEY_H / 2) + 1,
                            menu_icons[icon_idx],
                            icon_color,
                            background);
-    text_x = button_x + mini_icon_w + 3;
+    text_x = button_x + ICON_W + 3;
   }
 
   display_obj.tft.setTextColor(text_color, background);

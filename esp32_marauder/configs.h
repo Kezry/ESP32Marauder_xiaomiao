@@ -2120,7 +2120,7 @@
       #define YMAX SCREEN_HEIGHT
       #define minimum(a,b)     (((a) < (b)) ? (a) : (b))
       #define MENU_FONT &FreeMono9pt7b
-      #define BUTTON_SCREEN_LIMIT 9
+      #define BUTTON_SCREEN_LIMIT 7
       #define BUTTON_ARRAY_LEN BUTTON_SCREEN_LIMIT
       #define STATUS_BAR_WIDTH (SCREEN_HEIGHT/16)
       #define LVGL_TICK_PERIOD 6
@@ -2429,24 +2429,21 @@
 
   #ifdef MARAUDER_XIAOMIAO
     // Landscape menu layout (160 wide x 128 tall visible after 270deg rotation).
-    // IMPORTANT: KEY_Y/KEY_W/KEY_X use the LANDSCAPE visible size (SCREEN_WIDTH=160,
-    // SCREEN_HEIGHT=128), NOT the portrait TFT_HEIGHT(160). The Mini layout this was
-    // copied from uses TFT_HEIGHT because Mini is 128x128 square; on this 128x160 panel
-    // TFT_HEIGHT(160) != visible vertical(128), which pushed the last menu row off-screen.
-    // With KEY_Y=23, KEY_H=12, spacing=1: row centers run 17,30,...,121 — all 9 rows fit
-    // inside the 10..128 usable band (128 minus the 10px status bar).
+    // Row height 16 with 3:2-scaled icons (15x16) keeps icons legible while fitting
+    // 7 rows per page. KEY_Y=18, KEY_H=16, SP=1: centers 18,35,52,69,86,103,120;
+    // last row bottom = 128 (fills the screen exactly).
     #define BANNER_TIME 50
 
     #define COMMAND_PREFIX "!"
 
     #define KEY_X (SCREEN_WIDTH/2)
-    #define KEY_Y 26
+    #define KEY_Y 18
     #define KEY_W SCREEN_WIDTH
-    #define KEY_H 11
+    #define KEY_H 16
     #define KEY_SPACING_X 0
     #define KEY_SPACING_Y 1
     #define KEY_TEXTSIZE 1
-    #define ICON_W 22
+    #define ICON_W 15
     #define ICON_H 22
     #define BUTTON_PADDING 10
   #endif
