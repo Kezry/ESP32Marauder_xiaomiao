@@ -13,7 +13,9 @@ void MenuFunctions::drawMiniMenuButton(int b, int x, bool selected) {
   MenuNode mini_node = current_menu->list->get(x);
   bool is_setting_node = (mini_node.icon == SETTINGS && mini_node.color == TFTLIGHTGREY);
   uint16_t color = is_setting_node ? (mini_node.selected ? TFT_GREEN : TFT_RED) : this->getColor(mini_node.color);
-  uint16_t icon_color = is_setting_node ? TFT_LIGHTGREY : color;
+  // Icon colour: when the row is selected the icon fills with TFT_BLACK so it
+  // contrasts against the coloured row background. Otherwise use the row colour.
+  uint16_t icon_color = selected ? TFT_BLACK : (is_setting_node ? TFT_LIGHTGREY : color);
   int16_t button_x = KEY_X - (KEY_W / 2);
   int16_t button_y = (KEY_Y + (b * (KEY_H + KEY_SPACING_Y))) - (KEY_H / 2);
 
@@ -32,9 +34,10 @@ void MenuFunctions::drawMiniMenuButton(int b, int x, bool selected) {
   bool has_icon = (current_menu->list->get(x).name != text09) && (icon_idx != 255);
   int16_t text_x = button_x + BUTTON_PADDING;
   if (has_icon) {
-    // Vertically centre the 24px-tall icon in the row (KEY_H=22, slight overflow OK).
+    // Vertically align icon top with the fillRect top (button_y - 4) so the icon
+    // sits inside the coloured row, not above it in the status bar area.
     display_obj.tft.drawXBitmap(button_x + 1,
-                                button_y - (ICON_H / 2) + 1,
+                                button_y - 4,
                                 menu_icons[icon_idx],
                                 ICON_W,
                                 ICON_H,
