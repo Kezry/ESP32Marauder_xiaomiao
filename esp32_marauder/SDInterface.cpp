@@ -20,6 +20,18 @@ bool SDInterface::initSD() {
 
     pinMode(SD_CS, OUTPUT);
 
+    // XiaoMiao: GPIO19 is shared between TFT RST and SD MISO. TFT_eSPI configures
+    // GPIO19 as OUTPUT (RST) during tft.init(). Before SD.begin(), we must reconfigure
+    // the SPI bus so GPIO19 is MISO (input). Use an explicit SPIClass with the correct
+    // pins, matching the shared bus (SCK=18, MISO=19, MOSI=23).
+    #ifdef MARAUDER_XIAOMIAO
+      pinMode(TFT_MISO, INPUT);  // reclaim GPIO19 as MISO input
+      digitalWrite(SD_CS, HIGH); // deselect SD
+      delay(10);
+      this->spiExt = new SPIClass(VSPI);
+      this->spiExt->begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
+      if (!SD.begin(SD_CS, *(this->spiExt))) {
+    #else
     delay(10);
     #if (defined(MARAUDER_M5STICKC)) || (defined(HAS_CYD_TOUCH)) || (defined(MARAUDER_CARDPUTER)) || (defined(MARAUDER_CARDPUTER_ADV)) || (defined(HAS_SEPARATE_SD))
       /* Set up SPI SD Card using external pin header
@@ -50,6 +62,7 @@ bool SDInterface::initSD() {
       if (!SD.begin(SD_CS, *_spi)) {
     #else
       if (!SD.begin(SD_CS)) {
+    #endif
     #endif
       Serial.println(F("Failed to mount SD Card"));
       this->supported = false;
