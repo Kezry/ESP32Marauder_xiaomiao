@@ -2816,14 +2816,16 @@ String WiFiScan::security_int_to_string(int security_type) {
       authtype = "[WPA3_PSK]";
       break;
 
-    #ifdef HAS_IDF_3
+    // WIFI_AUTH_WPA3_ENTERPRISE / WPA2_WPA3_PSK were added in arduino-esp32 3.x;
+    // guard on the core version (not HAS_IDF_3, which XiaoMiao sets on 2.x too).
+    #if ESP_ARDUINO_VERSION_MAJOR >= 3
     case WIFI_AUTH_WPA3_ENTERPRISE:
       authtype = "[WPA3]";
       break;
-    #endif
     case WIFI_AUTH_WPA2_WPA3_PSK:
       authtype = "[WPA2_WPA3_PSK]";
       break;
+    #endif
 
     case WIFI_AUTH_WAPI_PSK:
       authtype = "[WAPI_PSK]";
