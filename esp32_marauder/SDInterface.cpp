@@ -73,8 +73,21 @@ bool SDInterface::initSD() {
         Serial.printf("XiaoMiao SD: CMD0 R1 response = 0x%02X (0x01=idle/OK, 0xFF=no card/MISO dead)\n", resp);
       }
 
-      if (!SD.begin(SD_CS, SPI)) {
-        Serial.println(F("XiaoMiao SD: SD.begin FAILED"));
+      // SD.begin() retries with a flag so we keep a single shared error/else branch.
+      // The manual CMD0 above succeeded (R1=0x01), so the card and MISO are alive.
+      // High-speed begin often fails on the shared GPIO19 RST/MISO trace, so try a
+      // moderate speed first, then a conservative 1 MHz.
+      bool sd_ok = SD.begin(SD_CS, SPI, 8000000);
+      if (!sd_ok) {
+        Serial.println(F("XiaoMiao SD: SD.begin failed @ 8MHz, retrying @ 1MHz"));
+        SPI.end();
+        delay(2);
+        SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
+        delay(10);
+        sd_ok = SD.begin(SD_CS, SPI, 1000000);
+        if (!sd_ok) Serial.println(F("XiaoMiao SD: SD.begin failed @ 1MHz"));
+      }
+      if (!sd_ok) {
     #else
     delay(10);
     #if (defined(MARAUDER_M5STICKC)) || (defined(HAS_CYD_TOUCH)) || (defined(MARAUDER_CARDPUTER)) || (defined(MARAUDER_CARDPUTER_ADV)) || (defined(HAS_SEPARATE_SD))
