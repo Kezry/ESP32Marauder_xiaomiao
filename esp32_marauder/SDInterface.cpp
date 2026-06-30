@@ -136,23 +136,22 @@ bool SDInterface::initSD() {
         bbXfer(0xFF);
         Serial.printf("SD bb: CMD1 R1=0x%02X (0x05=illegal[SD card], other=MMC-like)\n", r1cmd);
 
+        // CMD1 was accepted (R1=0x01) while ACMD41 returns illegal-command (0x05).
+        // This card accepts MMC-style CMD1 init. Loop CMD1 until idle clears.
         bool inited = false;
         for (int i = 0; i < 50; i++) {
           digitalWrite(SD_CS, LOW);
           delayMicroseconds(20);
-          uint8_t r55 = bbSendCmd(55, 0, 0x00);
-          bbXfer(0xFF);
-          bbXfer(0xFF);
-          uint8_t r41 = bbSendCmd(41, 0x40FF8000, 0x00);
+          uint8_t r1c = bbSendCmd(1, 0x40FF8000, 0x00);  // MMC-style OP_COND with HCS
           bbXfer(0xFF);
           digitalWrite(SD_CS, HIGH);
           bbXfer(0xFF);
-          if (r41 == 0x00) { inited = true; Serial.printf("SD bb: ACMD41 READY after %d tries\n", i + 1); break; }
+          if (r1c == 0x00) { inited = true; Serial.printf("SD bb: CMD1 READY after %d tries\n", i + 1); break; }
           if (i == 0 || i == 4 || i == 9 || i == 24 || i == 49)
-            Serial.printf("SD bb: ACMD41 try %d R55=0x%02X R41=0x%02X\n", i + 1, r55, r41);
+            Serial.printf("SD bb: CMD1 try %d R1=0x%02X\n", i + 1, r1c);
           delay(20);
         }
-        if (!inited) Serial.println(F("SD bb: ACMD41 never cleared idle"));
+        if (!inited) Serial.println(F("SD bb: CMD1 never cleared idle"));
         // restore SCK/MOSI to the SPI driver before SD.begin
         digitalWrite(SD_CS, HIGH);
         SPI.end();
