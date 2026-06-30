@@ -1,9 +1,9 @@
-Sketch uses 1647883 bytes (83%) of program storage space. Maximum is 1966080 bytes.
-Global variables use 77680 bytes (23%) of dynamic memory, leaving 250000 bytes for local variables. Maximum is 327680 bytes.
--rw-r--r-- 1 runner runner 1648032 Jun 30 13:46 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
--rw-r--r-- 1 runner runner   23664 Jun 30 13:44 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
--rw-r--r-- 1 runner runner 4194304 Jun 30 13:46 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.merged.bin
--rw-r--r-- 1 runner runner    3072 Jun 30 13:46 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
+Sketch uses 1632515 bytes (83%) of program storage space. Maximum is 1966080 bytes.
+Global variables use 78004 bytes (23%) of dynamic memory, leaving 249676 bytes for local variables. Maximum is 327680 bytes.
+-rw-r--r-- 1 runner runner 1632656 Jun 30 13:59 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
+-rw-r--r-- 1 runner runner   23664 Jun 30 13:56 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
+-rw-r--r-- 1 runner runner 4194304 Jun 30 13:59 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.merged.bin
+-rw-r--r-- 1 runner runner    3072 Jun 30 13:59 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
 ++ date -u +%Y%m%d
 + DATE=20260630
 + OUTPUT_BIN=esp32_marauder_v1_0_0_20260630_xiaomiao.bin
@@ -11,22 +11,22 @@ Global variables use 77680 bytes (23%) of dynamic memory, leaving 250000 bytes f
 + echo '=== build_out *.bin ==='
 === build_out *.bin ===
 + ls -la /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.merged.bin /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
--rw-r--r-- 1 runner runner 1648032 Jun 30 13:46 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
--rw-r--r-- 1 runner runner   23664 Jun 30 13:44 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
--rw-r--r-- 1 runner runner 4194304 Jun 30 13:46 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.merged.bin
--rw-r--r-- 1 runner runner    3072 Jun 30 13:46 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
+-rw-r--r-- 1 runner runner 1632656 Jun 30 13:59 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
+-rw-r--r-- 1 runner runner   23664 Jun 30 13:56 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
+-rw-r--r-- 1 runner runner 4194304 Jun 30 13:59 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.merged.bin
+-rw-r--r-- 1 runner runner    3072 Jun 30 13:59 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
 + INPUT_BIN=/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
 + '[' '!' -f /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin ']'
 + '[' -z /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin ']'
 + '[' '!' -f /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin ']'
 + cp /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin esp32_marauder_v1_0_0_20260630_xiaomiao.bin
 + ls -la esp32_marauder_v1_0_0_20260630_xiaomiao.bin
--rw-r--r-- 1 runner runner 1648032 Jun 30 13:46 esp32_marauder_v1_0_0_20260630_xiaomiao.bin
+-rw-r--r-- 1 runner runner 1632656 Jun 30 13:59 esp32_marauder_v1_0_0_20260630_xiaomiao.bin
 + echo artifact_name=esp32_marauder_v1_0_0_20260630_xiaomiao.bin
 + cp /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin bootloader_xiaomiao.bin
 + cp /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin partitions_xiaomiao.bin
 + ls -la bootloader_xiaomiao.bin partitions_xiaomiao.bin
--rw-r--r-- 1 runner runner 23664 Jun 30 13:46 bootloader_xiaomiao.bin
--rw-r--r-- 1 runner runner  3072 Jun 30 13:46 partitions_xiaomiao.bin
+-rw-r--r-- 1 runner runner 23664 Jun 30 13:59 bootloader_xiaomiao.bin
+-rw-r--r-- 1 runner runner  3072 Jun 30 13:59 partitions_xiaomiao.bin
 
 === artifact search (rename step) ===
