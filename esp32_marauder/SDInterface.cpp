@@ -114,19 +114,39 @@ bool SDInterface::initSD() {
         Serial.printf("SD bb: CMD8 R1=0x%02X R7=%02X %02X %02X %02X (last=AA ok)\n",
                       r1, cmd8[0], cmd8[1], cmd8[2], cmd8[3]);
 
+        // CMD58 READ_OCR -> R3 (R1 + 4-byte OCR). Confirms multi-byte read works and
+        // shows card's CCS/voltage window. Also try CMD1 (MMC-style init): if the card
+        // answers CMD1 with anything but 0x05 it may be an MMC/eMMC variant.
+        digitalWrite(SD_CS, LOW);
+        delayMicroseconds(20);
+        uint8_t r58 = bbSendCmd(58, 0, 0x00);
+        uint8_t ocr[4] = {0};
+        if (!(r58 & 0x80)) for (int i = 0; i < 4; i++) ocr[i] = bbXfer(0xFF);
+        bbXfer(0xFF);
+        digitalWrite(SD_CS, HIGH);
+        bbXfer(0xFF);
+        Serial.printf("SD bb: CMD58 R1=0x%02X OCR=%02X %02X %02X %02X\n",
+                      r58, ocr[0], ocr[1], ocr[2], ocr[3]);
+
+        digitalWrite(SD_CS, LOW);
+        delayMicroseconds(20);
+        uint8_t r1cmd = bbSendCmd(1, 0, 0x00);
+        bbXfer(0xFF);
+        digitalWrite(SD_CS, HIGH);
+        bbXfer(0xFF);
+        Serial.printf("SD bb: CMD1 R1=0x%02X (0x05=illegal[SD card], other=MMC-like)\n", r1cmd);
+
         bool inited = false;
         for (int i = 0; i < 50; i++) {
           digitalWrite(SD_CS, LOW);
-          // small CS-low settling
           delayMicroseconds(20);
           uint8_t r55 = bbSendCmd(55, 0, 0x00);
-          // consume any trailing byte, then a clear dummy gap before ACMD41
           bbXfer(0xFF);
           bbXfer(0xFF);
           uint8_t r41 = bbSendCmd(41, 0x40FF8000, 0x00);
-          bbXfer(0xFF);               // dummy to release bus
+          bbXfer(0xFF);
           digitalWrite(SD_CS, HIGH);
-          bbXfer(0xFF);               // deselected idle clocks
+          bbXfer(0xFF);
           if (r41 == 0x00) { inited = true; Serial.printf("SD bb: ACMD41 READY after %d tries\n", i + 1); break; }
           if (i == 0 || i == 4 || i == 9 || i == 24 || i == 49)
             Serial.printf("SD bb: ACMD41 try %d R55=0x%02X R41=0x%02X\n", i + 1, r55, r41);
