@@ -32,18 +32,17 @@ bool SDInterface::initSD() {
     #ifdef MARAUDER_XIAOMIAO
       // XiaoMiao: SD MISO (GPIO19) is shared with TFT RST. After the splash screen,
       // GPIO19 is still OUTPUT (RST). Release it, then re-attach the SPI bus so MISO
-      // points at GPIO19. SdFat's cardCommand() does the full CMD0/CMD8/ACMD41 init
-      // with waitReady()+fill-byte-discard that hand-rolled code gets wrong.
-      // USE_SPI_ARRAY_TRANSFER=0 (build flag) forces byte transfers -> no DMA ->
-      // avoids the arduino-esp32 3.x DMA crash (EXCVADDR 0x00060020).
+      // points at GPIO19. SdFat's cardCommand() does the full CMD0/CMD8/ACMD41 init.
       Serial.println(F("XiaoMiao SD: SdFat SHARED_SPI init..."));
-      gpio_reset_pin(GPIO_NUM_19);
+      // Release GPIO19 from TFT_eSPI's OUTPUT(RST) to input, but do NOT use
+      // gpio_reset_pin (it drops the SPI input-matrix routing and can corrupt the
+      // SPI handle on arduino-esp32 3.x). Plain pinMode(INPUT) keeps the routing.
+      pinMode(TFT_RST, INPUT_PULLUP);
       delay(5);
       pinMode(SD_CS, OUTPUT);
       digitalWrite(SD_CS, HIGH);
-      pinMode(TFT_SCLK, OUTPUT);
-      pinMode(TFT_MOSI, OUTPUT);
       delay(5);
+      // Re-attach the shared SPI2 bus with MISO=GPIO19.
       SPI.end();
       delay(2);
       SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
