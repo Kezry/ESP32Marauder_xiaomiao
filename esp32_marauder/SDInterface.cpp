@@ -36,144 +36,24 @@ bool SDInterface::initSD() {
     #ifdef MARAUDER_XIAOMIAO
       Serial.println(F("XiaoMiao SD: releasing GPIO19 from TFT RST -> SD MISO"));
       // Force GPIO19 (shared RST/MISO) out of TFT_eSPI's OUTPUT state. gpio_reset_pin
-      // disables the output driver and returns the pad to high-impedance input.
+      // disables the output driver and returns the pad to high-impedance input, while
+      // preserving the SPI input-matrix mapping that TFT_eSPI already established. This
+      // matches the NES emulator project's workaround for this exact hardware.
       gpio_reset_pin(GPIO_NUM_19);
       delay(5);
 
       // Hold SD_CS idle (high) while we (re)start the bus.
       pinMode(SD_CS, OUTPUT);
       digitalWrite(SD_CS, HIGH);
-      pinMode(TFT_SCLK, OUTPUT);
-      pinMode(TFT_MOSI, OUTPUT);
       delay(5);
 
       // Force the shared SPI2 bus to re-attach the pins (end() tears the bus down so
       // the next begin() actually re-programs the GPIO matrix with MISO=GPIO19).
       SPI.end();
-      delay(2);
       SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
       delay(10);
-
-      // ---- Full manual SD SPI init diagnostic (software bit-bang SPI) ----
-      // Bypass the hardware SPI driver entirely to rule out arduino-esp32 3.x SPI
-      // timing/DMA oddities. If bit-bang works, the HW SPI driver is the culprit.
-      {
-        // bit-bang SPI: clock out on SCK rising edge, MSB first, ~100kHz
-        auto bbXfer = [](uint8_t mosi) -> uint8_t {
-          uint8_t miso = 0;
-          for (int8_t b = 7; b >= 0; b--) {
-            digitalWrite(TFT_MOSI, (mosi >> b) & 1);
-            digitalWrite(TFT_SCLK, LOW);
-            delayMicroseconds(3);
-            digitalWrite(TFT_SCLK, HIGH);
-            delayMicroseconds(3);
-            miso = (miso << 1) | (digitalRead(TFT_MISO) & 1);
-          }
-          digitalWrite(TFT_SCLK, LOW);
-          return miso;
-        };
-        auto bbSendCmd = [&](uint8_t cmd, uint32_t arg, uint8_t crc) -> uint8_t {
-          digitalWrite(SD_CS, LOW);
-          bbXfer(0x40 | cmd);
-          bbXfer((arg >> 24) & 0xFF);
-          bbXfer((arg >> 16) & 0xFF);
-          bbXfer((arg >> 8) & 0xFF);
-          bbXfer(arg & 0xFF);
-          bbXfer(crc);
-          uint8_t r1 = 0xFF;
-          for (int i = 0; i < 10 && (r1 & 0x80); i++) r1 = bbXfer(0xFF);
-          return r1;
-        };
-
-        // set up bit-bang pins (output), CS handled by bbSendCmd
-        pinMode(TFT_SCLK, OUTPUT);
-        pinMode(TFT_MOSI, OUTPUT);
-        pinMode(TFT_MISO, INPUT);
-        pinMode(SD_CS, OUTPUT);
-        digitalWrite(TFT_SCLK, LOW);
-
-        // >= 74 dummy clocks with CS high
-        digitalWrite(SD_CS, HIGH);
-        for (int i = 0; i < 12; i++) bbXfer(0xFF);
-        delay(2);
-
-        uint8_t r1 = bbSendCmd(0, 0, 0x95);
-        bbXfer(0xFF);                 // dummy to release bus
-        digitalWrite(SD_CS, HIGH);
-        bbXfer(0xFF);                 // 8 clocks while deselected
-        Serial.printf("SD bb: CMD0 R1=0x%02X (expect 0x01)\n", r1);
-
-        uint8_t cmd8[4] = {0};
-        digitalWrite(SD_CS, LOW);
-        r1 = bbSendCmd(8, 0x000001AA, 0x87);
-        // MUST read the full 5-byte R7 (R1 + 4 echo bytes) or the card state misaligns.
-        if (!(r1 & 0x80)) for (int i = 0; i < 4; i++) cmd8[i] = bbXfer(0xFF);
-        bbXfer(0xFF);                 // dummy
-        digitalWrite(SD_CS, HIGH);
-        bbXfer(0xFF);                 // deselected idle clocks
-        Serial.printf("SD bb: CMD8 R1=0x%02X R7=%02X %02X %02X %02X (last=AA ok)\n",
-                      r1, cmd8[0], cmd8[1], cmd8[2], cmd8[3]);
-
-        // CMD58 READ_OCR -> R3 (R1 + 4-byte OCR). Confirms multi-byte read works and
-        // shows card's CCS/voltage window. Also try CMD1 (MMC-style init): if the card
-        // answers CMD1 with anything but 0x05 it may be an MMC/eMMC variant.
-        digitalWrite(SD_CS, LOW);
-        delayMicroseconds(20);
-        uint8_t r58 = bbSendCmd(58, 0, 0x00);
-        uint8_t ocr[4] = {0};
-        if (!(r58 & 0x80)) for (int i = 0; i < 4; i++) ocr[i] = bbXfer(0xFF);
-        bbXfer(0xFF);
-        digitalWrite(SD_CS, HIGH);
-        bbXfer(0xFF);
-        Serial.printf("SD bb: CMD58 R1=0x%02X OCR=%02X %02X %02X %02X\n",
-                      r58, ocr[0], ocr[1], ocr[2], ocr[3]);
-
-        digitalWrite(SD_CS, LOW);
-        delayMicroseconds(20);
-        uint8_t r1cmd = bbSendCmd(1, 0, 0x00);
-        bbXfer(0xFF);
-        digitalWrite(SD_CS, HIGH);
-        bbXfer(0xFF);
-        Serial.printf("SD bb: CMD1 R1=0x%02X (0x05=illegal[SD card], other=MMC-like)\n", r1cmd);
-
-        // CMD1 was accepted (R1=0x01) while ACMD41 returns illegal-command (0x05).
-        // This card accepts MMC-style CMD1 init. Loop CMD1 until idle clears.
-        bool inited = false;
-        for (int i = 0; i < 50; i++) {
-          digitalWrite(SD_CS, LOW);
-          delayMicroseconds(20);
-          uint8_t r1c = bbSendCmd(1, 0x40FF8000, 0x00);  // MMC-style OP_COND with HCS
-          bbXfer(0xFF);
-          digitalWrite(SD_CS, HIGH);
-          bbXfer(0xFF);
-          if (r1c == 0x00) { inited = true; Serial.printf("SD bb: CMD1 READY after %d tries\n", i + 1); break; }
-          if (i == 0 || i == 4 || i == 9 || i == 24 || i == 49)
-            Serial.printf("SD bb: CMD1 try %d R1=0x%02X\n", i + 1, r1c);
-          delay(20);
-        }
-        if (!inited) Serial.println(F("SD bb: CMD1 never cleared idle"));
-        // restore SCK/MOSI to the SPI driver before SD.begin
-        digitalWrite(SD_CS, HIGH);
-        SPI.end();
-        delay(2);
-        SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
-        delay(10);
-      }
-      // SD.begin() retries with a flag so we keep a single shared error/else branch.
-      // The manual CMD0 above succeeded (R1=0x01), so the card and MISO are alive.
-      // High-speed begin often fails on the shared GPIO19 RST/MISO trace, so try a
-      // moderate speed first, then a conservative 1 MHz.
-      bool sd_ok = SD.begin(SD_CS, SPI, 8000000);
-      if (!sd_ok) {
-        Serial.println(F("XiaoMiao SD: SD.begin failed @ 8MHz, retrying @ 1MHz"));
-        SPI.end();
-        delay(2);
-        SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
-        delay(10);
-        sd_ok = SD.begin(SD_CS, SPI, 1000000);
-        if (!sd_ok) Serial.println(F("XiaoMiao SD: SD.begin failed @ 1MHz"));
-      }
-      if (!sd_ok) {
+      if (!SD.begin(SD_CS, SPI)) {
+        Serial.println(F("XiaoMiao SD: SD.begin FAILED"));
     #else
     delay(10);
     #if (defined(MARAUDER_M5STICKC)) || (defined(HAS_CYD_TOUCH)) || (defined(MARAUDER_CARDPUTER)) || (defined(MARAUDER_CARDPUTER_ADV)) || (defined(HAS_SEPARATE_SD))
