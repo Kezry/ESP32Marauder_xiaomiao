@@ -54,63 +54,79 @@ bool SDInterface::initSD() {
       SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
       delay(10);
 
-      // ---- Full manual SD SPI init diagnostic ----
-      // Walk through CMD0 -> CMD8 -> ACMD41 the way the SD library does internally,
-      // printing each response so we can see exactly where the card stops answering.
-      // Wrapped in begin/endTransaction: on arduino-esp32 3.x, bare SPI.transfer()
-      // without an active transaction may use undefined clock settings.
+      // ---- Full manual SD SPI init diagnostic (software bit-bang SPI) ----
+      // Bypass the hardware SPI driver entirely to rule out arduino-esp32 3.x SPI
+      // timing/DMA oddities. If bit-bang works, the HW SPI driver is the culprit.
       {
-        SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
-        auto sendCmd = [](uint8_t cmd, uint32_t arg, uint8_t crc) {
+        // bit-bang SPI: clock out on SCK rising edge, MSB first, ~100kHz
+        auto bbXfer = [](uint8_t mosi) -> uint8_t {
+          uint8_t miso = 0;
+          for (int8_t b = 7; b >= 0; b--) {
+            digitalWrite(TFT_MOSI, (mosi >> b) & 1);
+            digitalWrite(TFT_SCLK, LOW);
+            delayMicroseconds(3);
+            digitalWrite(TFT_SCLK, HIGH);
+            delayMicroseconds(3);
+            miso = (miso << 1) | (digitalRead(TFT_MISO) & 1);
+          }
+          digitalWrite(TFT_SCLK, LOW);
+          return miso;
+        };
+        auto bbSendCmd = [&](uint8_t cmd, uint32_t arg, uint8_t crc) -> uint8_t {
           digitalWrite(SD_CS, LOW);
-          SPI.transfer(0x40 | cmd);
-          SPI.transfer((arg >> 24) & 0xFF);
-          SPI.transfer((arg >> 16) & 0xFF);
-          SPI.transfer((arg >> 8) & 0xFF);
-          SPI.transfer(arg & 0xFF);
-          SPI.transfer(crc);
+          bbXfer(0x40 | cmd);
+          bbXfer((arg >> 24) & 0xFF);
+          bbXfer((arg >> 16) & 0xFF);
+          bbXfer((arg >> 8) & 0xFF);
+          bbXfer(arg & 0xFF);
+          bbXfer(crc);
           uint8_t r1 = 0xFF;
-          for (int i = 0; i < 10 && (r1 & 0x80); i++) r1 = SPI.transfer(0xFF);
+          for (int i = 0; i < 10 && (r1 & 0x80); i++) r1 = bbXfer(0xFF);
           return r1;
         };
 
-        // >= 74 dummy clocks with CS high to enter native SPI mode
+        // set up bit-bang pins (output), CS handled by bbSendCmd
+        pinMode(TFT_SCLK, OUTPUT);
+        pinMode(TFT_MOSI, OUTPUT);
+        pinMode(TFT_MISO, INPUT);
+        pinMode(SD_CS, OUTPUT);
+        digitalWrite(TFT_SCLK, LOW);
+
+        // >= 74 dummy clocks with CS high
         digitalWrite(SD_CS, HIGH);
-        for (int i = 0; i < 12; i++) SPI.transfer(0xFF);
+        for (int i = 0; i < 12; i++) bbXfer(0xFF);
         delay(2);
 
-        // CMD0 GO_IDLE_STATE -> expect R1=0x01 (idle)
-        uint8_t r1 = sendCmd(0, 0, 0x95);
+        uint8_t r1 = bbSendCmd(0, 0, 0x95);
         digitalWrite(SD_CS, HIGH);
-        Serial.printf("SD diag: CMD0 R1=0x%02X (expect 0x01)\n", r1);
+        Serial.printf("SD bb: CMD0 R1=0x%02X (expect 0x01)\n", r1);
 
-        // CMD8 SEND_IF_COND (SD v2 check): arg=0x000001AA -> R7 echoes 00 00 01 AA
         uint8_t cmd8[4] = {0};
-        digitalWrite(SD_CS, LOW);
-        r1 = sendCmd(8, 0x000001AA, 0x87);
-        if (!(r1 & 0x80)) for (int i = 0; i < 4; i++) cmd8[i] = SPI.transfer(0xFF);
+        r1 = bbSendCmd(8, 0x000001AA, 0x87);
+        if (!(r1 & 0x80)) for (int i = 0; i < 4; i++) cmd8[i] = bbXfer(0xFF);
         digitalWrite(SD_CS, HIGH);
-        Serial.printf("SD diag: CMD8 R1=0x%02X R7=%02X %02X %02X %02X (last=AA ok)\n",
+        Serial.printf("SD bb: CMD8 R1=0x%02X R7=%02X %02X %02X %02X (last=AA ok)\n",
                       r1, cmd8[0], cmd8[1], cmd8[2], cmd8[3]);
 
-        // ACMD41 init loop (CMD55 + ACMD41). Card clears idle (R1=0x00) when ready.
-        // IMPORTANT: CMD55 and ACMD41 must be in the SAME CS-low window with no CS
-        // toggle between them, or the card returns illegal-command (0x05).
-        // arg = HCS(bit30) | voltage window(2.7-3.6V = 0xFF8000)
         bool inited = false;
         for (int i = 0; i < 50; i++) {
           digitalWrite(SD_CS, LOW);
-          uint8_t r55 = sendCmd(55, 0, 0x00);
-          SPI.transfer(0xFF);   // 8 dummy clocks between CMD55 and ACMD41 (CS stays low)
-          uint8_t r41 = sendCmd(41, 0x40FF8000, 0x00);  // HCS=1 + 2.7-3.6V window
+          uint8_t r55 = bbSendCmd(55, 0, 0x00);
+          bbXfer(0xFF);
+          uint8_t r41 = bbSendCmd(41, 0x40FF8000, 0x00);
           digitalWrite(SD_CS, HIGH);
-          if (r41 == 0x00) { inited = true; Serial.printf("SD diag: ACMD41 READY after %d tries\n", i + 1); break; }
+          if (r41 == 0x00) { inited = true; Serial.printf("SD bb: ACMD41 READY after %d tries\n", i + 1); break; }
           if (i == 0 || i == 4 || i == 9 || i == 24 || i == 49)
-            Serial.printf("SD diag: ACMD41 try %d R55=0x%02X R41=0x%02X\n", i + 1, r55, r41);
+            Serial.printf("SD bb: ACMD41 try %d R55=0x%02X R41=0x%02X\n", i + 1, r55, r41);
           delay(20);
         }
-        if (!inited) Serial.println(F("SD diag: ACMD41 never cleared idle (NOT initialized)"));
-        SPI.endTransaction();
+        if (!inited) Serial.println(F("SD bb: ACMD41 never cleared idle"));
+        // restore SCK/MOSI to the SPI driver before SD.begin
+        digitalWrite(SD_CS, HIGH);
+        SPI.end();
+        delay(2);
+        SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
+        delay(10);
       }
       // SD.begin() retries with a flag so we keep a single shared error/else branch.
       // The manual CMD0 above succeeded (R1=0x01), so the card and MISO are alive.
