@@ -98,23 +98,35 @@ bool SDInterface::initSD() {
         delay(2);
 
         uint8_t r1 = bbSendCmd(0, 0, 0x95);
+        bbXfer(0xFF);                 // dummy to release bus
         digitalWrite(SD_CS, HIGH);
+        bbXfer(0xFF);                 // 8 clocks while deselected
         Serial.printf("SD bb: CMD0 R1=0x%02X (expect 0x01)\n", r1);
 
         uint8_t cmd8[4] = {0};
+        digitalWrite(SD_CS, LOW);
         r1 = bbSendCmd(8, 0x000001AA, 0x87);
+        // MUST read the full 5-byte R7 (R1 + 4 echo bytes) or the card state misaligns.
         if (!(r1 & 0x80)) for (int i = 0; i < 4; i++) cmd8[i] = bbXfer(0xFF);
+        bbXfer(0xFF);                 // dummy
         digitalWrite(SD_CS, HIGH);
+        bbXfer(0xFF);                 // deselected idle clocks
         Serial.printf("SD bb: CMD8 R1=0x%02X R7=%02X %02X %02X %02X (last=AA ok)\n",
                       r1, cmd8[0], cmd8[1], cmd8[2], cmd8[3]);
 
         bool inited = false;
         for (int i = 0; i < 50; i++) {
           digitalWrite(SD_CS, LOW);
+          // small CS-low settling
+          delayMicroseconds(20);
           uint8_t r55 = bbSendCmd(55, 0, 0x00);
+          // consume any trailing byte, then a clear dummy gap before ACMD41
+          bbXfer(0xFF);
           bbXfer(0xFF);
           uint8_t r41 = bbSendCmd(41, 0x40FF8000, 0x00);
+          bbXfer(0xFF);               // dummy to release bus
           digitalWrite(SD_CS, HIGH);
+          bbXfer(0xFF);               // deselected idle clocks
           if (r41 == 0x00) { inited = true; Serial.printf("SD bb: ACMD41 READY after %d tries\n", i + 1); break; }
           if (i == 0 || i == 4 || i == 9 || i == 24 || i == 49)
             Serial.printf("SD bb: ACMD41 try %d R55=0x%02X R41=0x%02X\n", i + 1, r55, r41);
