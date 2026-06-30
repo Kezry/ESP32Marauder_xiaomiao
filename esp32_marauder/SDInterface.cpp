@@ -100,10 +100,33 @@ bool SDInterface::initSD() {
           SPI.transfer(0xFF);   // 8 dummy clocks between CMD55 and ACMD41 (CS stays low)
           uint8_t r41 = sendCmd(41, 0x40000000, 0x00);  // HCS=1 (host supports SDHC)
           digitalWrite(SD_CS, HIGH);
-          if (r41 == 0x00) { inited = true; Serial.printf("SD diag: ACMD41 READY after %d tries\n", i + 1); break; }
+          if (r41 == 0x00) { inited = true; Serial.printf("SD diag: ACMD41(HCS=1) READY after %d tries\n", i + 1); break; }
           if (i == 0 || i == 4 || i == 9 || i == 24 || i == 49)
             Serial.printf("SD diag: ACMD41 try %d R55=0x%02X R41=0x%02X\n", i + 1, r55, r41);
           delay(20);
+        }
+        // If HCS=1 failed, retry the whole loop with HCS=0 (SDSC voltage-only init).
+        if (!inited) {
+          Serial.println(F("SD diag: ACMD41(HCS=1) failed, retrying HCS=0..."));
+          digitalWrite(SD_CS, HIGH);
+          for (int i = 0; i < 12; i++) SPI.transfer(0xFF);
+          delay(2);
+          digitalWrite(SD_CS, LOW);
+          sendCmd(0, 0, 0x95);   // re-idle
+          digitalWrite(SD_CS, HIGH);
+          for (int i = 0; i < 12; i++) SPI.transfer(0xFF);
+          delay(2);
+          for (int i = 0; i < 50; i++) {
+            digitalWrite(SD_CS, LOW);
+            uint8_t r55 = sendCmd(55, 0, 0x00);
+            SPI.transfer(0xFF);
+            uint8_t r41 = sendCmd(41, 0x00000000, 0x00);  // HCS=0 (SDSC)
+            digitalWrite(SD_CS, HIGH);
+            if (r41 == 0x00) { inited = true; Serial.printf("SD diag: ACMD41(HCS=0) READY after %d tries\n", i + 1); break; }
+            if (i == 0 || i == 4 || i == 9 || i == 24 || i == 49)
+              Serial.printf("SD diag: ACMD41(HCS=0) try %d R55=0x%02X R41=0x%02X\n", i + 1, r55, r41);
+            delay(20);
+          }
         }
         if (!inited) Serial.println(F("SD diag: ACMD41 never cleared idle (NOT initialized)"));
         SPI.transfer(0xFF);  // 8 clocks to release bus
