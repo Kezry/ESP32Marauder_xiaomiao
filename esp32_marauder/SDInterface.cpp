@@ -36,22 +36,43 @@ bool SDInterface::initSD() {
     #ifdef MARAUDER_XIAOMIAO
       Serial.println(F("XiaoMiao SD: releasing GPIO19 from TFT RST -> SD MISO"));
       // Force GPIO19 (shared RST/MISO) out of TFT_eSPI's OUTPUT state. gpio_reset_pin
-      // disables the output driver and returns the pad to high-impedance input, while
-      // preserving the SPI input-matrix mapping that TFT_eSPI already established. This
-      // matches the NES emulator project's workaround for this exact hardware.
+      // disables the output driver and returns the pad to high-impedance input.
       gpio_reset_pin(GPIO_NUM_19);
       delay(5);
 
       // Hold SD_CS idle (high) while we (re)start the bus.
       pinMode(SD_CS, OUTPUT);
       digitalWrite(SD_CS, HIGH);
+      pinMode(TFT_SCLK, OUTPUT);
+      pinMode(TFT_MOSI, OUTPUT);
       delay(5);
 
       // Force the shared SPI2 bus to re-attach the pins (end() tears the bus down so
       // the next begin() actually re-programs the GPIO matrix with MISO=GPIO19).
       SPI.end();
+      delay(2);
       SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
       delay(10);
+
+      // ---- MISO diagnostic: drive CMD0 manually and read the R1 response ----
+      // SD SPI init: send 80+ clocks with CS high (card enters native SPI mode),
+      // then assert CS and send CMD0 (GO_IDLE_STATE). A live card answers with at
+      // least one 0x01 byte (idle). If we only read 0xFF, MISO is not connected.
+      {
+        digitalWrite(SD_CS, HIGH);
+        for (int i = 0; i < 12; i++) SPI.transfer(0xFF);   // >= 74 dummy clocks
+        delay(1);
+        digitalWrite(SD_CS, LOW);
+        delay(1);
+        // CMD0: 0x40 00 00 00 00 0x95
+        uint8_t cmd0[6] = { 0x40, 0x00, 0x00, 0x00, 0x00, 0x95 };
+        for (int i = 0; i < 6; i++) SPI.transfer(cmd0[i]);
+        uint8_t resp = 0xFF;
+        for (int i = 0; i < 10 && resp == 0xFF; i++) resp = SPI.transfer(0xFF);
+        digitalWrite(SD_CS, HIGH);
+        Serial.printf("XiaoMiao SD: CMD0 R1 response = 0x%02X (0x01=idle/OK, 0xFF=no card/MISO dead)\n", resp);
+      }
+
       if (!SD.begin(SD_CS, SPI)) {
         Serial.println(F("XiaoMiao SD: SD.begin FAILED"));
     #else
