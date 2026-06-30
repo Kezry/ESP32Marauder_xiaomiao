@@ -157,10 +157,6 @@
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/soc/esp32/include/soc/sdmmc_pins.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/soc/esp32/include/soc/spi_struct.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/hal/include/hal/spi_types.h \
- /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/hal/esp32/include/hal/gpio_ll.h \
- /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/soc/esp32/include/soc/rtc_cntl_reg.h \
- /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/soc/esp32/include/soc/rtc_io_reg.h \
- /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/hal/platform_port/include/hal/misc.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/libraries/FS/src/FS.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/libraries/SPIFFS/src/SPIFFS.h \
  /home/runner/Arduino/libraries/TFT_eSPI/Fonts/glcdfont.c \
