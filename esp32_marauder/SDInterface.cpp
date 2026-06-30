@@ -1,8 +1,9 @@
 #include "SDInterface.h"
 #include "lang_var.h"
-
 #ifdef MARAUDER_XIAOMIAO
+  #include "SdFat.h"
   #include "driver/gpio.h"
+  SdFat SD;
 #endif
 
 #ifdef HAS_C5_SD
@@ -25,35 +26,25 @@ bool SDInterface::initSD() {
     pinMode(SD_CS, OUTPUT);
 
     // XiaoMiao: GPIO19 is shared between TFT RST and SD MISO. TFT_eSPI configures
-    // GPIO19 as OUTPUT (RST) during tft.init() and keeps it as OUTPUT through every
-    // subsequent draw operation. Display::init() never runs during setup(), so by the
-    // time initSD() is called GPIO19 is still configured as OUTPUT (RST), which makes
-    // SD reads return garbage. The Arduino SD library's internal SPI object is already
-    // initialized (by TFT_eSPI), so SPI.begin() returns early WITHOUT re-attaching the
-    // pins. We must (a) force GPIO19 back to its input state via the ESP-IDF GPIO
-    // driver, and (b) force the global SPI bus to re-attach with the correct pins by
-    // calling end()/begin() — this re-points the SPI2 MISO input at GPIO19.
+    // GPIO19 as OUTPUT (RST) during tft.init(). Before SD.begin(), we must reconfigure
+    // the SPI bus so GPIO19 is MISO (input). Use an explicit SPIClass with the correct
+    // pins, matching the shared bus (SCK=18, MISO=19, MOSI=23).
     #ifdef MARAUDER_XIAOMIAO
-      Serial.println(F("XiaoMiao SD: releasing GPIO19 from TFT RST -> SD MISO"));
-      // Force GPIO19 (shared RST/MISO) out of TFT_eSPI's OUTPUT state. gpio_reset_pin
-      // disables the output driver and returns the pad to high-impedance input, while
-      // preserving the SPI input-matrix mapping that TFT_eSPI already established. This
-      // matches the NES emulator project's workaround for this exact hardware.
+      // XiaoMiao: SD MISO (GPIO19) is shared with TFT RST. After the splash screen,
+      // GPIO19 is still OUTPUT (RST). Release it, then re-attach the shared SPI2 bus
+      // so MISO points at GPIO19. SdFat 2.2.0 + SHARED_SPI works on arduino-esp32 2.x
+      // (mirrors the NES emulator project on this exact hardware). On 3.x SdFat crashes,
+      // so this whole SD path is only reached meaningfully on the 2.x-core build.
+      Serial.println(F("XiaoMiao SD: SdFat SHARED_SPI init..."));
       gpio_reset_pin(GPIO_NUM_19);
       delay(5);
-
-      // Hold SD_CS idle (high) while we (re)start the bus.
       pinMode(SD_CS, OUTPUT);
       digitalWrite(SD_CS, HIGH);
       delay(5);
-
-      // Force the shared SPI2 bus to re-attach the pins (end() tears the bus down so
-      // the next begin() actually re-programs the GPIO matrix with MISO=GPIO19).
-      SPI.end();
       SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
       delay(10);
-      if (!SD.begin(SD_CS, SPI)) {
-        Serial.println(F("XiaoMiao SD: SD.begin FAILED"));
+      if (!SD.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(20), &SPI))) {
+        Serial.println(F("XiaoMiao SD: SdFat init FAILED"));
     #else
     delay(10);
     #if (defined(MARAUDER_M5STICKC)) || (defined(HAS_CYD_TOUCH)) || (defined(MARAUDER_CARDPUTER)) || (defined(MARAUDER_CARDPUTER_ADV)) || (defined(HAS_SEPARATE_SD))
@@ -79,7 +70,7 @@ bool SDInterface::initSD() {
         this->spiExt = new SPIClass(FSPI);
       #endif
       Serial.println(F("Using external SPI configuration..."));
-      SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI);
+      SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
       if (!SD.begin(SD_CS, *(&SPI))) {
     #elif defined(HAS_C5_SD)
       if (!SD.begin(SD_CS, *_spi)) {
@@ -94,8 +85,8 @@ bool SDInterface::initSD() {
     else {
       this->supported = true;
       #ifdef MARAUDER_XIAOMIAO
-        this->cardType = SD.cardType();
-        this->cardSizeMB = SD.cardSize() / (1024 * 1024);
+        this->cardType = SD.card()->type();
+        this->cardSizeMB = (SD.card()->sectorCount() * 512) / (1024 * 1024);
       #else
         this->cardType = SD.cardType();
         this->cardSizeMB = SD.cardSize() / (1024 * 1024);
@@ -156,9 +147,9 @@ void SDInterface::listDirToLinkedList(LinkedList<String>* file_names, String str
         break;
       if (entry.isDirectory())
         continue;
-      
-      
-      String file_name = entry.name();
+      char namebuf[64];
+      entry.getName(namebuf, sizeof(namebuf));
+      String file_name = String(namebuf);
       if (ext != "") {
         if (file_name.endsWith(ext))
           file_names->add(file_name);
@@ -176,9 +167,9 @@ void SDInterface::listDir(String str_dir){
       File entry = dir.openNextFile();
       if (!entry)
         break;
-      
-      
-      Serial.print(entry.name());
+      char namebuf[64];
+      entry.getName(namebuf, sizeof(namebuf));
+      Serial.print(namebuf);
       Serial.print("\t");
       Serial.println(entry.size());
       entry.close();

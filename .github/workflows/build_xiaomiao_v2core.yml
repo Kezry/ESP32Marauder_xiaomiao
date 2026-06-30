@@ -1,61 +1,65 @@
-name: Build XiaoMiao
+name: Build XiaoMiao (2.x core)
 
-# Single-board build for XiaoMiao (学而思小喵掌机).
-# All libraries are installed EXPLICITLY via actions/checkout at pinned versions
-# (mirroring upstream build_parallel.yml). The sketch-bundled submodule libs under
-# esp32_marauder/libraries/ are NOT used — they are stale (e.g. TFT_eSPI submodule
-# is 2.0.2 which lacks the 3-arg setTextColor Marauder needs).
+# arduino-esp32 2.x build for XiaoMiao. The 3.x core's SPIClass crashes SdFat
+# (EXCVADDR panics) on the shared GPIO19 RST/MISO bus, so SD is unreadable.
+# The NES emulator project (same hardware) reads SD fine on espressif32@6.x
+# (arduino-esp32 2.x) + SdFat 2.2.0, so we mirror that toolchain here.
+#
+# Differences vs build_xiaomiao.yml (3.x):
+#  - core 2.0.17 instead of 3.3.4
+#  - NimBLE 1.4.x (1.x API); HAS_NIMBLE_2 is auto-disabled via ESP_ARDUINO_VERSION
+#    guard in configs.h, so the NimBLE-1.x code path in WiFiScan.cpp is taken
+#  - me-no-dev AsyncTCP + ESPAsyncWebServer (2.x-compatible)
+#  - outputs to Release Bins/ (same as before) + doc/last_compile_v2core.log
 on:
   workflow_dispatch:
-  # NOTE: push trigger moved to build_xiaomiao_v2core.yml (arduino-esp32 2.x). This
-  # 3.x build is kept as a manual-only fallback; SdFat crashes on 3.x so SD is
-  # unsupported in its output.
+  push:
+    branches:
+      - feat/xiaomiao
 
 jobs:
   build:
-    name: Build XiaoMiao firmware
+    name: Build XiaoMiao (2.x) firmware
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # allow pushing the compile-error log back to the branch
+      contents: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-        # Do NOT init submodules: bundled esp32_marauder/libraries/* are stale and
-        # we override every one with pinned Custom* checkouts below.
 
       - name: Install Arduino CLI
         run: |
           curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
 
-      - name: Install ESP32 core v3.3.4
+      - name: Install ESP32 core v2.0.17
         run: |
           arduino-cli config init
           arduino-cli config set board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
           arduino-cli core update-index
-          arduino-cli core install esp32:esp32@3.3.4
+          arduino-cli core install esp32:esp32@2.0.17
 
-      # ---- Every library via explicit checkout at CI-pinned versions ----
+      # ---- Libraries pinned to arduino-esp32 2.x-compatible versions ----
       - name: ESP32Ping
         uses: actions/checkout@v3
         with: { repository: marian-craciunescu/ESP32Ping, ref: 1.6, path: libs/ESP32Ping }
+      # me-no-dev AsyncTCP (2.x core compatible), not the ESP32Async v3 fork.
       - name: AsyncTCP
         uses: actions/checkout@v3
-        with: { repository: ESP32Async/AsyncTCP, ref: v3.4.8, path: libs/AsyncTCP }
+        with: { repository: me-no-dev/AsyncTCP, ref: v1.1.4, path: libs/AsyncTCP }
       - name: MicroNMEA
         uses: actions/checkout@v3
         with: { repository: stevemarple/MicroNMEA, ref: v2.0.6, path: libs/MicroNMEA }
-      - name: ESPAsyncWebServer (repo-bundled, 2.10.4 — compatible with idf 3.3.4 mbedtls)
-        # NOTE: bigbrodude6119@master (v1.2.3) uses mbedtls_md5_*_ret which is gone in
-        # arduino-esp32 3.3.4's mbedtls. The repo-bundled 2.10.4 has version guards.
-        run: |
-          mkdir -p libs
-          cp -r libraries/ESPAsyncWebServer libs/ESPAsyncWebServer
-      - name: TFT_eSPI (V2.5.34 — has 3-arg setTextColor)
+      # me-no-dev ESPAsyncWebServer (2.x core compatible).
+      - name: ESPAsyncWebServer
         uses: actions/checkout@v3
-        with: { repository: Bodmer/TFT_eSPI, ref: V2.5.34, path: libs/TFT_eSPI }
+        with: { repository: me-no-dev/ESPAsyncWebServer, ref: v1.2.6, path: libs/ESPAsyncWebServer }
+      # TFT_eSPI 2.4.x is the last 2.x-core-compatible line that has 3-arg setTextColor.
+      - name: TFT_eSPI
+        uses: actions/checkout@v3
+        with: { repository: Bodmer/TFT_eSPI, ref: V2.4.79, path: libs/TFT_eSPI }
       - name: XPT2046_Touchscreen
         uses: actions/checkout@v3
         with: { repository: PaulStoffregen/XPT2046_Touchscreen, ref: v1.4, path: libs/XPT2046_Touchscreen }
@@ -65,9 +69,11 @@ jobs:
       - name: JPEGDecoder
         uses: actions/checkout@v3
         with: { repository: Bodmer/JPEGDecoder, ref: 1.8.0, path: libs/JPEGDecoder }
+      # NimBLE 1.x: HAS_NIMBLE_2 is OFF on 2.x core (configs.h guard), so the
+      # NimBLE-1.x API path in WiFiScan.cpp is used. h2zero 1.4.x line.
       - name: NimBLE-Arduino
         uses: actions/checkout@v3
-        with: { repository: h2zero/NimBLE-Arduino, ref: 2.3.8, path: libs/NimBLE-Arduino }
+        with: { repository: h2zero/NimBLE-Arduino, ref: 1.4.2, path: libs/NimBLE-Arduino }
       - name: Adafruit_NeoPixel
         uses: actions/checkout@v3
         with: { repository: adafruit/Adafruit_NeoPixel, ref: 1.12.0, path: libs/Adafruit_NeoPixel }
@@ -79,7 +85,7 @@ jobs:
         with: { repository: ivanseidel/LinkedList, ref: v1.3.3, path: libs/LinkedList }
       - name: EspSoftwareSerial
         uses: actions/checkout@v3
-        with: { repository: plerup/espsoftwareserial, ref: 8.1.0, path: libs/EspSoftwareSerial }
+        with: { repository: plerup/espsoftwareserial, ref: 6.16.1, path: libs/EspSoftwareSerial }
       - name: Adafruit_BusIO
         uses: actions/checkout@v3
         with: { repository: adafruit/Adafruit_BusIO, ref: 1.15.0, path: libs/Adafruit_BusIO }
@@ -89,11 +95,10 @@ jobs:
       - name: Adafruit_GFX
         uses: actions/checkout@v3
         with: { repository: adafruit/Adafruit-GFX-Library, ref: 1.11.9, path: libs/Adafruit_GFX }
-      - name: SdFat (XiaoMiao SD card — Arduino SD lib fails on shared SPI/RST pin)
+      # SdFat 2.2.0 — the whole point: reads the XiaoMiao SD on 2.x without crashing.
+      - name: SdFat
         uses: actions/checkout@v3
         with: { repository: greiman/SdFat, ref: 2.2.0, path: libs/SdFat }
-      # SwitchLib submodule is NOT included by Marauder code (uses local Switches.h), skip it.
-      # Adafruit_TCA8418 is a real (non-submodule) dir at the repo top level.
       - name: Adafruit_TCA8418 (repo-bundled)
         run: |
           mkdir -p libs
@@ -104,12 +109,13 @@ jobs:
           arduino-cli config set directories.user "$HOME/Arduino"
           mkdir -p "$HOME/Arduino/libraries"
           cp -r libs/* "$HOME/Arduino/libraries/"
-          # remove sketch-bundled submodule libs so they cannot shadow the pinned ones
           rm -rf esp32_marauder/libraries
           echo "--- installed libraries: ---"
           ls "$HOME/Arduino/libraries/"
           echo "--- TFT_eSPI version: ---"
-          grep -i version "$HOME/Arduino/libraries/TFT_eSPI/library.properties"
+          grep -i version "$HOME/Arduino/libraries/TFT_eSPI/library.properties" || true
+          echo "--- core version: ---"
+          ls "$HOME/.arduino15/packages/esp32/hardware/esp32/"
 
       - name: Configure TFT_eSPI for XiaoMiao
         run: |
@@ -119,13 +125,13 @@ jobs:
           echo "--- active TFT_eSPI setup: ---"
           grep -nE "^#include <User_Setup" "$TFT/User_Setup_Select.h"
 
-      - name: Patch platform.txt (idf 3.x -Wl,-zmuldefs)
+      - name: Patch platform.txt (-Wl,-zmuldefs for duplicate symbols)
         run: |
           for i in $(find $HOME/.arduino15/packages/esp32/hardware/esp32/ -name "platform.txt"); do
             sed -i 's|compiler.c.elf.extra_flags=|compiler.c.elf.extra_flags=-Wl,-zmuldefs |' "$i"
           done
 
-      - name: Build XiaoMiao
+      - name: Build XiaoMiao (2.x)
         run: |
           set -x
           BUILD_OUT="$GITHUB_WORKSPACE/build_out"
@@ -136,17 +142,16 @@ jobs:
             --build-property "compiler.cpp.extra_flags=-DMARAUDER_XIAOMIAO" \
             --warnings none \
             esp32_marauder/esp32_marauder.ino 2>&1 | tee /tmp/compile_output.log
-          # verify the bin exists immediately after compile
           echo "=== POST-COMPILE: build_out .bin files ==="
           ls -la "$BUILD_OUT"/*.bin 2>&1 | tee -a /tmp/compile_output.log
 
       - name: Rename artifact
         run: |
           set -x
-          exec 2>&1  # send stderr (set -x) to the log via tee below
+          exec 2>&1
           {
           DATE=$(date -u +%Y%m%d)
-          OUTPUT_BIN=esp32_marauder_v1_0_0_${DATE}_xiaomiao.bin
+          OUTPUT_BIN=esp32_marauder_v2core_${DATE}_xiaomiao.bin
           BUILD_OUT="$GITHUB_WORKSPACE/build_out"
           echo "=== build_out *.bin ==="
           ls -la "$BUILD_OUT"/*.bin 2>&1
@@ -161,60 +166,36 @@ jobs:
           cp "$INPUT_BIN" "$OUTPUT_BIN"
           ls -la "$OUTPUT_BIN"
           echo "artifact_name=$OUTPUT_BIN" >> $GITHUB_ENV
-          # Also stage the matching bootloader + partitions (needed to flash; must
-          # match the IDF version the app was built with).
-          cp "$BUILD_OUT/esp32_marauder.ino.bootloader.bin" "bootloader_xiaomiao.bin" 2>/dev/null || echo "no bootloader in build_out"
-          cp "$BUILD_OUT/esp32_marauder.ino.partitions.bin" "partitions_xiaomiao.bin" 2>/dev/null || echo "no partitions in build_out"
-          ls -la bootloader_xiaomiao.bin partitions_xiaomiao.bin 2>/dev/null
+          # matching bootloader + partitions (must match the 2.x IDF build)
+          cp "$BUILD_OUT/esp32_marauder.ino.bootloader.bin" "bootloader_xiaomiao_v2core.bin" 2>/dev/null || echo "no bootloader in build_out"
+          cp "$BUILD_OUT/esp32_marauder.ino.partitions.bin" "partitions_xiaomiao_v2core.bin" 2>/dev/null || echo "no partitions in build_out"
+          ls -la bootloader_xiaomiao_v2core.bin partitions_xiaomiao_v2core.bin 2>/dev/null
           } 2>&1 | tee -a /tmp/compile_output.log
 
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
-          name: xiaomiao_firmware
+          name: xiaomiao_firmware_v2core
           path: ${{ env.artifact_name }}
           retention-days: 14
 
-      # Publish the firmware as GitHub Release v1.0.3 using the built-in GITHUB_TOKEN
-      # (no user gh auth needed). softprops/action-gh-release is what upstream CI uses.
-      - name: Create Release v1.0.3 with firmware
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v1.0.3
-          name: XiaoMiao v1.0.3
-          body: |
-            ESP32 Marauder firmware for the 学而思小喵掌机 (XiaoMiao).
-
-            - Target: ESP32-D0WD, 4MB flash, ST7735 128x160 (landscape)
-            - Source: feat/xiaomiao branch (CI build ${{ github.run_id }})
-            - Flash with esptool: `0x10000` = this .bin (plus bootloader/partitions/boot_app0)
-
-            Full backup of factory firmware is in the repo at `doc/esp32_xiaomiao_factory_backup.bin`.
-          files: |
-            ${{ env.artifact_name }}
-            bootloader_xiaomiao.bin
-            partitions_xiaomiao.bin
-          fail_on_unmatched_files: true
-          draft: false
-          prerelease: false
-
-      # Always commit the compile output + rename diagnostics back to the branch so
-      # failures are readable via plain git (no gh auth needed).
+      # Always commit the compile output + firmware to the branch so results are
+      # readable via plain git (no gh auth needed).
       - name: Commit log + firmware to branch
         if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           mkdir -p doc Release\ Bins
-          cp /tmp/compile_output.log doc/last_compile_error.log
+          cp /tmp/compile_output.log doc/last_compile_v2core.log
           {
             echo ""
             echo "=== artifact search (rename step) ==="
-          } >> doc/last_compile_error.log
-          # Also commit the built firmware bin so it can be pulled via git
+          } >> doc/last_compile_v2core.log
           if [ -f "${{ env.artifact_name }}" ]; then
             cp "${{ env.artifact_name }}" "Release Bins/"
           fi
-          git add doc/last_compile_error.log "Release Bins/" || true
-          git commit -m "Update compile log + firmware (CI run ${{ github.run_id }})" || echo "nothing to commit"
+          git add doc/last_compile_v2core.log "Release Bins/" bootloader_xiaomiao_v2core.bin partitions_xiaomiao_v2core.bin 2>/dev/null || true
+          git commit -m "Update 2.x compile log + firmware (CI run ${{ github.run_id }})" || echo "nothing to commit"
+          git pull -r origin feat/xiaomiao || true
           git push || echo "push skipped"

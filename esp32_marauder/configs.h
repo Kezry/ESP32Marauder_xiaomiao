@@ -578,7 +578,12 @@
     #define USE_SD
     //#define HAS_SIMPLEX_DISPLAY
     #define HAS_TEMP_SENSOR
-    #define HAS_NIMBLE_2
+    // NimBLE 2.x API requires arduino-esp32 3.x. On the 2.x toolchain (used so SdFat
+    // can read this shared-SPI SD card without the 3.x SPI-driver crash), fall back
+    // to the NimBLE 1.x code path. Both paths exist in WiFiScan.cpp.
+    #if ESP_ARDUINO_VERSION_MAJOR >= 3
+      #define HAS_NIMBLE_2
+    #endif
     #define HAS_IDF_3
   #endif
   //// END BOARD FEATURES
