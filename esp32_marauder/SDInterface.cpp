@@ -1,6 +1,10 @@
 #include "SDInterface.h"
 #include "lang_var.h"
 
+#ifdef MARAUDER_XIAOMIAO
+  #include "driver/gpio.h"
+#endif
+
 #ifdef HAS_C5_SD
   SDInterface::SDInterface(SPIClass* spi, int cs)
     : _spi(spi), _cs(cs) {}
@@ -21,16 +25,34 @@ bool SDInterface::initSD() {
     pinMode(SD_CS, OUTPUT);
 
     // XiaoMiao: GPIO19 is shared between TFT RST and SD MISO. TFT_eSPI configures
-    // GPIO19 as OUTPUT (RST) during tft.init(). Before SD.begin(), we must reconfigure
-    // the SPI bus so GPIO19 is MISO (input). Use an explicit SPIClass with the correct
-    // pins, matching the shared bus (SCK=18, MISO=19, MOSI=23).
+    // GPIO19 as OUTPUT (RST) during tft.init() and keeps it as OUTPUT through every
+    // subsequent draw operation. Display::init() never runs during setup(), so by the
+    // time initSD() is called GPIO19 is still configured as OUTPUT (RST), which makes
+    // SD reads return garbage. The Arduino SD library's internal SPI object is already
+    // initialized (by TFT_eSPI), so SPI.begin() returns early WITHOUT re-attaching the
+    // pins. We must (a) force GPIO19 back to its input state via the ESP-IDF GPIO
+    // driver, and (b) force the global SPI bus to re-attach with the correct pins by
+    // calling end()/begin() — this re-points the SPI2 MISO input at GPIO19.
     #ifdef MARAUDER_XIAOMIAO
-      // XiaoMiao: SD MISO (GPIO19) is shared with TFT RST. Use SdFat with
-      // SHARED_SPI mode + a new SPIClass to avoid DMA conflicts with TFT_eSPI.
-      Serial.println(F("XiaoMiao SD: Arduino SD init (GPIO19 released by Display::init)..."));
-      SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI);
+      Serial.println(F("XiaoMiao SD: releasing GPIO19 from TFT RST -> SD MISO"));
+      // Force GPIO19 (shared RST/MISO) out of TFT_eSPI's OUTPUT state. gpio_reset_pin
+      // disables the output driver and returns the pad to high-impedance input, while
+      // preserving the SPI input-matrix mapping that TFT_eSPI already established. This
+      // matches the NES emulator project's workaround for this exact hardware.
+      gpio_reset_pin(GPIO_NUM_19);
+      delay(5);
+
+      // Hold SD_CS idle (high) while we (re)start the bus.
+      pinMode(SD_CS, OUTPUT);
+      digitalWrite(SD_CS, HIGH);
+      delay(5);
+
+      // Force the shared SPI2 bus to re-attach the pins (end() tears the bus down so
+      // the next begin() actually re-programs the GPIO matrix with MISO=GPIO19).
+      SPI.end();
+      SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
       delay(10);
-      if (!SD.begin(SD_CS)) {
+      if (!SD.begin(SD_CS, SPI)) {
         Serial.println(F("XiaoMiao SD: SD.begin FAILED"));
     #else
     delay(10);

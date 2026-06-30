@@ -120,12 +120,10 @@ void Display::init() {
     display_initialized = true;
   }
 
-  // XiaoMiao: GPIO19 is shared between TFT RST and SD MISO. After tft.init(),
-  // TFT_eSPI holds GPIO19 as OUTPUT(HIGH). Release it as INPUT so the SD card
-  // SPI MISO can use it. (Same pattern as the NES emulator project on this HW.)
-  #ifdef MARAUDER_XIAOMIAO
-    pinMode(TFT_RST, INPUT);
-  #endif
+  // NOTE: GPIO19 (shared TFT RST / SD MISO) is released to INPUT in
+  // SDInterface::initSD() right before SD.begin(). It is intentionally NOT released
+  // here: tft.init() and the subsequent draw operations (splash, menus, scans) all
+  // need GPIO19 as OUTPUT (RST), and releasing it here would break the next draw.
 
   #if defined(HAS_DUAL_BAND) && !defined(MARAUDER_MINI_V3)
     digitalWrite(TFT_BL, HIGH);
