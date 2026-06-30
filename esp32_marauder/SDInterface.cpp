@@ -96,14 +96,15 @@ bool SDInterface::initSD() {
         // ACMD41 init loop (CMD55 + ACMD41). Card clears idle (R1=0x00) when ready.
         // IMPORTANT: CMD55 and ACMD41 must be in the SAME CS-low window with no CS
         // toggle between them, or the card returns illegal-command (0x05).
+        // arg = HCS(bit30) | voltage window(2.7-3.6V = 0xFF8000)
         bool inited = false;
         for (int i = 0; i < 50; i++) {
           digitalWrite(SD_CS, LOW);
           uint8_t r55 = sendCmd(55, 0, 0x00);
           SPI.transfer(0xFF);   // 8 dummy clocks between CMD55 and ACMD41 (CS stays low)
-          uint8_t r41 = sendCmd(41, 0x40000000, 0x00);  // HCS=1 (host supports SDHC)
+          uint8_t r41 = sendCmd(41, 0x40FF8000, 0x00);  // HCS=1 + 2.7-3.6V window
           digitalWrite(SD_CS, HIGH);
-          if (r41 == 0x00) { inited = true; Serial.printf("SD diag: ACMD41(HCS=1) READY after %d tries\n", i + 1); break; }
+          if (r41 == 0x00) { inited = true; Serial.printf("SD diag: ACMD41 READY after %d tries\n", i + 1); break; }
           if (i == 0 || i == 4 || i == 9 || i == 24 || i == 49)
             Serial.printf("SD diag: ACMD41 try %d R55=0x%02X R41=0x%02X\n", i + 1, r55, r41);
           delay(20);
