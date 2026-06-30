@@ -45,21 +45,22 @@ jobs:
       - name: ESP32Ping
         uses: actions/checkout@v3
         with: { repository: marian-craciunescu/ESP32Ping, ref: 1.6, path: libs/ESP32Ping }
-      # me-no-dev AsyncTCP (2.x core compatible), not the ESP32Async v3 fork.
+      # me-no-dev AsyncTCP (2.x core compatible), not the ESP32Async v3 fork. Has no
+      # release tags, so use master.
       - name: AsyncTCP
         uses: actions/checkout@v3
-        with: { repository: me-no-dev/AsyncTCP, ref: v1.1.4, path: libs/AsyncTCP }
+        with: { repository: me-no-dev/AsyncTCP, ref: master, path: libs/AsyncTCP }
       - name: MicroNMEA
         uses: actions/checkout@v3
         with: { repository: stevemarple/MicroNMEA, ref: v2.0.6, path: libs/MicroNMEA }
-      # me-no-dev ESPAsyncWebServer (2.x core compatible).
+      # me-no-dev ESPAsyncWebServer (2.x core compatible). No release tags, use master.
       - name: ESPAsyncWebServer
         uses: actions/checkout@v3
-        with: { repository: me-no-dev/ESPAsyncWebServer, ref: v1.2.6, path: libs/ESPAsyncWebServer }
-      # TFT_eSPI 2.4.x is the last 2.x-core-compatible line that has 3-arg setTextColor.
+        with: { repository: me-no-dev/ESPAsyncWebServer, ref: master, path: libs/ESPAsyncWebServer }
+      # TFT_eSPI V2.4.51 is the last 2.4.x tag (2.x-core compatible) with 3-arg setTextColor.
       - name: TFT_eSPI
         uses: actions/checkout@v3
-        with: { repository: Bodmer/TFT_eSPI, ref: V2.4.79, path: libs/TFT_eSPI }
+        with: { repository: Bodmer/TFT_eSPI, ref: V2.4.51, path: libs/TFT_eSPI }
       - name: XPT2046_Touchscreen
         uses: actions/checkout@v3
         with: { repository: PaulStoffregen/XPT2046_Touchscreen, ref: v1.4, path: libs/XPT2046_Touchscreen }
