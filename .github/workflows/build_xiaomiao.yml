@@ -133,7 +133,7 @@ jobs:
           arduino-cli compile \
             --fqbn "esp32:esp32:d32:PartitionScheme=min_spiffs" \
             --build-path "$BUILD_OUT" \
-            --build-property "compiler.cpp.extra_flags=-DMARAUDER_XIAOMIAO" \
+            --build-property "compiler.cpp.extra_flags=-DMARAUDER_XIAOMIAO -DUSE_SPI_ARRAY_TRANSFER=0" \
             --warnings none \
             esp32_marauder/esp32_marauder.ino 2>&1 | tee /tmp/compile_output.log
           # verify the bin exists immediately after compile
