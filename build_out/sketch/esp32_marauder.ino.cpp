@@ -201,7 +201,7 @@ void backlightOn();
 void backlightOff();
 #line 226 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
 void setup();
-#line 422 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
+#line 425 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
 void loop();
 #line 196 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
   void backlightOn() {
@@ -298,6 +298,7 @@ void setup()
   //  delay(10);
 
   Serial.println("ESP-IDF version is: " + String(esp_get_idf_version()));
+  Serial.println("DBG setup: S1 before PSRAM");
 
   #ifdef HAS_PSRAM
     if (!psramInit()) {
@@ -314,10 +315,12 @@ void setup()
     #endif
   #endif
 
+  Serial.println("DBG setup: S2 before RunSetup");
   #ifdef HAS_SCREEN
     display_obj.RunSetup();
     display_obj.tft.setTextColor(TFT_WHITE, TFT_BLACK);
   #endif
+  Serial.println("DBG setup: S3 after RunSetup");
 
   // Init PWM brightness AFTER display init (so ledcAttach overrides TFT_eSPI's pinMode)
   #ifndef HAS_MINI_SCREEN
