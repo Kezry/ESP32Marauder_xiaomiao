@@ -2838,7 +2838,7 @@ String WiFiScan::security_int_to_string(int security_type) {
 void WiFiScan::startPcap(const char* file_name) {
   buffer_obj.pcapOpen(
     file_name,
-    #if defined(HAS_SD) && !defined(MARAUDER_XIAOMIAO)
+    #if defined(HAS_SD)
       sd_obj.supported ? &SD :
     #endif
     NULL,
@@ -2849,7 +2849,7 @@ void WiFiScan::startPcap(const char* file_name) {
 void WiFiScan::startLog(const char* file_name) {
   buffer_obj.logOpen(
     file_name,
-    #if defined(HAS_SD) && !defined(MARAUDER_XIAOMIAO)
+    #if defined(HAS_SD)
       sd_obj.supported ? &SD :
     #endif
     NULL,
@@ -2860,7 +2860,7 @@ void WiFiScan::startLog(const char* file_name) {
 void WiFiScan::startGPX(const char* file_name) {
   buffer_obj.gpxOpen(
     file_name,
-    #if defined(HAS_SD) && !defined(MARAUDER_XIAOMIAO)
+    #if defined(HAS_SD)
       sd_obj.supported ? &SD :
     #endif
     NULL,

@@ -9,18 +9,7 @@
 #ifdef HAS_C5_SD
   #include "FS.h"
 #endif
-#ifdef MARAUDER_XIAOMIAO
-  #include "SdFat.h"
-  extern SdFat SD;
-  // Alias so all Marauder code using 'File' / 'FILE_READ' / 'FILE_WRITE' compiles
-  // unchanged with SdFat. FsFile is SdFat's file type; O_READ/O_WRITE are its flags.
-  #define File FsFile
-  #define FILE_READ O_READ
-  #define FILE_WRITE (O_RDWR | O_CREAT | O_TRUNC)
-  #define FILE_APPEND (O_WRITE | O_APPEND | O_CREAT)
-#else
-  #include "SD.h"
-#endif
+#include "SD.h"
 #ifdef HAS_C5_SD
   #include "SPI.h"
 #endif
