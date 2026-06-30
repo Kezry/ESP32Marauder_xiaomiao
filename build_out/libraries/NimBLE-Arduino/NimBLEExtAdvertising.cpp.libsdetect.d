@@ -1,0 +1,5 @@
+NimBLEExtAdvertising.o: \
+ /home/runner/Arduino/libraries/NimBLE-Arduino/src/NimBLEExtAdvertising.cpp \
+ /home/runner/Arduino/libraries/NimBLE-Arduino/src/nimconfig.h \
+ /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/dio_qspi/include/sdkconfig.h \
+ /home/runner/Arduino/libraries/NimBLE-Arduino/src/nimconfig_rename.h

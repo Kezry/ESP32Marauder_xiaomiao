@@ -1,0 +1,9 @@
+{
+  "additionalFiles": "../../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..",
+  "compiler.optimization_flags": "-Os",
+  "customBuildProperties": "compiler.cpp.extra_flags=-DMARAUDER_XIAOMIAO",
+  "fqbn": "esp32:esp32:d32:PartitionScheme=min_spiffs",
+  "hardwareFolders": "/home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17,/home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17",
+  "otherLibrariesFolders": "/home/runner/Arduino/libraries",
+  "sketchLocation": "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder"
+}
