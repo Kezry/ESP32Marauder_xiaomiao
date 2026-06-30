@@ -1,9 +1,8 @@
 #include "SDInterface.h"
 #include "lang_var.h"
+
 #ifdef MARAUDER_XIAOMIAO
-  #include "SdFat.h"
   #include "driver/gpio.h"
-  SdFat SD;
 #endif
 
 #ifdef HAS_C5_SD
@@ -26,46 +25,105 @@ bool SDInterface::initSD() {
     pinMode(SD_CS, OUTPUT);
 
     // XiaoMiao: GPIO19 is shared between TFT RST and SD MISO. TFT_eSPI configures
-    // GPIO19 as OUTPUT (RST) during tft.init(). Before SD.begin(), we must reconfigure
-    // the SPI bus so GPIO19 is MISO (input). Use an explicit SPIClass with the correct
-    // pins, matching the shared bus (SCK=18, MISO=19, MOSI=23).
+    // GPIO19 as OUTPUT (RST) during tft.init() and keeps it as OUTPUT through every
+    // subsequent draw operation. Display::init() never runs during setup(), so by the
+    // time initSD() is called GPIO19 is still configured as OUTPUT (RST), which makes
+    // SD reads return garbage. The Arduino SD library's internal SPI object is already
+    // initialized (by TFT_eSPI), so SPI.begin() returns early WITHOUT re-attaching the
+    // pins. We must (a) force GPIO19 back to its input state via the ESP-IDF GPIO
+    // driver, and (b) force the global SPI bus to re-attach with the correct pins by
+    // calling end()/begin() — this re-points the SPI2 MISO input at GPIO19.
     #ifdef MARAUDER_XIAOMIAO
-      // XiaoMiao: SD MISO (GPIO19) is shared with TFT RST. After the splash screen
-      // draws, GPIO19 is still OUTPUT (RST). Release it to high-Z input, then re-attach
-      // the SPI bus so MISO points at GPIO19. A manual CMD0 probe confirms MISO before
-      // handing control to SdFat. SHARED_SPI reuses the global SPI bus (no DMA/dedicated
-      // bus) to avoid the arduino-esp32 3.x DMA buffer-alignment crash SdFat hits with
-      // DEDICATED_SPI. SD_SCK_MHZ(4) keeps the shared GPIO19 trace reliable.
-      Serial.println(F("XiaoMiao SD: SdFat SHARED_SPI init..."));
+      Serial.println(F("XiaoMiao SD: releasing GPIO19 from TFT RST -> SD MISO"));
+      // Force GPIO19 (shared RST/MISO) out of TFT_eSPI's OUTPUT state. gpio_reset_pin
+      // disables the output driver and returns the pad to high-impedance input.
       gpio_reset_pin(GPIO_NUM_19);
       delay(5);
+
+      // Hold SD_CS idle (high) while we (re)start the bus.
       pinMode(SD_CS, OUTPUT);
       digitalWrite(SD_CS, HIGH);
       pinMode(TFT_SCLK, OUTPUT);
       pinMode(TFT_MOSI, OUTPUT);
       delay(5);
+
+      // Force the shared SPI2 bus to re-attach the pins (end() tears the bus down so
+      // the next begin() actually re-programs the GPIO matrix with MISO=GPIO19).
       SPI.end();
       delay(2);
       SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
       delay(10);
 
-      // ---- MISO sanity probe: CMD0 should return R1=0x01 (idle) ----
+      // ---- Full manual SD SPI init diagnostic ----
+      // Walk through CMD0 -> CMD8 -> ACMD41 the way the SD library does internally,
+      // printing each response so we can see exactly where the card stops answering.
       {
+        auto sendCmd = [](uint8_t cmd, uint32_t arg, uint8_t crc) {
+          digitalWrite(SD_CS, LOW);
+          SPI.transfer(0x40 | cmd);
+          SPI.transfer((arg >> 24) & 0xFF);
+          SPI.transfer((arg >> 16) & 0xFF);
+          SPI.transfer((arg >> 8) & 0xFF);
+          SPI.transfer(arg & 0xFF);
+          SPI.transfer(crc);
+          uint8_t r1 = 0xFF;
+          for (int i = 0; i < 10 && (r1 & 0x80); i++) r1 = SPI.transfer(0xFF);
+          return r1;
+        };
+
+        // >= 74 dummy clocks with CS high to enter native SPI mode
         digitalWrite(SD_CS, HIGH);
-        for (int i = 0; i < 12; i++) SPI.transfer(0xFF);   // >= 74 dummy clocks
-        delay(1);
+        for (int i = 0; i < 12; i++) SPI.transfer(0xFF);
+        delay(2);
+
+        // CMD0 GO_IDLE_STATE -> expect R1=0x01 (idle)
+        uint8_t r1 = sendCmd(0, 0, 0x95);
+        digitalWrite(SD_CS, HIGH);
+        Serial.printf("SD diag: CMD0 R1=0x%02X (expect 0x01)\n", r1);
+
+        // CMD8 SEND_IF_COND (SD v2 check): arg=0x000001AA -> R7 echoes 00 00 01 AA
+        uint8_t cmd8[4] = {0};
         digitalWrite(SD_CS, LOW);
-        delay(1);
-        uint8_t cmd0[6] = { 0x40, 0x00, 0x00, 0x00, 0x00, 0x95 };
-        for (int i = 0; i < 6; i++) SPI.transfer(cmd0[i]);
-        uint8_t resp = 0xFF;
-        for (int i = 0; i < 10 && resp == 0xFF; i++) resp = SPI.transfer(0xFF);
+        r1 = sendCmd(8, 0x000001AA, 0x87);
+        if (!(r1 & 0x80)) for (int i = 0; i < 4; i++) cmd8[i] = SPI.transfer(0xFF);
         digitalWrite(SD_CS, HIGH);
-        Serial.printf("XiaoMiao SD: CMD0 R1 = 0x%02X (0x01=ok)\n", resp);
+        Serial.printf("SD diag: CMD8 R1=0x%02X R7=%02X %02X %02X %02X (last=AA ok)\n",
+                      r1, cmd8[0], cmd8[1], cmd8[2], cmd8[3]);
+
+        // ACMD41 init loop (CMD55 + ACMD41 with HCS). Card clears idle (R1=0x00) when ready.
+        bool inited = false;
+        for (int i = 0; i < 50; i++) {
+          digitalWrite(SD_CS, LOW);
+          uint8_t r55 = sendCmd(55, 0, 0x00);
+          digitalWrite(SD_CS, HIGH);
+          SPI.transfer(0xFF);
+          digitalWrite(SD_CS, LOW);
+          uint8_t r41 = sendCmd(41, 0x40000000, 0x00);
+          digitalWrite(SD_CS, HIGH);
+          if (r41 == 0x00) { inited = true; Serial.printf("SD diag: ACMD41 READY after %d tries\n", i + 1); break; }
+          if (i == 0 || i == 4 || i == 9 || i == 24 || i == 49)
+            Serial.printf("SD diag: ACMD41 try %d R55=0x%02X R41=0x%02X\n", i + 1, r55, r41);
+          delay(20);
+        }
+        if (!inited) Serial.println(F("SD diag: ACMD41 never cleared idle (NOT initialized)"));
+        SPI.transfer(0xFF);  // 8 clocks to release bus
       }
-      delay(2);
-      if (!SD.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(4), &SPI))) {
-        Serial.println(F("XiaoMiao SD: SdFat init FAILED"));
+
+      // SD.begin() retries with a flag so we keep a single shared error/else branch.
+      // The manual CMD0 above succeeded (R1=0x01), so the card and MISO are alive.
+      // High-speed begin often fails on the shared GPIO19 RST/MISO trace, so try a
+      // moderate speed first, then a conservative 1 MHz.
+      bool sd_ok = SD.begin(SD_CS, SPI, 8000000);
+      if (!sd_ok) {
+        Serial.println(F("XiaoMiao SD: SD.begin failed @ 8MHz, retrying @ 1MHz"));
+        SPI.end();
+        delay(2);
+        SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
+        delay(10);
+        sd_ok = SD.begin(SD_CS, SPI, 1000000);
+        if (!sd_ok) Serial.println(F("XiaoMiao SD: SD.begin failed @ 1MHz"));
+      }
+      if (!sd_ok) {
     #else
     delay(10);
     #if (defined(MARAUDER_M5STICKC)) || (defined(HAS_CYD_TOUCH)) || (defined(MARAUDER_CARDPUTER)) || (defined(MARAUDER_CARDPUTER_ADV)) || (defined(HAS_SEPARATE_SD))
@@ -91,7 +149,7 @@ bool SDInterface::initSD() {
         this->spiExt = new SPIClass(FSPI);
       #endif
       Serial.println(F("Using external SPI configuration..."));
-      SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
+      SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI);
       if (!SD.begin(SD_CS, *(&SPI))) {
     #elif defined(HAS_C5_SD)
       if (!SD.begin(SD_CS, *_spi)) {
@@ -106,8 +164,8 @@ bool SDInterface::initSD() {
     else {
       this->supported = true;
       #ifdef MARAUDER_XIAOMIAO
-        this->cardType = SD.card()->type();
-        this->cardSizeMB = (SD.card()->sectorCount() * 512) / (1024 * 1024);
+        this->cardType = SD.cardType();
+        this->cardSizeMB = SD.cardSize() / (1024 * 1024);
       #else
         this->cardType = SD.cardType();
         this->cardSizeMB = SD.cardSize() / (1024 * 1024);
@@ -168,9 +226,9 @@ void SDInterface::listDirToLinkedList(LinkedList<String>* file_names, String str
         break;
       if (entry.isDirectory())
         continue;
-      char namebuf[64];
-      entry.getName(namebuf, sizeof(namebuf));
-      String file_name = String(namebuf);
+      
+      
+      String file_name = entry.name();
       if (ext != "") {
         if (file_name.endsWith(ext))
           file_names->add(file_name);
@@ -188,9 +246,9 @@ void SDInterface::listDir(String str_dir){
       File entry = dir.openNextFile();
       if (!entry)
         break;
-      char namebuf[64];
-      entry.getName(namebuf, sizeof(namebuf));
-      Serial.print(namebuf);
+      
+      
+      Serial.print(entry.name());
       Serial.print("\t");
       Serial.println(entry.size());
       entry.close();
