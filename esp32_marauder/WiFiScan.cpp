@@ -1557,7 +1557,7 @@ void WiFiScan::RunSetup() {
     NimBLEDevice::init("");
     pBLEScan = NimBLEDevice::getScan(); //create new scan
     this->ble_initialized = true;
-    
+
     this->shutdownBLE();
 
     //Serial.println("Initializing WiFi...");
@@ -5294,6 +5294,12 @@ void WiFiScan::RunSourApple(uint8_t scan_mode, uint16_t color) {
     NimBLEServer *pServer = NimBLEDevice::createServer();
 
     pAdvertising = pServer->getAdvertising();
+    // Mark BLE initialized so executeBLESpam's Apple path does NOT re-run
+    // NimBLEDevice::init/createServer every frame. Without this, the Sour Apple
+    // loop calls init("") again while the stack is already up, and on the 2.x
+    // core NimBLE 1.4.2 returns a bad server/advertising pointer ->
+    // InstrFetchProhibited (EXCVADDR 0x00000000) on the next pAdvertising->start().
+    this->ble_initialized = true;
 
     #ifdef HAS_SCREEN
       this->setupScanDisplayArea(TFT_BLACK, color);

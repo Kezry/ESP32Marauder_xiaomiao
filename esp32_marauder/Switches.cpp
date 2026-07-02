@@ -20,12 +20,21 @@ Switches::Switches(int pin, uint32_t hold_lim, bool pullup) {
 	this->hold_lim = hold_lim;
 	this->cur_hold = 0;
 	this->isheld = false;
-	
-  if (pullup)
-  	pinMode(this->pin, INPUT_PULLUP);
+
+  // ESP32 GPIO 34/35/36/39 are input-only pads with NO internal pull-up/pull-down
+  // resistors. INPUT_PULLUP is silently ignored on them, leaving the pin floating,
+  // so digitalRead returns noise and the button reads as randomly pressed/released.
+  // Boards that wire a button to one of these pins (e.g. XiaoMiao C_BTN=34, R_BTN=35)
+  // must provide an EXTERNAL pull-up; in that case use plain INPUT. The active-low
+  // read in getButtonState() still works because the external pull-up holds the pin
+  // HIGH and the button pulls it LOW. (pin 38 is not an input-only pad on ESP32.)
+  if (pullup && (pin == 34 || pin == 35 || pin == 36 || pin == 39))
+    pinMode(this->pin, INPUT);
+  else if (pullup)
+    pinMode(this->pin, INPUT_PULLUP);
   else
     pinMode(this->pin, INPUT_PULLDOWN);
-	
+
 	return;
 }
 
