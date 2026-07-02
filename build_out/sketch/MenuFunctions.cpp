@@ -176,6 +176,7 @@ void MenuFunctions::displayMenuButtons() {
 // Function to check menu input
 void MenuFunctions::main(uint32_t currentTime)
 {
+  extern LinkedList<AccessPoint>* access_points;
   #if defined(MARAUDER_CARDPUTER) || defined(MARAUDER_CARDPUTER_ADV)
     this->updateKeyboard();
   #endif
@@ -504,6 +505,11 @@ void MenuFunctions::main(uint32_t currentTime)
             (wifi_scan_obj.currentScanMode == WIFI_SCAN_PACKET_RATE) ||
             (wifi_scan_obj.currentScanMode == BT_SCAN_ANALYZER))
         {
+          // Remember whether this was an AP/STA scan before stopping (so we can
+          // jump straight to the AP selection list afterwards).
+          bool was_ap_scan = (wifi_scan_obj.currentScanMode == WIFI_SCAN_AP) ||
+                             (wifi_scan_obj.currentScanMode == WIFI_SCAN_AP_STA) ||
+                             (wifi_scan_obj.currentScanMode == WIFI_SCAN_STATION);
           wifi_scan_obj.StartScan(WIFI_SCAN_OFF);
 
           // Restore display state without full reinit to avoid screen flash
@@ -514,8 +520,15 @@ void MenuFunctions::main(uint32_t currentTime)
             display_obj.init();
           #endif
 
-          // Take us back to the menu
-          changeMenu(current_menu, true);
+          // After an AP/STA scan, land on the selectable AP list (the usual
+          // reason to scan is to pick targets), instead of the pre-scan menu
+          // where the user would otherwise have to hunt for "Select APs".
+          if (was_ap_scan && access_points->size() > 0) {
+            buildWifiAPMenu();
+          } else {
+            // Take us back to the menu
+            changeMenu(current_menu, true);
+          }
         }
     
         x = -1;
@@ -2244,45 +2257,7 @@ void MenuFunctions::RunSetup()
 
     // Select APs on Mini
     this->addNodes(&wifiGeneralMenu, "Select APs", TFTNAVY, KEYBOARD_ICO, [this](){
-      wifiAPMenu.parentMenu = &wifiGeneralMenu;
-      // Add the back button
-      wifiAPMenu.list->clear();
-        this->addNodes(&wifiAPMenu, text09, TFTLIGHTGREY, 0, [this]() {
-        this->changeMenu(wifiAPMenu.parentMenu, true);
-      });
-
-      this->addNodes(&wifiAPMenu, "Select ALL", TFTGREEN, 255, [this](){
-
-        for (int x = 0; x < access_points->size(); x++) {
-          AccessPoint new_ap = access_points->get(x);
-          new_ap.selected = !access_points->get(x).selected;
-          access_points->set(x, new_ap);
-
-          MenuNode new_node = current_menu->list->get(x + 2);
-          new_node.selected = !current_menu->list->get(x + 2).selected;
-          current_menu->list->set(x + 2, new_node);
-        }
-
-        this->changeMenu(current_menu, true);
-
-      });
-
-      // Populate the menu with buttons
-      for (int i = 0; i < access_points->size(); i++) {
-        // This is the menu node
-        this->addNodes(&wifiAPMenu, access_points->get(i).essid.c_str(), TFTCYAN, 255, [this, i](){
-        AccessPoint new_ap = access_points->get(i);
-        new_ap.selected = !access_points->get(i).selected;
-
-        // Change selection status of menu node
-        MenuNode new_node = current_menu->list->get(i + 2);
-        new_node.selected = !current_menu->list->get(i + 2).selected;
-        current_menu->list->set(i + 2, new_node);
-
-        access_points->set(i, new_ap);
-        }, access_points->get(i).selected);
-      }
-      this->changeMenu(&wifiAPMenu, true);
+      this->buildWifiAPMenu();
     });
 
     this->addNodes(&wifiGeneralMenu, "View AP Info", TFTCYAN, KEYBOARD_ICO, [this](){
@@ -3751,6 +3726,46 @@ void MenuFunctions::changeMenu(Menu* menu, bool simple_change) {
   //#ifdef MARAUDER_V8
   //  digitalWrite(TFT_BL, HIGH);
   //#endif
+}
+
+void MenuFunctions::buildWifiAPMenu() {
+  extern LinkedList<AccessPoint>* access_points;
+  wifiAPMenu.parentMenu = &wifiGeneralMenu;
+  // Add the back button
+  wifiAPMenu.list->clear();
+  this->addNodes(&wifiAPMenu, text09, TFTLIGHTGREY, 0, [this]() {
+    this->changeMenu(wifiAPMenu.parentMenu, true);
+  });
+
+  this->addNodes(&wifiAPMenu, "Select ALL", TFTGREEN, 255, [this](){
+    for (int x = 0; x < access_points->size(); x++) {
+      AccessPoint new_ap = access_points->get(x);
+      new_ap.selected = !access_points->get(x).selected;
+      access_points->set(x, new_ap);
+
+      MenuNode new_node = current_menu->list->get(x + 2);
+      new_node.selected = !current_menu->list->get(x + 2).selected;
+      current_menu->list->set(x + 2, new_node);
+    }
+    this->changeMenu(current_menu, true);
+  });
+
+  // Populate the menu with buttons
+  for (int i = 0; i < access_points->size(); i++) {
+    // This is the menu node
+    this->addNodes(&wifiAPMenu, access_points->get(i).essid.c_str(), TFTCYAN, 255, [this, i](){
+      AccessPoint new_ap = access_points->get(i);
+      new_ap.selected = !access_points->get(i).selected;
+
+      // Change selection status of menu node
+      MenuNode new_node = current_menu->list->get(i + 2);
+      new_node.selected = !current_menu->list->get(i + 2).selected;
+      current_menu->list->set(i + 2, new_node);
+
+      access_points->set(i, new_ap);
+    }, access_points->get(i).selected);
+  }
+  this->changeMenu(&wifiAPMenu, true);
 }
 
 void MenuFunctions::buildButtons(Menu *menu, int starting_index, const char* button_name) {
