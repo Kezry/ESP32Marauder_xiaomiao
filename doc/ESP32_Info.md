@@ -98,10 +98,10 @@ Marauder 固件在 TFT_eSPI 里把面板定义成 **portrait（竖屏）128×160
 |------|------|------|
 | SCK | GPIO18 | SPI2 共享 |
 | MOSI | GPIO23 | SPI2 共享 |
-| MISO | GPIO19 | SPI2 共享 / TFT RES 复用 |
+| MISO | GPIO19 | SPI2 共享。**专作 MISO**（见下方"SD 卡与 TFT 复位"说明） |
 | CS | GPIO5 | TFT 片选 |
 | DC | GPIO4 | 数据/命令选择 |
-| RES | GPIO19 | 复位（与 SD 卡 MISO 共享） |
+| RES | (无独立引脚) | **不用硬件复位**。Marauder 固件里 `TFT_RST=-1`，ST7735 走软件复位（SWRESET 0x01），使 GPIO19 专作 SD MISO。参考 retro-go-for-xueersi-xiaomiao 移植方案。 |
 
 ### ST7735 初始化序列关键寄存器
 
@@ -168,10 +168,12 @@ def color(r, g, b):
 |------|------|------|
 | SCK | GPIO18 | SPI2 共享 |
 | MOSI | GPIO23 | SPI2 共享 |
-| MISO | GPIO19 | SPI2 共享 / TFT RES 复用 |
+| MISO | GPIO19 | SPI2 共享（专作 MISO，TFT 不占用此脚） |
 | CS | GPIO22 | SD 卡片选 |
 
 > **SPI 共享方案**：TFT CS=GPIO5, SD CS=GPIO22，通过 CS 互斥实现分时复用。同一时刻只能访问一个设备。
+>
+> **重要（SD 修复）**：GPIO19 不能同时作 TFT RST 和 SD MISO。Marauder 固件设 `TFT_RST=-1`，TFT 走软件复位，GPIO19 全程作 MISO，SD 才能正常识别（对齐 retro-go-for-xueersi-xiaomiao）。
 
 ## 七、按键详细参数
 
@@ -347,7 +349,7 @@ GPIO39 → 热敏电阻 (仅输入, ADC1_CH3)
 | 仅输入引脚 | GPIO34/35/36/39 | 不可设为输出模式，无内部上拉/下拉电阻 | 按键 A/右需外部上拉 |
 | 启动敏感 | GPIO12 | B 键，上电阶段避免外部高电平 | 按键设计需注意上电状态 |
 | 共享 SPI | GPIO18/23/19 | TFT/SD 卡分时复用 | 需互斥锁，禁止同时访问 |
-| RES/MISO 复用 | GPIO19 | TFT RESET 与 SD MISO 共用 | SD 卡通信时 TFT 复位线被借用 |
+| RES/MISO 复用 | GPIO19 | TFT RESET 与 SD MISO 共用 | **Marauder 固件不用硬件 RST**（`TFT_RST=-1`，软件复位），GPIO19 专作 SD MISO，避免冲突 |
 | I2C 地址冲突 | — | 电机/LED 共用 0x40 | 需协议层区分设备 |
 | I2S 采样率 | GPIO25/26 | 麦克风/功放采样率必须一致 | 音频系统设计约束 |
 | 无背光控制 | — | bl=None | 无法软件调节屏幕亮度 |

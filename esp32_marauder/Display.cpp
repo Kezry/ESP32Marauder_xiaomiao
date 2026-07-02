@@ -120,10 +120,9 @@ void Display::init() {
     display_initialized = true;
   }
 
-  // NOTE: GPIO19 (shared TFT RST / SD MISO) is released to INPUT in
-  // SDInterface::initSD() right before SD.begin(). It is intentionally NOT released
-  // here: tft.init() and the subsequent draw operations (splash, menus, scans) all
-  // need GPIO19 as OUTPUT (RST), and releasing it here would break the next draw.
+  // NOTE: On XiaoMiao there is NO hardware TFT reset line — TFT_RST is -1 and the
+  // display is software-reset by TFT_eSPI. GPIO19 is therefore a dedicated MISO and
+  // is shared cleanly between TFT and SD on SPI2 (SD CS=22). No pin hand-off needed.
 
   #if defined(HAS_DUAL_BAND) && !defined(MARAUDER_MINI_V3)
     digitalWrite(TFT_BL, HIGH);

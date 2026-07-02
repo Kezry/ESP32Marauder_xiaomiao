@@ -5,10 +5,14 @@
 //   Physical: 128 wide x 160 tall (portrait), RGB565, RGB order, no inversion.
 //   Mirrors User_Setup_marauder_mini.h but tuned for this hardware.
 //
-//   Pins per doc/ESP32_Info.md:
+//   Pins per doc/ESP32_Info.md + retro-go-for-xueersi-xiaomiao port:
 //     SPI2 shared: SCK=18 MOSI=23 MISO=19
-//     TFT: CS=5  DC=4  RST=19 (shares MISO line)   SD: CS=22
-//     No backlight pin (bl=None) -> TFT_BL handled as -1 in configs.h
+//     TFT: CS=5  DC=4  (NO hardware RST)   SD: CS=22
+//     GPIO19 is MISO ONLY. There is no hardware reset line wired to a GPIO:
+//     TFT_eSPI uses software reset (TFT_RST=-1). This mirrors the NES-emulator
+//     retro-go port, which keeps GPIO19 as a dedicated MISO so the SD card can
+//     share the SPI2 bus. Defining TFT_RST=19 makes TFT_eSPI drive GPIO19 as an
+//     OUTPUT (reset) and corrupts MISO, so SD reads fail / the 3.x core panics.
 
 // ##################################################################################
 // Section 1. Driver + options
@@ -43,7 +47,8 @@
 #define TFT_SCLK 18
 #define TFT_CS   5
 #define TFT_DC   4
-#define TFT_RST  19   // shares line with SD MISO on this board
+#define TFT_RST  -1   // NO hardware RST. ST7735 is software-reset (TFT_SWRST).
+                      // GPIO19 must stay as MISO (input) for the shared-SPI SD.
 #define TOUCH_CS -1
 // TFT_BL defined in configs.h as -1 (no backlight control pin)
 

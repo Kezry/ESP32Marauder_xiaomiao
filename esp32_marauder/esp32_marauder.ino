@@ -287,7 +287,6 @@ void setup()
   //  delay(10);
 
   Serial.println("ESP-IDF version is: " + String(esp_get_idf_version()));
-  Serial.println("DBG setup: S1 before PSRAM");
 
   #ifdef HAS_PSRAM
     if (!psramInit()) {
@@ -304,12 +303,10 @@ void setup()
     #endif
   #endif
 
-  Serial.println("DBG setup: S2 before RunSetup");
   #ifdef HAS_SCREEN
     display_obj.RunSetup();
     display_obj.tft.setTextColor(TFT_WHITE, TFT_BLACK);
   #endif
-  Serial.println("DBG setup: S3 after RunSetup");
 
   // Init PWM brightness AFTER display init (so ledcAttach overrides TFT_eSPI's pinMode)
   #ifndef HAS_MINI_SCREEN
@@ -352,7 +349,14 @@ void setup()
     settings_obj.createDefaultSettings(SPIFFS);
   }
 
-  buffer_obj = Buffer();
+  // buffer_obj is already default-constructed at global scope (line 77), so the
+  // reassignment below is redundant. On XiaoMiao it is also harmful: SdFat 2.2.0's
+  // FsFile destructor (ExFatFile::close) dereferences an uninitialized handle
+  // (magic 0xbaad5678) when closing the never-opened File member of the OLD
+  // buffer_obj during the copy-assignment, causing a LoadProhibited crash. Skip it.
+  #ifndef MARAUDER_XIAOMIAO
+    buffer_obj = Buffer();
+  #endif
 
   #ifndef HAS_SIMPLEX_DISPLAY
     #if defined(HAS_SD)
