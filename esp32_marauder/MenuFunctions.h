@@ -278,6 +278,10 @@ class MenuFunctions
     void updateStatusBar();
     void buildButtons(Menu* menu, int starting_index = 0, const char* button_name = nullptr);
     void changeMenu(Menu* menu, bool simple_change = false);
+    // Build the "Select APs" submenu from the current access_points list and
+    // switch to it. Called from the "Select APs" menu node AND after an AP/STA
+    // scan is stopped, so the user lands directly on the selectable AP list.
+    void buildWifiAPMenu();
     void drawStatusBar();
     void displayCurrentMenu(int start_index = 0);
     #ifndef HAS_MINI_SCREEN
