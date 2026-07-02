@@ -2090,7 +2090,8 @@
       #define TFT_SCLK 18
       #define TFT_CS   5
       #define TFT_DC   4
-      #define TFT_RST  19
+      #define TFT_RST  -1   // NO hardware RST: GPIO19 stays MISO for shared-SPI SD.
+                           // TFT_eSPI ignores TFT_RST when < 0 and uses software reset.
       #define TFT_BL   -1   // no backlight control pin on this board
       #define TOUCH_CS -1
       #define SD_CS    22

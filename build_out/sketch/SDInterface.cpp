@@ -3,7 +3,6 @@
 #include "lang_var.h"
 #ifdef MARAUDER_XIAOMIAO
   #include "SdFat.h"
-  #include "driver/gpio.h"
   SdFat SD;
 #endif
 
@@ -26,25 +25,31 @@ bool SDInterface::initSD() {
 
     pinMode(SD_CS, OUTPUT);
 
-    // XiaoMiao: GPIO19 is shared between TFT RST and SD MISO. TFT_eSPI configures
-    // GPIO19 as OUTPUT (RST) during tft.init(). Before SD.begin(), we must reconfigure
-    // the SPI bus so GPIO19 is MISO (input). Use an explicit SPIClass with the correct
-    // pins, matching the shared bus (SCK=18, MISO=19, MOSI=23).
+    // XiaoMiao: SD shares SPI2 with the TFT (SCK=18, MOSI=23, MISO=19, SD CS=22).
+    // There is NO hardware TFT reset line — TFT_RST is -1, so GPIO19 is a dedicated
+    // MISO and the two devices time-share the bus via CS only. This mirrors the
+    // retro-go-for-xueersi-xiaomiao port, which reads this SD cleanly.
     #ifdef MARAUDER_XIAOMIAO
-      // XiaoMiao: SD MISO (GPIO19) is shared with TFT RST. After the splash screen,
-      // GPIO19 is still OUTPUT (RST). Release it, then re-attach the shared SPI2 bus
-      // so MISO points at GPIO19. SdFat 2.2.0 + SHARED_SPI works on arduino-esp32 2.x
-      // (mirrors the NES emulator project on this exact hardware). On 3.x SdFat crashes,
-      // so this whole SD path is only reached meaningfully on the 2.x-core build.
-      Serial.println(F("XiaoMiao SD: SdFat SHARED_SPI init..."));
-      gpio_reset_pin(GPIO_NUM_19);
-      delay(5);
+      // SdFat 2.2.0 + SHARED_SPI works on arduino-esp32 2.x (the 3.x core's SPIClass
+      // crashes SdFat on this shared bus, so this path only runs on the 2.x build).
+      // Deselect both SPI devices before bus init so neither holds MISO low.
+      pinMode(TFT_CS, OUTPUT);
+      digitalWrite(TFT_CS, HIGH);
       pinMode(SD_CS, OUTPUT);
       digitalWrite(SD_CS, HIGH);
       delay(5);
       SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, SD_CS);
       delay(10);
-      if (!SD.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(20), &SPI))) {
+      // Try the full bus speed first; on failure fall back to a slow init speed
+      // (mirrors retro-go rg_storage.c: retry at SDMMC_FREQ_PROBING on TIMEOUT/CRC).
+      Serial.println(F("XiaoMiao SD: SdFat SHARED_SPI init @20MHz..."));
+      bool sd_ok = SD.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(20), &SPI));
+      if (!sd_ok) {
+        Serial.println(F("XiaoMiao SD: 20MHz failed, retry @400kHz..."));
+        delay(10);
+        sd_ok = SD.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(0.4), &SPI));
+      }
+      if (!sd_ok) {
         Serial.println(F("XiaoMiao SD: SdFat init FAILED"));
     #else
     delay(10);
