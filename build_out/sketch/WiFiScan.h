@@ -333,6 +333,10 @@ class WiFiScan
     uint32_t initTime = 0;
     uint32_t last_ui_update = 0;
     uint32_t last_sour_apple_update = 0;
+    // Throttle for BLE spam init/deinit cycling: the NimBLE controller is only
+    // re-initialized when we roll a new random MAC (~1s), not every frame. This
+    // avoids the per-frame init/deinit crash (see executeBLESpam).
+    uint32_t last_spam_mac_update = 0;
     bool run_setup = true;
     void initWiFi(uint8_t scan_mode);
     uint8_t bluetoothScanTime = 5;

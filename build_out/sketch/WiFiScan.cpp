@@ -2235,11 +2235,19 @@ bool WiFiScan::shutdownBLE() {
       delay(100);
 
 
-      NimBLEDevice::deinit();
+      // deinit(true) deletes the NimBLE singleton server/advertising/scan objects
+      // so the next init()+createServer()/getScan() build fresh objects. With the
+      // default deinit(false) those singletons survive but point at the torn-down
+      // controller, and re-using them crashes (InstrFetchProhibited, PC=0x00).
+      NimBLEDevice::deinit(true);
+      // Null our handles: they are now deleted. Prevents dangling deref if
+      // shutdownBLE() or a spam branch touches them before the next init.
+      pAdvertising = nullptr;
+      pBLEScan = nullptr;
 
       this->_analyzer_value = 0;
       this->bt_frames = 0;
-    
+
       this->ble_initialized = false;
     }
     else {
@@ -4271,136 +4279,95 @@ void WiFiScan::executeBLESpam(EBLEPayloadType type) {
     uint8_t macAddr[6];
     generateRandomMac(macAddr);
 
-    if (type == Apple2) {
+    // --- Throttled NimBLE init/deinit -------------------------------------
+    // CRASH FIX: the original code called NimBLEDevice::init()+createServer()+
+    // deinit() EVERY frame for every spam type. On NimBLE 1.4.2 (arduino-esp32
+    // 2.x) deinit() defaults to clearAll=false, so the server/advertising
+    // singletons survive but point at the torn-down controller; the next
+    // createServer() returns those stale objects and pAdvertising->start() jumps
+    // to a freed callback -> InstrFetchProhibited (PC=0x00000000) reboot.
+    //
+    // Now we only (re)initialize the stack when we want a fresh random MAC
+    // (~once per second) or when not yet initialized. Between re-inits we reuse
+    // the live advertising object and just swap advertisement data + start/stop.
+    // deinit(true) is used so the singletons are deleted and rebuilt clean.
+    bool need_reinit = (!this->ble_initialized) ||
+                       (this->last_spam_mac_update == 0) ||
+                       ((now_time - this->last_spam_mac_update) > 1000);
+
+    if (type == Airtag) {
+      // Airtag uses a fixed (selected) MAC, not a random one. Only init once.
+      need_reinit = !this->ble_initialized;
+      bool found_selected = false;
+      for (int i = 0; i < airtags->size(); i++) {
+        AirTag airtag = airtags->get(i);
+        if (airtag.selected) {
+          convertMacStringToUint8(airtag.mac, macAddr);
+          macAddr[5] -= 2; // ESP32 BT addr is Base MAC + 2
+          found_selected = true;
+          break;
+        }
+      }
+      if (!found_selected) return; // nothing to spoof
+      if (need_reinit) this->setBaseMacAddress(macAddr);
+    }
+    else if (need_reinit) {
       this->setBaseMacAddress(macAddr);
+    }
+
+    if (need_reinit) {
+      // Tear down any previous stack cleanly (delete singletons) before rebuild.
+      if (this->ble_initialized) {
+        if (pAdvertising) { pAdvertising->stop(); }
+        delay(20);
+        NimBLEDevice::deinit(true);
+        pAdvertising = nullptr;
+        this->ble_initialized = false;
+        delay(20);
+      }
+
       NimBLEDevice::init("");
       #ifdef HAS_NIMBLE_2
         if (!NimBLEDevice::setPower(20))
           Serial.println("Failed to set NimBLE output power");
       #endif
       NimBLEServer *pServer = NimBLEDevice::createServer();
-
       pAdvertising = pServer->getAdvertising();
+      this->ble_initialized = true;
+      this->last_spam_mac_update = now_time;
+      delay(20);
+    }
 
-      delay(10);
+    // pAdvertising must be valid here (we just ensured init, or it was reused).
+    if (!pAdvertising) return;
 
+    // --- Per-frame advertising -------------------------------------------
+    if ((type == Apple) || (type == Apple2)) {
       NimBLEAdvertisementData advertisementData = this->GetUniversalAdvertisementData(Apple);
       pAdvertising->setAdvertisementData(advertisementData);
-
-      #ifdef HAS_NIMBLE_2
-        pAdvertising->setConnectableMode((random(2) == 0) ? BLE_GAP_CONN_MODE_NON : BLE_GAP_CONN_MODE_UND);
-        pAdvertising->setDiscoverableMode(random(3));
-        pAdvertising->setMinInterval(0x20);
-        pAdvertising->setMaxInterval(0x20);
-        pAdvertising->setPreferredParams(0x20, 0x20);
-      #else
+      #ifndef HAS_NIMBLE_2
         pAdvertising->setMaxInterval(0x20);
         pAdvertising->setMinInterval(0x20);
         pAdvertising->setMinPreferred(0x20);
         pAdvertising->setMaxPreferred(0x20);
       #endif
-
       pAdvertising->start();
-      delay(500);
+      delay(type == Apple2 ? 120 : 60);
       pAdvertising->stop();
-
-      delay(10);
-
-      NimBLEDevice::deinit();
-    }
-    else if (type == Apple) {
-      if ((now_time - this->last_sour_apple_update > 1000) || (this->last_sour_apple_update == 0) || (!this->ble_initialized)) {
-        this->setBaseMacAddress(macAddr);
-
-        NimBLEDevice::init("");
-        #ifdef HAS_NIMBLE_2
-          if (!NimBLEDevice::setPower(20))
-            Serial.println("Failed to set NimBLE output power");
-        #endif
-        NimBLEServer *pServer = NimBLEDevice::createServer();
-
-        pAdvertising = pServer->getAdvertising();
-
-        delay(40);
-
-        NimBLEAdvertisementData advertisementData = this->GetUniversalAdvertisementData(Apple);
-        pAdvertising->setAdvertisementData(advertisementData);
-
-        this->ble_initialized = true;
-      }
-
-      pAdvertising->start();
-      delay(60);
-      pAdvertising->stop();
-
-      if ((now_time - this->last_sour_apple_update > 1000) || (this->last_sour_apple_update == 0)) {
-        this->last_sour_apple_update = now_time;
-        NimBLEDevice::deinit();
-        this->ble_initialized = false;
-      }
     }
     else if (type == Airtag) {
-      for (int i = 0; i < airtags->size(); i++) {
-        AirTag airtag = airtags->get(i);
-        if (airtag.selected) {
-          convertMacStringToUint8(airtag.mac, macAddr);
-
-          macAddr[5] -= 2;
-
-          // Do this because ESP32 BT addr is Base MAC + 2
-          
-          this->setBaseMacAddress(macAddr);
-
-          NimBLEDevice::init("");
-
-          #ifdef HAS_NIMBLE_2
-            if (!NimBLEDevice::setPower(20))
-              Serial.println("Failed to set NimBLE output power");
-          #endif
-
-          NimBLEServer *pServer = NimBLEDevice::createServer();
-
-          pAdvertising = pServer->getAdvertising();
-
-          //NimBLEAdvertisementData advertisementData = getSwiftAdvertisementData();
-          NimBLEAdvertisementData advertisementData = this->GetUniversalAdvertisementData(Airtag);
-          pAdvertising->setAdvertisementData(advertisementData);
-          pAdvertising->start();
-          delay(10);
-          pAdvertising->stop();
-
-          //#ifndef HAS_DUAL_BAND
-            NimBLEDevice::deinit();
-          //#endif
-
-          break;
-        }
-      }
+      NimBLEAdvertisementData advertisementData = this->GetUniversalAdvertisementData(Airtag);
+      pAdvertising->setAdvertisementData(advertisementData);
+      pAdvertising->start();
+      delay(10);
+      pAdvertising->stop();
     }
-    else if ((type == Microsoft) ||
-             (type == Google) ||
-             (type == Samsung) ||
-             (type == FlipperZero)) {
-      this->setBaseMacAddress(macAddr);
-
-      NimBLEDevice::init("");
-
-      #ifdef HAS_NIMBLE_2
-        if (!NimBLEDevice::setPower(20))
-          Serial.println("Failed to set NimBLE output power");
-      #endif
-
-      NimBLEServer *pServer = NimBLEDevice::createServer();
-
-      pAdvertising = pServer->getAdvertising();
-
+    else { // Microsoft / Google / Samsung / FlipperZero
       NimBLEAdvertisementData advertisementData = this->GetUniversalAdvertisementData(type);
       pAdvertising->setAdvertisementData(advertisementData);
       pAdvertising->start();
       delay(10);
       pAdvertising->stop();
-
-      NimBLEDevice::deinit();
     }
   #endif
 }
@@ -5295,12 +5262,12 @@ void WiFiScan::RunSourApple(uint8_t scan_mode, uint16_t color) {
     NimBLEServer *pServer = NimBLEDevice::createServer();
 
     pAdvertising = pServer->getAdvertising();
-    // Mark BLE initialized so executeBLESpam's Apple path does NOT re-run
-    // NimBLEDevice::init/createServer every frame. Without this, the Sour Apple
-    // loop calls init("") again while the stack is already up, and on the 2.x
-    // core NimBLE 1.4.2 returns a bad server/advertising pointer ->
-    // InstrFetchProhibited (EXCVADDR 0x00000000) on the next pAdvertising->start().
+    // Mark BLE initialized + stamp the mac-update timer so executeBLESpam's
+    // throttle does NOT immediately tear down + re-init this stack on frame 1.
+    // (executeBLESpam now reuses the live advertising object and only re-inits
+    // ~once/second to roll a fresh random MAC.)
     this->ble_initialized = true;
+    this->last_spam_mac_update = millis();
 
     #ifdef HAS_SCREEN
       this->setupScanDisplayArea(TFT_BLACK, color);
