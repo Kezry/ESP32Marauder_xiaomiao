@@ -1716,9 +1716,6 @@ void MenuFunctions::RunSetup()
 
   // Build WiFi Menu
   wifiMenu.parentMenu = &mainMenu; // Main Menu is second menu parent
-  this->addNodes(&wifiMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(wifiMenu.parentMenu, true);
-  });
   this->addNodes(&wifiMenu, text_table1[31], TFTYELLOW, SNIFFERS, [this]() {
     this->changeMenu(&wifiSnifferMenu, true);
   });
@@ -1739,9 +1736,6 @@ void MenuFunctions::RunSetup()
 
   // Build WiFi scanner Menu
   wifiScannerMenu.parentMenu = &wifiMenu; // Main Menu is second menu parent
-  this->addNodes(&wifiScannerMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(wifiScannerMenu.parentMenu, true);
-  });
   this->addNodes(&wifiScannerMenu, "Ping Scan", TFTGREEN, SCANNERS, [this]() {
     display_obj.clearScreen();
     this->drawStatusBar();
@@ -1757,9 +1751,6 @@ void MenuFunctions::RunSetup()
   this->addNodes(&wifiScannerMenu, "Port Scan All", TFTMAGENTA, BEACON_LIST, [this](){
     // Add the back button
     wifiIPMenu.list->clear();
-      this->addNodes(&wifiIPMenu, text09, TFTLIGHTGREY, 0, [this]() {
-      this->changeMenu(wifiIPMenu.parentMenu, true);
-    });
 
     // Populate the menu with buttons
     for (int i = 0; i < ipList->size(); i++) {
@@ -1812,9 +1803,6 @@ void MenuFunctions::RunSetup()
 
   // Build WiFi sniffer Menu
   wifiSnifferMenu.parentMenu = &wifiMenu; // Main Menu is second menu parent
-  this->addNodes(&wifiSnifferMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(wifiSnifferMenu.parentMenu, true);
-  });
   this->addNodes(&wifiSnifferMenu, text_table1[42], TFTCYAN, PROBE_SNIFF, [this]() {
     display_obj.clearScreen();
     this->drawStatusBar();
@@ -1940,9 +1928,6 @@ void MenuFunctions::RunSetup()
 
   // Build WiFi attack menu
   wifiAttackMenu.parentMenu = &wifiMenu; // Main Menu is second menu parent
-  this->addNodes(&wifiAttackMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(wifiAttackMenu.parentMenu, true);
-  });
   this->addNodes(&wifiAttackMenu, text_table1[50], TFTRED, BEACON_LIST, [this]() {
     display_obj.clearScreen();
     this->drawStatusBar();
@@ -1976,12 +1961,6 @@ void MenuFunctions::RunSetup()
     wifiAPMenu.parentMenu = &evilPortalMenu;
     ssidsMenu.parentMenu = &evilPortalMenu;
 
-    this->addNodes(&wifiAPMenu, text09, TFTLIGHTGREY, 0, [this]() {
-      this->changeMenu(wifiAPMenu.parentMenu, true);
-    });
-    this->addNodes(&ssidsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-      this->changeMenu(ssidsMenu.parentMenu, true);
-    });
 
     // Get AP list ready
     for (int i = 0; i < access_points->size(); i++) {
@@ -2038,9 +2017,6 @@ void MenuFunctions::RunSetup()
   this->addNodes(&wifiAttackMenu, "Karma", TFTORANGE, KEYBOARD_ICO, [this](){
     // Add the back button
     selectProbeSSIDsMenu.list->clear();
-    this->addNodes(&selectProbeSSIDsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-      this->changeMenu(&wifiAttackMenu, true);
-    });
 
     // Populate the menu with buttons
     for (int i = 0; i < probe_req_ssids->size(); i++) {
@@ -2096,9 +2072,6 @@ void MenuFunctions::RunSetup()
   });
 
   evilPortalMenu.parentMenu = &wifiAttackMenu;
-  this->addNodes(&evilPortalMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(evilPortalMenu.parentMenu, true);
-  });
   this->addNodes(&evilPortalMenu, "Access Points", TFTGREEN, BEACON_SNIFF, [this]() {
     this->changeMenu(&wifiAPMenu, true);
   });
@@ -2108,9 +2081,6 @@ void MenuFunctions::RunSetup()
 
   // Build WiFi General menu
   wifiGeneralMenu.parentMenu = &wifiMenu;
-  this->addNodes(&wifiGeneralMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(wifiGeneralMenu.parentMenu, true);
-  });
   this->addNodes(&wifiGeneralMenu, text_table1[27], TFTSKYBLUE, GENERATE, [this]() {
     this->changeMenu(&generateSSIDsMenu, true);
     wifi_scan_obj.RunGenerateSSIDs();
@@ -2221,9 +2191,6 @@ void MenuFunctions::RunSetup()
     this->addNodes(&wifiGeneralMenu, "Select EP HTML File", TFTCYAN, KEYBOARD_ICO, [this](){
       // Add the back button
       htmlMenu.list->clear();
-        this->addNodes(&htmlMenu, text09, TFTLIGHTGREY, 0, [this]() {
-        this->changeMenu(htmlMenu.parentMenu, true);
-      });
 
       // Populate the menu with buttons
       for (int i = 0; i < evil_portal_obj.html_files->size(); i++) {
@@ -2250,9 +2217,6 @@ void MenuFunctions::RunSetup()
     //#endif
 
     htmlMenu.parentMenu = &wifiGeneralMenu;
-    this->addNodes(&htmlMenu, text09, TFTLIGHTGREY, 0, [this]() {
-      this->changeMenu(htmlMenu.parentMenu, true);
-    });
 
     // Select APs on Mini
     this->addNodes(&wifiGeneralMenu, "Select APs", TFTNAVY, KEYBOARD_ICO, [this](){
@@ -2264,9 +2228,6 @@ void MenuFunctions::RunSetup()
       
       // Add the back button
       wifiAPMenu.list->clear();
-        this->addNodes(&wifiAPMenu, text09, TFTLIGHTGREY, 0, [this]() {
-        this->changeMenu(wifiAPMenu.parentMenu, true);
-      });
 
       // Populate the menu with buttons
       for (int i = 0; i < access_points->size(); i++) {
@@ -2280,19 +2241,10 @@ void MenuFunctions::RunSetup()
     });
 
     apInfoMenu.parentMenu = &wifiAPMenu;
-    this->addNodes(&apInfoMenu, text09, TFTLIGHTGREY, 0, [this]() {
-      this->changeMenu(apInfoMenu.parentMenu, true);
-    });
 
     wifiAPMenu.parentMenu = &wifiGeneralMenu;
-    this->addNodes(&wifiAPMenu, text09, TFTLIGHTGREY, 0, [this]() {
-      this->changeMenu(wifiAPMenu.parentMenu, true);
-    });
 
     wifiIPMenu.parentMenu = &wifiScannerMenu;
-    this->addNodes(&wifiIPMenu, text09, TFTLIGHTGREY, 0, [this]() {
-      this->changeMenu(wifiIPMenu.parentMenu, true);
-    });
 
 
     // Select Stations on Mini v2
@@ -2300,9 +2252,6 @@ void MenuFunctions::RunSetup()
       wifiAPMenu.parentMenu = &wifiGeneralMenu;
 
       wifiAPMenu.list->clear();
-        this->addNodes(&wifiAPMenu, text09, TFTLIGHTGREY, 0, [this]() {
-        this->changeMenu(wifiAPMenu.parentMenu, true);
-      });
 
       int menu_limit = access_points->size();
 
@@ -2316,9 +2265,6 @@ void MenuFunctions::RunSetup()
           wifiStationMenu.parentMenu = &wifiAPMenu;
 
           // Add back button to the APs
-          this->addNodes(&wifiStationMenu, text09, TFTLIGHTGREY, 0, [this]() {
-            this->changeMenu(wifiStationMenu.parentMenu, true);
-          });
 
           this->addNodes(&wifiStationMenu, "Select ALL", TFTGREEN, 255, [this, i](){
 
@@ -2328,8 +2274,8 @@ void MenuFunctions::RunSetup()
               new_sta.selected = !stations->get(cur_ap_sta_inx).selected;
 
               // Change selection status of menu node
-              MenuNode new_node = current_menu->list->get(y + 2);
-              new_node.selected = !current_menu->list->get(y + 2).selected;
+              MenuNode new_node = current_menu->list->get(y + 1);
+              new_node.selected = !current_menu->list->get(y + 1).selected;
               current_menu->list->set(y + 2, new_node);
 
               stations->set(cur_ap_sta_inx, new_sta);
@@ -2348,8 +2294,8 @@ void MenuFunctions::RunSetup()
             new_sta.selected = !stations->get(cur_ap_sta).selected;
 
             // Change selection status of menu node
-            MenuNode new_node = current_menu->list->get(x + 2);
-            new_node.selected = !current_menu->list->get(x + 2).selected;
+            MenuNode new_node = current_menu->list->get(x + 1);
+            new_node.selected = !current_menu->list->get(x + 1).selected;
             current_menu->list->set(x + 2, new_node);
 
             stations->set(cur_ap_sta, new_sta);
@@ -2370,9 +2316,6 @@ void MenuFunctions::RunSetup()
 
       // Add the back button
       wifiAPMenu.list->clear();
-        this->addNodes(&wifiAPMenu, text09, TFTLIGHTGREY, 0, [this]() {
-        this->changeMenu(wifiAPMenu.parentMenu, true);
-      });
 
       // Populate the menu with buttons
       for (int i = 0; i < access_points->size(); i++) {
@@ -2418,9 +2361,6 @@ void MenuFunctions::RunSetup()
 
         // Add the back button
         wifiAPMenu.list->clear();
-          this->addNodes(&wifiAPMenu, text09, TFTLIGHTGREY, 0, [this]() {
-          this->changeMenu(wifiAPMenu.parentMenu, true);
-        });
 
         // Populate the menu with buttons
         for (int i = 0; i < access_points->size(); i++) {
@@ -2459,9 +2399,6 @@ void MenuFunctions::RunSetup()
 
       // Add the back button
       ssidsMenu.list->clear();
-        this->addNodes(&ssidsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-        this->changeMenu(ssidsMenu.parentMenu, true);
-      });
 
       // Populate the menu with buttons
       for (int i = 0; i < ssids->size(); i++) {
@@ -2502,9 +2439,6 @@ void MenuFunctions::RunSetup()
     });
 
     wifiStationMenu.parentMenu = &ssidsMenu;
-    this->addNodes(&wifiStationMenu, text09, TFTLIGHTGREY, 0, [this]() {
-      this->changeMenu(wifiStationMenu.parentMenu, true);
-    });
 
   this->addNodes(&wifiGeneralMenu, "Set MACs", TFTLIGHTGREY, 0, [this]() {
     this->changeMenu(&setMacMenu, true);
@@ -2520,9 +2454,6 @@ void MenuFunctions::RunSetup()
 
   // Menu for generating and setting MAC addrs for AP and STA
   setMacMenu.parentMenu = &wifiGeneralMenu;
-  this->addNodes(&setMacMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(setMacMenu.parentMenu, true);
-  });
 
   // Generate random MAC for AP
   this->addNodes(&setMacMenu, "Generate AP MAC", TFTLIME, 0, [this]() {
@@ -2543,9 +2474,6 @@ void MenuFunctions::RunSetup()
 
       // Add the back button
       wifiAPMenu.list->clear();
-        this->addNodes(&wifiAPMenu, text09, TFTLIGHTGREY, 0, [this]() {
-        this->changeMenu(wifiAPMenu.parentMenu, true);
-      });
 
       // Populate the menu with buttons
       for (int i = 0; i < access_points->size(); i++) {
@@ -2563,9 +2491,6 @@ void MenuFunctions::RunSetup()
 
       // Add the back button
       wifiAPMenu.list->clear();
-        this->addNodes(&wifiAPMenu, text09, TFTLIGHTGREY, 0, [this]() {
-        this->changeMenu(wifiAPMenu.parentMenu, true);
-      });
 
       // Populate the menu with buttons
       for (int i = 0; i < stations->size(); i++) {
@@ -2581,32 +2506,17 @@ void MenuFunctions::RunSetup()
 
   // Menu for generating and setting access point MAC (just goes bacK)
   genAPMacMenu.parentMenu = &wifiGeneralMenu;
-  this->addNodes(&genAPMacMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(genAPMacMenu.parentMenu, true);
-  });
 
   // Build generate ssids menu
   generateSSIDsMenu.parentMenu = &wifiGeneralMenu;
-  this->addNodes(&generateSSIDsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(generateSSIDsMenu.parentMenu, true);
-  });
 
   // Build clear ssids menu
   
-  this->addNodes(&clearSSIDsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(clearSSIDsMenu.parentMenu, true);
-  });
   clearAPsMenu.parentMenu = &wifiGeneralMenu;
-  this->addNodes(&clearAPsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(clearAPsMenu.parentMenu, true);
-  });
 
 #ifdef HAS_BT
   // Build Bluetooth Menu
   bluetoothMenu.parentMenu = &mainMenu; // Second Menu is third menu parent
-  this->addNodes(&bluetoothMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(bluetoothMenu.parentMenu, true);
-  });
   this->addNodes(&bluetoothMenu, text_table1[31], TFTYELLOW, SNIFFERS, [this]() {
     this->changeMenu(&bluetoothSnifferMenu, true);
   });
@@ -2616,9 +2526,6 @@ void MenuFunctions::RunSetup()
 
   // Build bluetooth sniffer Menu
   bluetoothSnifferMenu.parentMenu = &bluetoothMenu; // Second Menu is third menu parent
-  this->addNodes(&bluetoothSnifferMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(bluetoothSnifferMenu.parentMenu, true);
-  });
   this->addNodes(&bluetoothSnifferMenu, text_table1[34], TFTGREEN, BLUETOOTH_SNIFF, [this]() {
     display_obj.clearScreen();
     this->drawStatusBar();
@@ -2663,9 +2570,6 @@ void MenuFunctions::RunSetup()
 
   // Bluetooth Attack menu
   bluetoothAttackMenu.parentMenu = &bluetoothMenu; // Second Menu is third menu parent
-  this->addNodes(&bluetoothAttackMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(bluetoothAttackMenu.parentMenu, true);
-  });
   this->addNodes(&bluetoothAttackMenu, "Sour Apple", TFTGREEN, DEAUTH_SNIFF, [this]() {
     display_obj.clearScreen();
     this->drawStatusBar();
@@ -2711,9 +2615,6 @@ void MenuFunctions::RunSetup()
 
           // Clear nodes and add back button
           wifiAPMenu.list->clear();
-          this->addNodes(&wifiAPMenu, text09, TFT_LIGHTGREY, 0, [this]() {
-          this->changeMenu(wifiAPMenu.parentMenu, true);
-        });
 
         // Add buttons for all airtags
         // Find out how big our menu is going to be
@@ -2751,18 +2652,12 @@ void MenuFunctions::RunSetup()
       });
 
       wifiAPMenu.parentMenu = &bluetoothAttackMenu;
-      this->addNodes(&wifiAPMenu, text09, TFTLIGHTGREY, 0, [this]() {
-        this->changeMenu(wifiAPMenu.parentMenu, true);
-      });
     #endif
 
   //#endif
 
   // Device menu
   deviceMenu.parentMenu = &mainMenu;
-  this->addNodes(&deviceMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(deviceMenu.parentMenu, true);
-  });
 
   #ifdef HAS_SD
     if (sd_obj.supported) {
@@ -2825,9 +2720,6 @@ void MenuFunctions::RunSetup()
 
   // Save Files Menu
   saveFileMenu.parentMenu = &deviceMenu;
-  this->addNodes(&saveFileMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(saveFileMenu.parentMenu, true);
-  });
   this->addNodes(&saveFileMenu, "Save SSIDs", TFTCYAN, SD_UPDATE, [this]() {
     this->changeMenu(&saveSSIDsMenu, true);
     wifi_scan_obj.RunSaveSSIDList(true);
@@ -2854,43 +2746,22 @@ void MenuFunctions::RunSetup()
   });
 
   saveSSIDsMenu.parentMenu = &saveFileMenu;
-  this->addNodes(&saveSSIDsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(saveSSIDsMenu.parentMenu, true);
-  });
 
   loadSSIDsMenu.parentMenu = &saveFileMenu;
-  this->addNodes(&loadSSIDsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(loadSSIDsMenu.parentMenu, true);
-  });
 
   saveAPsMenu.parentMenu = &saveFileMenu;
-  this->addNodes(&saveAPsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(saveAPsMenu.parentMenu, true);
-  });
 
   loadAPsMenu.parentMenu = &saveFileMenu;
-  this->addNodes(&loadAPsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(loadAPsMenu.parentMenu, true);
-  });
 
   saveATsMenu.parentMenu = &saveFileMenu;
-  this->addNodes(&saveATsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(saveATsMenu.parentMenu, true);
-  });
 
   loadATsMenu.parentMenu = &saveFileMenu;
-  this->addNodes(&loadATsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(loadATsMenu.parentMenu, true);
-  });
 
   // GPS Menu
   #ifdef HAS_GPS
     if (gps_obj.getGpsModuleStatus()) {
       gpsMenu.parentMenu = &mainMenu; // Main Menu is second menu parent
 
-      this->addNodes(&gpsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-        this->changeMenu(gpsMenu.parentMenu, true);
-      });
 
       this->addNodes(&gpsMenu, "GPS Data", TFTRED, GPS_MENU, [this]() {
         wifi_scan_obj.currentScanMode = WIFI_SCAN_GPS_DATA;
@@ -2918,11 +2789,6 @@ void MenuFunctions::RunSetup()
 
       // GPS POI Menu
       gpsPOIMenu.parentMenu = &gpsMenu;
-      this->addNodes(&gpsPOIMenu, text09, TFTLIGHTGREY, 0, [this]() {
-        wifi_scan_obj.currentScanMode = GPS_POI;
-        wifi_scan_obj.StartScan(WIFI_SCAN_OFF);
-        this->changeMenu(gpsPOIMenu.parentMenu, true);
-      });
       this->addNodes(&gpsPOIMenu, "Mark POI", TFTCYAN, GPS_MENU, [this]() {
         wifi_scan_obj.currentScanMode = GPS_POI;
         display_obj.tft.setCursor(0, SCREEN_HEIGHT / 2);
@@ -2938,21 +2804,12 @@ void MenuFunctions::RunSetup()
 
       // GPS Info Menu
       gpsInfoMenu.parentMenu = &gpsMenu;
-      this->addNodes(&gpsInfoMenu, text09, TFTLIGHTGREY, 0, [this]() {
-        if(wifi_scan_obj.currentScanMode != GPS_TRACKER)
-          wifi_scan_obj.currentScanMode = WIFI_SCAN_OFF;
-        wifi_scan_obj.StartScan(WIFI_SCAN_OFF);
-        this->changeMenu(gpsInfoMenu.parentMenu, true);
-      }); 
     }
   #endif
 
   // Settings menu
   // Device menu
   settingsMenu.parentMenu = &deviceMenu;
-  this->addNodes(&settingsMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    changeMenu(settingsMenu.parentMenu, true);
-  });
   for (int i = 0; i < settings_obj.getNumberSettings(); i++) {
     String settingName = settings_obj.setting_index_to_name(i);
     const char* type = this->callSetting(settingName.c_str());
@@ -2975,26 +2832,15 @@ void MenuFunctions::RunSetup()
 
   // Specific setting menu
   specSettingMenu.parentMenu = &settingsMenu;
-  addNodes(&specSettingMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(specSettingMenu.parentMenu, true);
-  });
 
   // Web Update
   updateMenu.parentMenu = &deviceMenu;
 
   // Failed update menu
   failedUpdateMenu.parentMenu = &deviceMenu;
-  this->addNodes(&failedUpdateMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    wifi_scan_obj.currentScanMode = WIFI_SCAN_OFF;
-    this->changeMenu(failedUpdateMenu.parentMenu, true);
-  });
 
   // Device info menu
   infoMenu.parentMenu = &deviceMenu;
-  this->addNodes(&infoMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    wifi_scan_obj.currentScanMode = WIFI_SCAN_OFF;
-    this->changeMenu(infoMenu.parentMenu, true);
-  });
 
   Serial.println("Changing to main menu...");
 
@@ -3436,14 +3282,11 @@ void MenuFunctions::buildSDFileMenu(bool update) {
   else
     sdDeleteMenu.name = "Bin Files";
 
-  this->addNodes(&sdDeleteMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(sdDeleteMenu.parentMenu, true);
-  });
 
   if (!update) {
     this->addNodes(&sdDeleteMenu, "Delete Selected", TFTORANGE, 0, [this]() {
       for (int x = 0; x < sd_obj.sd_files->size(); x++) {
-        if (current_menu->list->get(x + 2).selected) {
+        if (current_menu->list->get(x + 1).selected) {
           if (sd_obj.removeFile("/" + sd_obj.sd_files->get(x))) {
             Serial.println("Deleted /" + sd_obj.sd_files->get(x));
             display_obj.clearScreen();
@@ -3463,8 +3306,8 @@ void MenuFunctions::buildSDFileMenu(bool update) {
     for (int x = 0; x < sd_obj.sd_files->size(); x++) {
       this->addNodes(&sdDeleteMenu, sd_obj.sd_files->get(x).c_str(), TFTCYAN, SD_UPDATE, [this, x]() {
         // Change selection status of menu node
-        MenuNode new_node = current_menu->list->get(x + 2);
-        new_node.selected = !current_menu->list->get(x + 2).selected;
+        MenuNode new_node = current_menu->list->get(x + 1);
+        new_node.selected = !current_menu->list->get(x + 1).selected;
         current_menu->list->set(x + 2, new_node);
       });
     }
@@ -3732,9 +3575,6 @@ void MenuFunctions::buildWifiAPMenu() {
   wifiAPMenu.parentMenu = &wifiGeneralMenu;
   // Add the back button
   wifiAPMenu.list->clear();
-  this->addNodes(&wifiAPMenu, text09, TFTLIGHTGREY, 0, [this]() {
-    this->changeMenu(wifiAPMenu.parentMenu, true);
-  });
 
   this->addNodes(&wifiAPMenu, "Select ALL", TFTGREEN, 255, [this](){
     for (int x = 0; x < access_points->size(); x++) {
@@ -3742,8 +3582,8 @@ void MenuFunctions::buildWifiAPMenu() {
       new_ap.selected = !access_points->get(x).selected;
       access_points->set(x, new_ap);
 
-      MenuNode new_node = current_menu->list->get(x + 2);
-      new_node.selected = !current_menu->list->get(x + 2).selected;
+      MenuNode new_node = current_menu->list->get(x + 1);
+      new_node.selected = !current_menu->list->get(x + 1).selected;
       current_menu->list->set(x + 2, new_node);
     }
     this->changeMenu(current_menu, true);
@@ -3757,8 +3597,8 @@ void MenuFunctions::buildWifiAPMenu() {
       new_ap.selected = !access_points->get(i).selected;
 
       // Change selection status of menu node
-      MenuNode new_node = current_menu->list->get(i + 2);
-      new_node.selected = !current_menu->list->get(i + 2).selected;
+      MenuNode new_node = current_menu->list->get(i + 1);
+      new_node.selected = !current_menu->list->get(i + 1).selected;
       current_menu->list->set(i + 2, new_node);
 
       access_points->set(i, new_ap);

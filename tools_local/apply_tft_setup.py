@@ -77,4 +77,74 @@ def patch_tft_espi():
         f.write(text)
 
 
+def patch_tft_drawchar():
+    """Inject CJK glyph rendering into TFT_eSPI's drawChar for the GLCD font path.
+    When uniCode is in the CJK range (0x4E00-0x9FFF or fullwidth 0xFF00-0xFFEF),
+    render from the embedded cjk_glyphs.h bitmap table instead of the ASCII font.
+    """
+    libdeps = os.path.join(PROJECT_DIR, ".pio", "libdeps")
+    if not os.path.isdir(libdeps):
+        return
+    tft_cpp = None
+    for env_name in os.listdir(libdeps):
+        candidate = os.path.join(libdeps, env_name, "TFT_eSPI", "TFT_eSPI.cpp")
+        if os.path.isfile(candidate):
+            tft_cpp = candidate
+            break
+    if tft_cpp is None:
+        return
+
+    # Copy cjk_glyphs.h into the TFT_eSPI library directory so #include resolves
+    tft_dir = os.path.dirname(tft_cpp)
+    cjk_src = os.path.join(PROJECT_DIR, "esp32_marauder", "cjk_glyphs.h")
+    if os.path.isfile(cjk_src):
+        shutil.copy2(cjk_src, os.path.join(tft_dir, "cjk_glyphs.h"))
+
+    with open(tft_cpp, "r", encoding="utf-8", errors="ignore") as f:
+        text = f.read()
+
+    # Already patched?
+    if "CJK_BITMAPS" in text:
+        return
+
+    # Add include at the top of TFT_eSPI.cpp
+    include_line = '#include "cjk_glyphs.h" // CJK font (auto-injected)\n'
+    text = include_line + text
+
+    # Inject CJK rendering at the start of drawChar(uniCode, x, y, font),
+    # right after the _vpOoB guard.
+    cjk_block = """  // === CJK glyph rendering (auto-injected by apply_tft_setup.py) ===
+  if (font == 1 && ((uniCode >= 0x4E00 && uniCode <= 0x9FFF) || (uniCode >= 0xFF00 && uniCode <= 0xFFEF))) {
+    int16_t idx = cjkLookup(uniCode);
+    if (idx >= 0) {
+      int32_t xd = x + _xDatum;
+      int32_t yd = y + _yDatum;
+      for (int row = 0; row < 12; row++) {
+        uint8_t hi = pgm_read_byte(&CJK_BITMAPS[idx][row * 2]);
+        uint8_t lo = pgm_read_byte(&CJK_BITMAPS[idx][row * 2 + 1]);
+        uint16_t bits = (hi << 8) | lo;
+        for (int col = 0; col < 12; col++) {
+          if (bits & (1 << (15 - col)))
+            drawPixel(xd + col, yd + row, textcolor);
+          else if (textbgcolor != textcolor)
+            drawPixel(xd + col, yd + row, textbgcolor);
+        }
+      }
+      return 13; // advance width: 12px glyph + 1px spacing
+    }
+  }
+"""
+
+    # Insert after the first occurrence of "if (_vpOoB || !uniCode) return 0;"
+    text = text.replace(
+        "  if (_vpOoB || !uniCode) return 0;",
+        "  if (_vpOoB || !uniCode) return 0;\n" + cjk_block,
+        1,
+    )
+
+    with open(tft_cpp, "w", encoding="utf-8") as f:
+        f.write(text)
+
+
 patch_tft_espi()
+patch_tft_drawchar()
