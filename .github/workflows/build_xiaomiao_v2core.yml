@@ -199,3 +199,40 @@ jobs:
           git add -A 2>/dev/null || true
           git commit -m "Update 2.x compile log + firmware (CI run ${{ github.run_id }})" || echo "nothing to commit"
           git push origin feat/xiaomiao 2>&1 || echo "push skipped"
+
+      # Publish firmware as a GitHub Release so it shows on the repo homepage.
+      # Uses the built-in GITHUB_TOKEN (no user gh auth needed).
+      - name: Create GitHub Release with firmware
+        if: success()
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v2.0.0
+          name: XiaoMiao v2.0.0 (SD + BLE + 中文 + B键)
+          body: |
+            ESP32 Marauder 固件 — 学而思小喵掌机 (XiaoMiao)
+
+            基于 arduino-esp32 2.0.17 + TFT_eSPI V2.4.51 + SdFat 2.2.0 构建。
+
+            ## v2.0.0 更新内容
+            - **SD 卡修复**：TFT_RST=-1 软件复位，GPIO19 专作 MISO，SD 20MHz 高速挂载
+            - **BLE 死机根治**：7 种 BLE 攻击模式（Sour Apple/Apple Juice/Swiftpair/Samsung/Google/Flipper/Spam All）不再死机重启
+            - **WiFi AP 选择**：扫描停止后自动进入 AP 选择列表
+            - **B 键返回**：移除所有屏幕 Back 节点，按 B 键直接返回上级菜单
+            - **中文显示**：嵌入 GB2312 12x12 字库（6857 字），中文 SSID 正确显示
+            - **按键修复**：GPIO34/35（确认键/右键）正确配置为 INPUT 模式
+
+            ## 烧录方法
+            下载下方 3 个文件，用 esptool 烧录：
+            ```
+            esptool.py --chip esp32 --port COM5 --baud 921600 write_flash \
+              0x1000  bootloader_xiaomiao_v2core.bin \
+              0x8000  partitions_xiaomiao_v2core.bin \
+              0x10000 esp32_marauder_v2core_*_xiaomiao.bin
+            ```
+          files: |
+            ${{ env.artifact_name }}
+            bootloader_xiaomiao_v2core.bin
+            partitions_xiaomiao_v2core.bin
+          fail_on_unmatched_files: true
+          draft: false
+          prerelease: false

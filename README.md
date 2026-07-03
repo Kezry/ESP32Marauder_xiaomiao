@@ -35,19 +35,28 @@ You can buy the ESP32 Marauder using [this link](https://www.justcallmekokollc.c
 - **设备**：ESP32-D0WD，4MB Flash，ST7735 128×160（横屏 160×128）
 - **按键**：上/下/左/右 + **A=确认/进入** + **B=返回上一级**
 - **屏幕**：横屏，`SCREEN_ORIENTATION=3`（logo 头朝上）
-- **固件 Release**：[v0.0.2](https://github.com/Kezry/ESP32Marauder_xiaomiao/releases/tag/v0.0.2)
+- **固件 Release**：[v2.0.0](https://github.com/Kezry/ESP32Marauder_xiaomiao/releases/tag/v2.0.0)
+
+### v2.0.0 更新内容
+
+| 功能 | 说明 |
+|------|------|
+| 🔧 SD 卡修复 | TFT 软件复位，GPIO19 专作 MISO，SD 20MHz 高速挂载 |
+| 🔧 BLE 死机根治 | 7 种 BLE 攻击模式不再死机重启 |
+| 🔧 WiFi AP 选择 | 扫描停止后自动进入 AP 选择列表 |
+| 🆕 B 键返回 | 移除所有屏幕 Back 节点，按 B 键直接返回上级 |
+| 🆕 中文显示 | 嵌入 GB2312 12x12 字库，中文 SSID 正确显示 |
+| 🔧 按键修复 | GPIO34/35（确认键/右键）正确配置为 INPUT |
 
 ## 1. 下载固件
 
-从 [Releases · v0.0.2](https://github.com/Kezry/ESP32Marauder_xiaomiao/releases/tag/v0.0.2) 下载这 3 个文件（同一编译产物，必须配套）：
+从 [Releases · v2.0.0](https://github.com/Kezry/ESP32Marauder_xiaomiao/releases/tag/v2.0.0) 下载这 3 个文件（同一编译产物，必须配套）：
 
 | 文件 | 烧录地址 | 说明 |
 |------|---------|------|
-| `bootloader_xiaomiao.bin` | `0x1000` | 引导加载器（与 app 配套，不能混用原厂/bootloader） |
-| `partitions_xiaomiao.bin` | `0x8000` | min_spiffs 分区表 |
-| `esp32_marauder_v0_0_2_20260628_xiaomiao.bin` | `0x10000` | 应用固件本体 |
-
-> 还需要 `boot_app0.bin`（OTA 数据初始镜像），可从 [arduino-esp32 核心](https://github.com/espressif/arduino-esp32/blob/3.3.4/tools/partitions/boot_app0.bin) 下载，烧到 `0xe000`。
+| `bootloader_xiaomiao_v2core.bin` | `0x1000` | 引导加载器（arduino-esp32 2.x，与 app 配套） |
+| `partitions_xiaomiao_v2core.bin` | `0x8000` | OTA 分区表 |
+| `esp32_marauder_v2core_*_xiaomiao.bin` | `0x10000` | 应用固件本体 |
 
 ## 2. 安装 esptool
 
@@ -74,25 +83,25 @@ esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200 read_flash 0 0x400000 
 
 ## 4. 烧录固件
 
-按标准 Marauder 地址一次性写入 4 个文件（把 `COM5` 换成你的串口）：
+一次性写入 3 个文件（把 `COM5` 换成你的串口）：
 
 ```bash
 # Windows（用仓库自带 esptool.exe）
 FlashFiles\esptool.exe --chip esp32 --port COM5 --baud 921600 ^
   write_flash -z --flash_mode dio --flash_freq 80m --flash_size detect ^
-  0x1000  bootloader_xiaomiao.bin ^
-  0x8000  partitions_xiaomiao.bin ^
-  0xe000  boot_app0.bin ^
-  0x10000 esp32_marauder_v0_0_2_20260628_xiaomiao.bin
+  0x1000  bootloader_xiaomiao_v2core.bin ^
+  0x8000  partitions_xiaomiao_v2core.bin ^
+  0x10000 esp32_marauder_v2core_*_xiaomiao.bin
 
 # Linux / macOS
 esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600 \
   write_flash -z --flash_mode dio --flash_freq 80m --flash_size detect \
-  0x1000  bootloader_xiaomiao.bin \
-  0x8000  partitions_xiaomiao.bin \
-  0xe000  boot_app0.bin \
-  0x10000 esp32_marauder_v0_0_2_20260628_xiaomiao.bin
+  0x1000  bootloader_xiaomiao_v2core.bin \
+  0x8000  partitions_xiaomiao_v2core.bin \
+  0x10000 esp32_marauder_v2core_*_xiaomiao.bin
 ```
+
+> ⚠️ **v2.0.0 使用 arduino-esp32 2.x 核心构建**，bootloader/partitions 与旧版（3.x 核心）不兼容。**必须同时烧录 3 个文件**，不能只更新 app。
 
 看到 `Hash of data verified.` + `Hard resetting via RTS pin...` 即烧录成功。设备会自动重启，屏幕显示 Marauder 骷髅 logo 和主菜单。
 
@@ -102,10 +111,12 @@ esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600 \
 |------|------|
 | 上 / 下 | 菜单项导航 |
 | 左 / 右 | 切换 / 翻页（部分模式下调信道） |
-| **A** | 确认 / 进入子菜单 / 长按进入隐身模式 |
+| **A** | 确认 / 进入子菜单 / 停止扫描 |
 | **B** | 返回上一级菜单 |
 
 > ⚠️ **注意**：B 键是 GPIO12（boot strapping 引脚）。**正常使用没问题，但上电启动时不要按住 B 键**，否则芯片会误判 Flash 电压进入异常状态。松开 B 键后再开机即可。
+
+> 💡 **WiFi 扫描后选 AP**：执行 Scan AP/STA 后，按 **A 键停止扫描**，设备会自动跳转到 AP 选择列表，然后用上/下导航、A 确认选择目标 AP。
 
 ## 6. 恢复原厂固件
 
@@ -127,9 +138,14 @@ FlashFiles\esptool.exe --chip esp32 --port COM5 --baud 921600 write_flash 0 fact
 
 ## 8. 自行编译
 
-本仓库配置了 GitHub Actions 自动构建（`.github/workflows/build_xiaomiao.yml`）。推送到 `feat/xiaomiao` 分支或手动触发 workflow，CI 会在 Linux 上几分钟编出固件并发布到 Release。
+本仓库配置了 GitHub Actions 自动构建（`.github/workflows/build_xiaomiao_v2core.yml`）。推送到 `feat/xiaomiao` 分支或手动触发 workflow，CI 会在 Linux 上编译固件并发布到 GitHub Release。
 
-如需本地编译：Arduino IDE 选板 **LOLIN D32**，分区方案 **Minimal SPIFFS**，在 `esp32_marauder/configs.h` 顶部取消注释 `#define MARAUDER_XIAOMIAO`，按 [ESP32_Info.md](doc/ESP32_Info.md) 配置 TFT_eSPI 后编译。
+如需本地编译（PlatformIO）：
+```bash
+pio run -e xiaomiao          # 编译
+pio run -e xiaomiao -t upload  # 编译+烧录（COM5）
+```
+`platformio.ini` 已配置好全部依赖（arduino-esp32 2.x、TFT_eSPI V2.4.51、SdFat 2.2.0、NimBLE 1.4.2 等）。
 
 > 完整设备硬件信息见 [doc/ESP32_Info.md](doc/ESP32_Info.md)。
 

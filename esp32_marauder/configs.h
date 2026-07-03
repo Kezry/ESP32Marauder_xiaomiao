@@ -41,7 +41,7 @@
 
   #define JSON_SETTING_SIZE 2048
 
-  #define MARAUDER_VERSION "v1.12.3"
+  #define MARAUDER_VERSION "v2.0.0-xiaomiao"
 
   #define GRAPH_REFRESH   100
 
