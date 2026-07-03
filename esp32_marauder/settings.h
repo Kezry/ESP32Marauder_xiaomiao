@@ -33,6 +33,7 @@ class Settings {
       bool  EnableLED   = true;
       bool  EPDeauth    = false;
       bool  ChanHop     = false;
+      bool  Language    = false;   // false = Chinese (default), true = English
       String ClientSSID = "";
       String ClientPW   = "";
     } _cache;

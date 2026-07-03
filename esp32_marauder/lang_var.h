@@ -5,6 +5,10 @@
 
 
 #include "configs.h"
+// i18n: route text_tableN[i] accessors and L("literal") through this header.
+// Including it here means every TU that already pulls in lang_var.h gets the
+// T0..T4() / L() accessors automatically.
+#include "i18n.h"
 
 //Starting window texts
 PROGMEM const char text0_0[] = "Giving room for HardwareSerial...";

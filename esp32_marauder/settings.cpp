@@ -1,4 +1,5 @@
 #include "settings.h"
+#include "i18n.h"
 
 // ---------------------------------------------------------------------------
 // _buildCache — called once after json_settings_string is loaded/updated.
@@ -28,6 +29,8 @@ void Settings::_buildCache() {
       _cache.EPDeauth = json["Settings"][i]["value"].as<bool>();
     else if (strcmp(name, "ChanHop") == 0)
       _cache.ChanHop = json["Settings"][i]["value"].as<bool>();
+    else if (strcmp(name, "Language") == 0)
+      _cache.Language = json["Settings"][i]["value"].as<bool>();
     else if (strcmp(name, "ClientSSID") == 0)
       _cache.ClientSSID = json["Settings"][i]["value"].as<String>();
     else if (strcmp(name, "ClientPW") == 0)
@@ -77,6 +80,11 @@ bool Settings::begin() {
 
   // Populate the flat cache from the freshly loaded JSON.
   this->_buildCache();
+
+  // Sync the global i18n flag from the persisted Language setting.
+  // Default is false (Chinese). Falls back gracefully if the key is absent
+  // (older settings.json without Language -> Chinese, the desired default).
+  g_lang_en = _cache.Language;
 
   return true;
 }
@@ -151,6 +159,8 @@ template <> bool Settings::loadSetting<bool>(const char* key) {
     return _cache.EPDeauth;
   if (strcmp(key, "ChanHop") == 0)
     return _cache.ChanHop;
+  if (strcmp(key, "Language") == 0)
+    return _cache.Language;
 
   // Unknown bool key: fall back to JSON so the setting can be auto-created.
   DynamicJsonDocument json(JSON_SETTING_SIZE);
@@ -168,8 +178,32 @@ template <> bool Settings::loadSetting<bool>(const char* key) {
   // Serial.print(key);
   // Serial.println(". Creating...");
 
-  if (this->createDefaultSettings(SPIFFS, true, json["Settings"].size(), "bool", key))
+  if (this->createDefaultSettings(SPIFFS, true, json["Settings"].size(), "bool", key)) {
+    // Auto-create defaults new bool settings to true. For Language we want the
+    // default to be Chinese (false), so override the value the spec path wrote.
+    if (strcmp(key, "Language") == 0) {
+      // Flip the just-written true back to false in JSON + on disk. Re-parse
+      // json_settings_string (createDefaultSettings serialized into it).
+      DynamicJsonDocument j2(JSON_SETTING_SIZE);
+      if (!deserializeJson(j2, this->json_settings_string)) {
+        for (int k = 0; k < (int)j2["Settings"].size(); k++) {
+          if (strcmp(j2["Settings"][k]["name"] | "", "Language") == 0) {
+            j2["Settings"][k]["value"] = false;
+            String out;
+            serializeJson(j2, out);
+            this->json_settings_string = out;
+            File f2 = SPIFFS.open("/settings.json", FILE_WRITE);
+            if (f2) { serializeJson(j2, f2); f2.close(); }
+            break;
+          }
+        }
+      }
+      _cache.Language = false;
+      g_lang_en = false;
+      return false;
+    }
     return true;
+  }
 
   return false;
 }
@@ -194,6 +228,9 @@ template <> uint8_t Settings::loadSetting<uint8_t>(const char* key) {
 
   if (strcmp(key, "ChanHop") == 0)
     return (uint8_t)_cache.ChanHop;
+
+  if (strcmp(key, "Language") == 0)
+    return (uint8_t)_cache.Language;
 
   DynamicJsonDocument json(JSON_SETTING_SIZE);
   deserializeJson(json, this->json_settings_string);
@@ -256,6 +293,12 @@ template <> bool Settings::saveSetting<bool>(const char* key, bool value) {
         _cache.EPDeauth = value;
       else if (strcmp(key, "ChanHop") == 0)
         _cache.ChanHop = value;
+      else if (strcmp(key, "Language") == 0) {
+        _cache.Language = value;
+        // Live-update the global i18n flag so the next menu redraw reflects it
+        // without requiring a reboot.
+        g_lang_en = value;
+      }
 
       this->printJsonSettings(settings_string);
 
@@ -439,17 +482,23 @@ bool Settings::createDefaultSettings(fs::FS &fs, bool spec, uint8_t index, const
     jsonBuffer["Settings"][5]["range"]["min"] = false;
     jsonBuffer["Settings"][5]["range"]["max"] = true;
 
-    jsonBuffer["Settings"][6]["name"] = "ClientSSID";
-    jsonBuffer["Settings"][6]["type"] = "String";
-    jsonBuffer["Settings"][6]["value"] = "";
-    jsonBuffer["Settings"][6]["range"]["min"] = "";
-    jsonBuffer["Settings"][6]["range"]["max"] = "";
+    jsonBuffer["Settings"][6]["name"] = "Language";
+    jsonBuffer["Settings"][6]["type"] = "bool";
+    jsonBuffer["Settings"][6]["value"] = false;
+    jsonBuffer["Settings"][6]["range"]["min"] = false;
+    jsonBuffer["Settings"][6]["range"]["max"] = true;
 
-    jsonBuffer["Settings"][7]["name"] = "ClientPW";
+    jsonBuffer["Settings"][7]["name"] = "ClientSSID";
     jsonBuffer["Settings"][7]["type"] = "String";
     jsonBuffer["Settings"][7]["value"] = "";
     jsonBuffer["Settings"][7]["range"]["min"] = "";
     jsonBuffer["Settings"][7]["range"]["max"] = "";
+
+    jsonBuffer["Settings"][8]["name"] = "ClientPW";
+    jsonBuffer["Settings"][8]["type"] = "String";
+    jsonBuffer["Settings"][8]["value"] = "";
+    jsonBuffer["Settings"][8]["range"]["min"] = "";
+    jsonBuffer["Settings"][8]["range"]["max"] = "";
 
     serializeJson(jsonBuffer, settingsFile);
     serializeJson(jsonBuffer, settings_string);

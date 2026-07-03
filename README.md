@@ -46,6 +46,7 @@ You can buy the ESP32 Marauder using [this link](https://www.justcallmekokollc.c
 | 🔧 WiFi AP 选择 | 扫描停止后自动进入 AP 选择列表 |
 | 🆕 B 键返回 | 移除所有屏幕 Back 节点，按 B 键直接返回上级 |
 | 🆕 中文显示 | 嵌入 GB2312 12x12 字库，中文 SSID 正确显示 |
+| 🆕 中英双语 | 设置→语言 切换中/英文，默认全中文菜单/状态页/扫描页 |
 | 🔧 按键修复 | GPIO34/35（确认键/右键）正确配置为 INPUT |
 
 ## 1. 下载固件
