@@ -234,4 +234,5 @@
  /home/runner/Arduino/libraries/TFT_eSPI/Extensions/Smooth_font.h \
  /home/runner/Arduino/libraries/TFT_eSPI/Extensions/Button.h \
  /home/runner/Arduino/libraries/TFT_eSPI/Extensions/Sprite.h \
- /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/lang_var.h
+ /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/lang_var.h \
+ /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/i18n.h

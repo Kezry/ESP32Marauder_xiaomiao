@@ -458,6 +458,7 @@ MenuFunctions.o: \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/bootloader_support/include/esp_flash_partitions.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/bootloader_support/include/esp_app_format.h \
  /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/lang_var.h \
+ /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/i18n.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/esp_wifi/include/esp_wifi.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/esp_wifi/include/esp_wifi_types.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/esp_wifi/include/esp_private/esp_wifi_private.h \

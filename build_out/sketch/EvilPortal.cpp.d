@@ -372,4 +372,5 @@
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/bootloader_support/include/esp_image_format.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/bootloader_support/include/esp_flash_partitions.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/bootloader_support/include/esp_app_format.h \
- /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/lang_var.h
+ /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/lang_var.h \
+ /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/i18n.h

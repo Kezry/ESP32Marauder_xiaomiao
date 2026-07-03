@@ -121,14 +121,14 @@ void Buffer::add(const uint8_t* buf, uint32_t len, bool is_pcap){
 }
 
 void Buffer::append(wifi_promiscuous_pkt_t *packet, int len) {
-  bool save_packet = settings_obj.loadSetting<bool>(text_table4[7]);
+  bool save_packet = settings_obj.loadSetting<bool>(LT4(7));
   if (save_packet) {
     add(packet->payload, len, true);
   }
 }
 
 void Buffer::append(String log) {
-  bool save_packet = settings_obj.loadSetting<bool>(text_table4[7]);
+  bool save_packet = settings_obj.loadSetting<bool>(LT4(7));
   if (save_packet) {
     add((const uint8_t*)log.c_str(), log.length(), false);
   }

@@ -40,6 +40,7 @@ https://www.online-utility.org/image/convert/to/XBM
 #include "settings.h"
 #include "CommandLine.h"
 #include "lang_var.h"
+#include "i18n.h"
 
 #ifdef HAS_BATTERY
   #include "BatteryInterface.h"
@@ -79,6 +80,10 @@ EvilPortal evil_portal_obj;
 Buffer buffer_obj;
 Settings settings_obj;
 CommandLine cli_obj;
+
+// i18n: false = Chinese (default), true = English. Set from SPIFFS in
+// settings_obj.begin() (see "Language" key).
+bool g_lang_en = false;
 
 #ifdef HAS_GPS
   GpsInterface gps_obj;
@@ -195,15 +200,15 @@ uint32_t currentTime  = 0;
     #endif
   }
 #else
-#line 196 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
+#line 201 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
 void backlightOn();
-#line 208 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
+#line 213 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
 void backlightOff();
-#line 226 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
+#line 231 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
 void setup();
-#line 429 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
+#line 434 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
 void loop();
-#line 196 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
+#line 201 "/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/esp32_marauder/esp32_marauder.ino"
   void backlightOn() {
     #ifdef HAS_SCREEN
       #if defined(MARAUDER_MINI) || defined(MARAUDER_MINI_V3)
@@ -382,7 +387,7 @@ void setup()
 
   #ifdef HAS_SCREEN
     display_obj.tft.setTextColor(TFT_GREEN, TFT_BLACK);
-    display_obj.tft.drawCentreString("Initializing...", SCREEN_WIDTH/2, SCREEN_HEIGHT * 0.82, 1);
+    display_obj.tft.drawCentreString(L("Initializing..."), SCREEN_WIDTH/2, SCREEN_HEIGHT * 0.82, 1);
   #endif
 
   evil_portal_obj.setup();

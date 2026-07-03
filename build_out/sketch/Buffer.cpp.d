@@ -243,4 +243,5 @@
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/esp_wifi/include/esp_private/esp_wifi_types_private.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/esp_hw_support/include/esp_interface.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/include/esp_event/include/esp_event_base.h \
- /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/lang_var.h
+ /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/lang_var.h \
+ /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/i18n.h

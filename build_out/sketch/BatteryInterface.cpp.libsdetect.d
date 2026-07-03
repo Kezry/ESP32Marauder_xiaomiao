@@ -139,4 +139,5 @@ BatteryInterface.o: \
  /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/configs.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/libraries/Wire/src/Wire.h \
  /home/runner/.arduino15/packages/esp32/hardware/esp32/2.0.17/cores/esp32/esp32-hal.h \
- /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/lang_var.h
+ /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/lang_var.h \
+ /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/sketch/i18n.h
