@@ -1,28 +1,28 @@
-Sketch uses 1429689 bytes (72%) of program storage space. Maximum is 1966080 bytes.
+Sketch uses 1421649 bytes (72%) of program storage space. Maximum is 1966080 bytes.
 Global variables use 79080 bytes (24%) of dynamic memory, leaving 248600 bytes for local variables. Maximum is 327680 bytes.
--rw-r--r-- 1 runner runner 1436272 Jul  2 16:40 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
--rw-r--r-- 1 runner runner   17568 Jul  2 16:39 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
--rw-r--r-- 1 runner runner    3072 Jul  2 16:40 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
+-rw-r--r-- 1 runner runner 1428224 Jul  3 15:17 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
+-rw-r--r-- 1 runner runner   17568 Jul  3 15:16 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
+-rw-r--r-- 1 runner runner    3072 Jul  3 15:17 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
 ++ date -u +%Y%m%d
-+ DATE=20260702
-+ OUTPUT_BIN=esp32_marauder_v2core_20260702_xiaomiao.bin
++ DATE=20260703
++ OUTPUT_BIN=esp32_marauder_v2core_20260703_xiaomiao.bin
 + BUILD_OUT=/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out
 + echo '=== build_out *.bin ==='
 === build_out *.bin ===
 + ls -la /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
--rw-r--r-- 1 runner runner 1436272 Jul  2 16:40 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
--rw-r--r-- 1 runner runner   17568 Jul  2 16:39 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
--rw-r--r-- 1 runner runner    3072 Jul  2 16:40 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
+-rw-r--r-- 1 runner runner 1428224 Jul  3 15:17 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
+-rw-r--r-- 1 runner runner   17568 Jul  3 15:16 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin
+-rw-r--r-- 1 runner runner    3072 Jul  3 15:17 /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin
 + INPUT_BIN=/home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin
 + '[' '!' -f /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin ']'
 + '[' -z /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin ']'
 + '[' '!' -f /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin ']'
-+ cp /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin esp32_marauder_v2core_20260702_xiaomiao.bin
-+ ls -la esp32_marauder_v2core_20260702_xiaomiao.bin
--rw-r--r-- 1 runner runner 1436272 Jul  2 16:40 esp32_marauder_v2core_20260702_xiaomiao.bin
-+ echo artifact_name=esp32_marauder_v2core_20260702_xiaomiao.bin
++ cp /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bin esp32_marauder_v2core_20260703_xiaomiao.bin
++ ls -la esp32_marauder_v2core_20260703_xiaomiao.bin
+-rw-r--r-- 1 runner runner 1428224 Jul  3 15:17 esp32_marauder_v2core_20260703_xiaomiao.bin
++ echo artifact_name=esp32_marauder_v2core_20260703_xiaomiao.bin
 + cp /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.bootloader.bin bootloader_xiaomiao_v2core.bin
 + cp /home/runner/work/ESP32Marauder_xiaomiao/ESP32Marauder_xiaomiao/build_out/esp32_marauder.ino.partitions.bin partitions_xiaomiao_v2core.bin
 + ls -la bootloader_xiaomiao_v2core.bin partitions_xiaomiao_v2core.bin
--rw-r--r-- 1 runner runner 17568 Jul  2 16:40 bootloader_xiaomiao_v2core.bin
--rw-r--r-- 1 runner runner  3072 Jul  2 16:40 partitions_xiaomiao_v2core.bin
+-rw-r--r-- 1 runner runner 17568 Jul  3 15:17 bootloader_xiaomiao_v2core.bin
+-rw-r--r-- 1 runner runner  3072 Jul  3 15:17 partitions_xiaomiao_v2core.bin
